@@ -24,31 +24,13 @@ import educationapp.shared.generated.resources.greeting
 
 import com.example.educationapp.core.theme.AppTheme
 
+import cafe.adriel.voyager.navigator.Navigator
+import com.example.educationapp.presentation.screen.login.LoginScreen
+
 @Composable
 @Preview
 fun App() {
     AppTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text(stringResource(Res.string.click_me))
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text(stringResource(Res.string.greeting, greeting))
-                }
-            }
-        }
+        Navigator(LoginScreen())
     }
 }
