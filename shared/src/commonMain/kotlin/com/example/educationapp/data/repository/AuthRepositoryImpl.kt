@@ -1,11 +1,14 @@
 package com.example.educationapp.data.repository
 
+import com.example.educationapp.core.data.TokenManager
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.network.BaseResponse
 import com.example.educationapp.core.network.safeApiCall
 import com.example.educationapp.data.dto.request.LoginRequest
-import com.example.educationapp.data.dto.response.LoginResponse
-import com.example.educationapp.domain.entity.UserToken
+import com.example.educationapp.data.dto.response.LoginDTO
+import com.example.educationapp.data.endpoint.AuthEndpoint
+import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.domain.entity.UserInfo
 import com.example.educationapp.domain.repository.AuthRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -13,19 +16,25 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 
 class AuthRepositoryImpl(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val tokenManager: TokenManager
 ) : AuthRepository {
 
-    override suspend fun login(username: String, password: String): ApiResult<UserToken> {
+    override suspend fun login(username: String, password: String): ApiResult<UserInfo> {
         return safeApiCall {
-            val response = httpClient.post("auth/login") {
+            val response = httpClient.post(AuthEndpoint.LOGIN) {
                 setBody(LoginRequest(username = username, password = password))
-            }.body<BaseResponse<LoginResponse>>()
+            }.body<BaseResponse<LoginDTO>>()
 
-            UserToken(
+            tokenManager.saveTokens(
                 accessToken = response.data.accessToken,
                 refreshToken = response.data.refreshToken,
-                userRole = response.data.userRole,
+                role = response.data.userRole,
+                fullName = response.data.fullName
+            )
+
+            UserInfo(
+                userRole = AppRole.fromString(response.data.userRole),
                 fullName = response.data.fullName
             )
         }
@@ -33,7 +42,8 @@ class AuthRepositoryImpl(
 
     override suspend fun logout(): ApiResult<Unit> {
         return safeApiCall {
-            httpClient.post("auth/logout")
+            httpClient.post(AuthEndpoint.LOGOUT)
+            tokenManager.clearTokens()
             Unit
         }
     }

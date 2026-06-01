@@ -1,15 +1,31 @@
 package com.example.educationapp.presentation.screen.login
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -20,9 +36,28 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppDimen
-import com.example.educationapp.core.ui.textfield.AppTextField
+import com.example.educationapp.core.ui.button.AppButton
+import com.example.educationapp.core.ui.button.AppTextButton
+import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.ui.textfield.EmailTextField
 import com.example.educationapp.core.ui.textfield.PasswordTextField
-import com.example.educationapp.presentation.screen.home.HomeScreen
+import com.example.educationapp.presentation.screen.main.MainScreen
+import com.example.educationapp.presentation.screenmodel.login.LoginScreenModel
+import com.example.educationapp.presentation.screenmodel.login.LoginState
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.lb_email_address
+import educationapp.shared.generated.resources.lb_email_address_placeholder
+import educationapp.shared.generated.resources.lb_login_desc
+import educationapp.shared.generated.resources.lb_login_title
+import educationapp.shared.generated.resources.lb_password
+import educationapp.shared.generated.resources.lb_password_placeholder
+import educationapp.shared.generated.resources.login_button
+import educationapp.shared.generated.resources.login_create_account
+import educationapp.shared.generated.resources.login_description
+import educationapp.shared.generated.resources.login_forgot_password
+import educationapp.shared.generated.resources.login_no_account
+import educationapp.shared.generated.resources.login_tagline
+import org.jetbrains.compose.resources.stringResource
 
 class LoginScreen : Screen {
 
@@ -37,98 +72,200 @@ class LoginScreen : Screen {
 
         LaunchedEffect(state) {
             if (state is LoginState.Success) {
-                navigator.replaceAll(HomeScreen())
+                val userInfo = (state as LoginState.Success).userInfo
+                navigator.replaceAll(MainScreen(userInfo.userRole))
                 screenModel.resetState()
             }
         }
 
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF6200EE),
-                            Color(0xFF3700B3)
-                        )
-                    )
-                ),
+                .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center
         ) {
+            val isLandscape = maxWidth > maxHeight
+            val isTabletOrLandscape = maxWidth >= 600.dp || isLandscape
+            val scrollState = rememberScrollState()
+
+            if (isTabletOrLandscape) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(AppDimen.p24),
+                    horizontalArrangement = Arrangement.spacedBy(AppDimen.p24),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(AppDimen.p16),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        AppText(
+                            text = "EducationApp",
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Start
+                        )
+                        Spacer(modifier = Modifier.height(AppDimen.p12))
+                        AppText(
+                            text = stringResource(Res.string.login_tagline),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Start
+                        )
+                        Spacer(modifier = Modifier.height(AppDimen.p8))
+                        AppText(
+                            text = stringResource(Res.string.login_description),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1.2f)
+                            .fillMaxHeight()
+                            .verticalScroll(scrollState),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        LoginForm(
+                            username = username,
+                            onUsernameChange = { username = it },
+                            password = password,
+                            onPasswordChange = { password = it },
+                            state = state,
+                            onLoginClick = { screenModel.login(username, password) },
+                            modifier = Modifier
+                                .widthIn(max = 400.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(AppDimen.p16)
+                        .verticalScroll(scrollState),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoginForm(
+                        username = username,
+                        onUsernameChange = { username = it },
+                        password = password,
+                        onPasswordChange = { password = it },
+                        state = state,
+                        onLoginClick = { screenModel.login(username, password) },
+                        modifier = Modifier
+                            .widthIn(max = 400.dp)
+                            .fillMaxWidth()
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun LoginForm(
+        username: String,
+        onUsernameChange: (String) -> Unit,
+        password: String,
+        onPasswordChange: (String) -> Unit,
+        state: LoginState,
+        onLoginClick: () -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
+        ) {
+            AppText(
+                text = stringResource(Res.string.lb_login_title),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+
+            AppText(
+                text = stringResource(Res.string.lb_login_desc),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = AppDimen.p8)
+            )
+
+            EmailTextField(
+                value = username,
+                onValueChange = onUsernameChange,
+                label = stringResource(Res.string.lb_email_address),
+                placeholder = stringResource(Res.string.lb_email_address_placeholder),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = state !is LoginState.Loading
+            )
+
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(AppDimen.p24)
-                    .clip(RoundedCornerShape(AppDimen.p16))
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))
-                    .padding(AppDimen.p24),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(AppDimen.p4)
             ) {
-                Text(
-                    text = "ĐĂNG NHẬP",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = AppDimen.p8)
-                )
-
-                AppTextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    label = "Tài khoản",
-                    placeholder = "Nhập tài khoản của bạn",
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = state !is LoginState.Loading
-                )
-
                 PasswordTextField(
                     value = password,
-                    onValueChange = { password = it },
-                    label = "Mật khẩu",
-                    placeholder = "Nhập mật khẩu",
+                    onValueChange = onPasswordChange,
+                    label = stringResource(Res.string.lb_password),
+                    placeholder = stringResource(Res.string.lb_password_placeholder),
                     modifier = Modifier.fillMaxWidth(),
                     enabled = state !is LoginState.Loading,
                     imeAction = ImeAction.Done
                 )
 
-                if (state is LoginState.Error) {
-                    Text(
-                        text = (state as LoginState.Error).message,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                AppTextButton(
+                    text = stringResource(Res.string.login_forgot_password),
+                    onClick = { /* Handle forgot password */ },
+                    modifier = Modifier.align(Alignment.End)
+                )
+            }
 
-                Spacer(modifier = Modifier.height(AppDimen.p8))
+            if (state is LoginState.Error) {
+                AppText(
+                    text = state.error.asString(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
-                Button(
-                    onClick = { screenModel.login(username, password) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(AppDimen.p12),
-                    enabled = state !is LoginState.Loading,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+            Spacer(modifier = Modifier.height(AppDimen.p4))
+
+            Column {
+                AppButton(
+                    text = stringResource(Res.string.login_button),
+                    onClick = onLoginClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    isLoading = state is LoginState.Loading
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (state is LoginState.Loading) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(24.dp),
-                            strokeWidth = 2.5.dp
-                        )
-                    } else {
-                        Text(
-                            text = "Đăng Nhập",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                    }
+                    AppText(
+                        text = stringResource(Res.string.login_no_account),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        fontSize = 14.sp
+                    )
+                    Spacer(modifier = Modifier.width(AppDimen.p4))
+                    AppTextButton(
+                        text = stringResource(Res.string.login_create_account),
+                        onClick = { /* Handle navigation to register */ }
+                    )
                 }
             }
         }

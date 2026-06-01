@@ -2,4 +2,44 @@
     <string name="app_name">Ứng dụng Giáo dục</string>
     <string name="click_me">Bấm vào tôi!</string>
     <string name="greeting">Compose: %s</string>
+    
+    <!-- Network & API Errors -->
+    <string name="error_no_internet">Không có kết nối mạng. Vui lòng kiểm tra lại.</string>
+    <string name="error_timeout">Hết thời gian kết nối. Vui lòng thử lại.</string>
+    <string name="error_unauthorized">Phiên làm việc hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="error_forbidden">Bạn không có quyền thực hiện hành động này.</string>
+    <string name="error_not_found">Không tìm thấy yêu cầu.</string>
+    <string name="error_server">Lỗi hệ thống. Vui lòng thử lại sau.</string>
+    <string name="error_serialization">Không thể xử lý dữ liệu từ máy chủ.</string>
+    <string name="error_unknown">Đã xảy ra lỗi không xác định.</string>
+    <string name="error_empty_credentials">Tên đăng nhập và mật khẩu không được để trống.</string>
+
+    <!-- Login Screen Strings -->
+    <string name="lb_login_title">Chào mừng trở lại</string>
+    <string name="lb_login_desc">Nhập thông tin tài khoản của bạn để vào lớp học</string>
+    <string name="login_button">Đăng Nhập</string>
+    <string name="login_tagline">Khám phá thế giới tri thức mới</string>
+    <string name="login_description">Hệ thống quản lý giáo dục trực quan, hiện đại và thân thiện cho mọi lứa tuổi học sinh.</string>
+
+    <string name="lb_email_address">Địa chỉ email</string>
+    <string name="lb_email_address_placeholder">you@example.com</string>
+    <string name="lb_password">Mật khẩu</string>
+    <string name="lb_password_placeholder">Nhập mật khẩu của bạn</string>
+
+    <string name="login_forgot_password">Quên mật khẩu?</string>
+    <string name="login_no_account">Chưa có tài khoản?</string>
+    <string name="login_create_account">Tạo tài khoản</string>
+
+    <!-- Main Screen - Bottom Tabs -->
+    <string name="tab_dashboard">Trang chủ</string>
+    <string name="tab_schedule">Lịch học</string>
+    <string name="tab_assignment">Bài tập</string>
+    <string name="tab_profile">Cá nhân</string>
+
+    <!-- Role Access Error -->
+    <string name="error_role_not_allowed">Vai trò của bạn không có quyền truy cập ứng dụng di động. Vui lòng liên hệ quản trị viên.</string>
+
+    <!-- Placeholders -->
+    <string name="placeholder_feature_title">Cổng thông tin %s</string>
+    <string name="placeholder_feature_desc">Tính năng đang được phát triển cho vai trò này.</string>
 </resources>

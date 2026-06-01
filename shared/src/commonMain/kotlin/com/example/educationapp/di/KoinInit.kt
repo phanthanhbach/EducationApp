@@ -6,7 +6,13 @@ import org.koin.dsl.KoinAppDeclaration
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
     startKoin {
         appDeclaration()
-        modules(appModule)
+        modules(
+            platformModule,
+            networkModule,
+            repositoryModule,
+            useCaseModule,
+            screenModelModule
+        )
     }
 
 // Helper cho iOS vì iOS không dùng appDeclaration trực tiếp dễ dàng như Android

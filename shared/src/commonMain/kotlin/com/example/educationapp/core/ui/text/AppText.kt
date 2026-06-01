@@ -28,10 +28,12 @@ fun AppText(
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
     softWrap: Boolean = true,
-    overflow: TextOverflow = TextOverflow.Clip
+    overflow: TextOverflow = TextOverflow.Clip,
+    allCaps: Boolean = false
 ) {
+    val displayText = if (allCaps) text.uppercase() else text
     Text(
-        text = text,
+        text = displayText,
         modifier = modifier,
         style = style,
         color = color,
@@ -66,10 +68,20 @@ fun AppText(
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
     softWrap: Boolean = true,
-    overflow: TextOverflow = TextOverflow.Clip
+    overflow: TextOverflow = TextOverflow.Clip,
+    allCaps: Boolean = false
 ) {
+    val displayText = if (allCaps) {
+        AnnotatedString(
+            text = text.text.uppercase(),
+            spanStyles = text.spanStyles,
+            paragraphStyles = text.paragraphStyles
+        )
+    } else {
+        text
+    }
     Text(
-        text = text,
+        text = displayText,
         modifier = modifier,
         style = style,
         color = color,

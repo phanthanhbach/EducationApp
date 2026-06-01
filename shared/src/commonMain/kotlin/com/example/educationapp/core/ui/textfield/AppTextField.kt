@@ -91,7 +91,7 @@ fun AppTextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     maxLength: Int? = null,
-    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -134,7 +134,7 @@ fun AppTextField(
             readOnly = readOnly,
             textStyle = textStyle,
             label = if (label != null && labelStyle == AppTextFieldLabelStyle.Floating) {
-                { Text(text = label) }
+                { Text(text = label, style = MaterialTheme.typography.bodyMedium) }
             } else {
                 null
             },
@@ -142,7 +142,7 @@ fun AppTextField(
                 {
                     Text(
                         text = placeholder,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 }
@@ -153,13 +153,17 @@ fun AppTextField(
             trailingIcon = trailingIcon,
             prefix = prefix,
             suffix = suffix,
-            supportingText = {
-                SupportingContent(
-                    errorMessage = errorMessage,
-                    supportingText = supportingText,
-                    currentLength = value.length,
-                    maxLength = maxLength
-                )
+            supportingText = if (errorMessage != null || supportingText != null || maxLength != null) {
+                {
+                    SupportingContent(
+                        errorMessage = errorMessage,
+                        supportingText = supportingText,
+                        currentLength = value.length,
+                        maxLength = maxLength
+                    )
+                }
+            } else {
+                null
             },
             isError = isError,
             visualTransformation = visualTransformation,

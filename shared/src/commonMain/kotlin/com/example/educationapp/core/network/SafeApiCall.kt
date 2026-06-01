@@ -30,20 +30,20 @@ suspend inline fun <reified T> safeApiCall(
         Logger.e(e) { "API Server Error (code: ${e.response.status.value})" }
         ApiResult.Error.HttpError(
             code = e.response.status.value,
-            message = "Server error occurred. Please try again later.",
+            message = e.message,
             exception = e
         )
     } catch (e: RedirectResponseException) {
         Logger.e(e) { "API Redirect Error (code: ${e.response.status.value})" }
         ApiResult.Error.HttpError(
             code = e.response.status.value,
-            message = "Redirect error occurred.",
+            message = e.message,
             exception = e
         )
     } catch (e: SerializationException) {
         Logger.e(e) { "API Serialization Error: ${e.message}" }
         ApiResult.Error.SerializationError(
-            message = "Failed to parse data from server.",
+            message = e.message,
             exception = e
         )
     } catch (e: Exception) {
@@ -54,14 +54,16 @@ suspend inline fun <reified T> safeApiCall(
 
         if (isNetworkIssue) {
             Logger.e(e) { "API Network Connection Error" }
+            val isTimeout = e is HttpRequestTimeoutException || e is ConnectTimeoutException || e.message?.contains("timeout", ignoreCase = true) == true
             ApiResult.Error.NetworkError(
-                message = "No internet connection. Please check your network.",
+                isTimeout = isTimeout,
+                message = e.message,
                 exception = e
             )
         } else {
             Logger.e(e) { "API Unknown Error: ${e.message}" }
             ApiResult.Error.UnknownError(
-                message = e.message ?: "An unknown error occurred.",
+                message = e.message,
                 exception = e
             )
         }

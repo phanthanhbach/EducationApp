@@ -2,4 +2,44 @@
     <string name="app_name">EducationApp</string>
     <string name="click_me">Click me!</string>
     <string name="greeting">Compose: %s</string>
+    
+    <!-- Network & API Errors -->
+    <string name="error_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_timeout">Connection timeout. Please try again.</string>
+    <string name="error_unauthorized">Session expired. Please log in again.</string>
+    <string name="error_forbidden">You do not have permission to perform this action.</string>
+    <string name="error_not_found">Requested resource not found.</string>
+    <string name="error_server">Server error occurred. Please try again later.</string>
+    <string name="error_serialization">Failed to parse data from server.</string>
+    <string name="error_unknown">An unknown error occurred.</string>
+    <string name="error_empty_credentials">Username and password cannot be empty.</string>
+
+    <!-- Login Screen Strings -->
+    <string name="lb_login_title">Welcome back</string>
+    <string name="lb_login_desc">Enter your credentials to access your class</string>
+    <string name="login_button">Sign In</string>
+    <string name="login_tagline">Explore a new world of knowledge</string>
+    <string name="login_description">Intuitive, modern and friendly educational management system for all student ages.</string>
+
+    <string name="lb_email_address">Email Address</string>
+    <string name="lb_email_address_placeholder">you@example.com</string>
+    <string name="lb_password">Password</string>
+    <string name="lb_password_placeholder">Enter your password</string>
+
+    <string name="login_forgot_password">Forgot password?</string>
+    <string name="login_no_account">Don\'t have an account?</string>
+    <string name="login_create_account">Create one</string>
+
+    <!-- Main Screen - Bottom Tabs -->
+    <string name="tab_dashboard">Dashboard</string>
+    <string name="tab_schedule">Schedule</string>
+    <string name="tab_assignment">Assignment</string>
+    <string name="tab_profile">Profile</string>
+
+    <!-- Role Access Error -->
+    <string name="error_role_not_allowed">Your role does not have access to the mobile app. Please contact your administrator.</string>
+
+    <!-- Placeholders -->
+    <string name="placeholder_feature_title">%s Portal</string>
+    <string name="placeholder_feature_desc">Feature coming soon for this role.</string>
 </resources>
