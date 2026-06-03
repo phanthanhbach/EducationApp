@@ -1,0 +1,97 @@
+package com.example.educationapp.presentation.screen.main
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.educationapp.core.ui.text.AppText
+
+/**
+ * Data class representing a single bottom navigation tab item.
+ */
+data class BottomNavItem(
+    val title: String,
+    val icon: Painter,
+    val index: Int
+)
+
+/**
+ * Clean, standard bottom navigation bar with:
+ * - Edge-to-edge window insets support (navigationBarsPadding)
+ * - Theme-adaptive background and item states
+ */
+@Composable
+fun BottomNavigation(
+    items: List<BottomNavItem>,
+    selectedIndex: Int,
+    onItemSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    barColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    selectedIconTint: Color = MaterialTheme.colorScheme.primary,
+    unselectedIconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    selectedLabelColor: Color = MaterialTheme.colorScheme.primary,
+    unselectedLabelColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    barHeight: Dp = 64.dp,
+    floatingCircleSize: Dp = 56.dp, // Kept for compatibility
+    floatingOffset: Dp = 28.dp,     // Kept for compatibility
+    notchRadius: Dp = 36.dp          // Kept for compatibility
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(barColor)
+            .navigationBarsPadding() // Prevents content from drawing behind OS navigation bar
+            .height(barHeight),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        items.forEachIndexed { index, item ->
+            val isSelected = index == selectedIndex
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onItemSelected(index) },
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = item.icon,
+                    contentDescription = item.title,
+                    tint = if (isSelected) selectedIconTint else unselectedIconTint,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                AppText(
+                    text = item.title,
+                    fontSize = 11.sp,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                    color = if (isSelected) selectedLabelColor else unselectedLabelColor
+                )
+            }
+        }
+    }
+}

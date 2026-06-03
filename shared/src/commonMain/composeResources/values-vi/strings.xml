@@ -34,7 +34,17 @@
     <string name="tab_dashboard">Trang chủ</string>
     <string name="tab_schedule">Lịch học</string>
     <string name="tab_assignment">Bài tập</string>
-    <string name="tab_profile">Cá nhân</string>
+    <string name="tab_profile">Hồ sơ</string>
+
+
+    <string name="btn_change_password">Đổi mật khẩu</string>
+    <string name="section_account">Quản lý tài khoản</string>
+    <string name="btn_edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="title_settings">Cài đặt</string>
+    <string name="title_about">Giới thiệu</string>
+    <string name="title_contact">Liên hệ</string>
+    <string name="title_about_me">Về tôi</string>
+    <string name="about_student_desc">Học sinh chăm chỉ và đam mê hiện đang học tại trung tâm giáo dục. Luôn ham học hỏi những kỹ năng mới và hợp tác với bạn bè để đạt thành tích xuất sắc trong học tập.</string>
 
     <!-- Role Access Error -->
     <string name="error_role_not_allowed">Vai trò của bạn không có quyền truy cập ứng dụng di động. Vui lòng liên hệ quản trị viên.</string>
@@ -42,4 +52,27 @@
     <!-- Placeholders -->
     <string name="placeholder_feature_title">Cổng thông tin %s</string>
     <string name="placeholder_feature_desc">Tính năng đang được phát triển cho vai trò này.</string>
+    
+    <string name="lb_logout">Đăng xuất</string>
+    <string name="dialog_logout_desc">Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?</string>
+    <string name="btn_cancel">Hủy</string>
+
+    <!-- Profile Info Fields -->
+    <string name="profile_email">Email</string>
+    <string name="profile_phone">Số điện thoại</string>
+    <string name="profile_code">Mã</string>
+    <string name="profile_gender">Giới tính</string>
+    <string name="profile_dob">Ngày sinh</string>
+    <string name="profile_address">Địa chỉ</string>
+    <string name="profile_level">Cấp độ</string>
+    <string name="profile_experience">Kinh nghiệm</string>
+    <string name="profile_hourly_rate">Phí theo giờ</string>
+    <string name="profile_certificates">Chứng chỉ</string>
+    <string name="profile_zalo">Zalo</string>
+    <string name="profile_parent">Phụ huynh</string>
+    <string name="profile_status">Trạng thái</string>
+    <string name="profile_loading_error">Không thể tải hồ sơ</string>
+    <string name="profile_retry">Thử lại</string>
+    <string name="profile_not_available">Không có</string>
 </resources>
+

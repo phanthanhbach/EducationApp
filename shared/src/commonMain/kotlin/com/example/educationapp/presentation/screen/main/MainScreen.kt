@@ -1,15 +1,29 @@
 package com.example.educationapp.presentation.screen.main
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
@@ -45,26 +59,13 @@ class MainScreen(private val role: AppRole) : Screen {
 
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                 val isTablet = maxWidth >= 600.dp
+                var isNavigationRailExpanded by rememberSaveable { mutableStateOf(false) }
+                val layoutDirection = LocalLayoutDirection.current
 
-                if (isTablet) {
-                    // Tablet Layout: Side Navigation Rail + Main Content
-                    Row(modifier = Modifier.fillMaxSize()) {
-                        VerticalNavigationRail(
-                            items = navItems,
-                            selectedIndex = selectedIndex,
-                            onItemSelected = { index ->
-                                tabNavigator.current = tabs[index]
-                            }
-                        )
-                        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
-                            CurrentTab()
-                        }
-                    }
-                } else {
-                    // Mobile Layout: Scaffold with Curved Bottom Navigation
-                    Scaffold(
-                        bottomBar = {
-                            CurvedBottomNavigation(
+                Scaffold(
+                    bottomBar = {
+                        if (!isTablet) {
+                            BottomNavigation(
                                 items = navItems,
                                 selectedIndex = selectedIndex,
                                 onItemSelected = { index ->
@@ -72,8 +73,71 @@ class MainScreen(private val role: AppRole) : Screen {
                                 }
                             )
                         }
-                    ) { padding ->
-                        Box(modifier = Modifier.padding(padding)) {
+                    }
+                ) { innerPadding ->
+                    val contentPadding = if (tabNavigator.current is ProfileTab) {
+                        PaddingValues(
+                            start = innerPadding.calculateStartPadding(layoutDirection),
+                            top = 0.dp,
+                            end = innerPadding.calculateEndPadding(layoutDirection),
+                            bottom = innerPadding.calculateBottomPadding()
+                        )
+                    } else {
+                        innerPadding
+                    }
+
+                    if (isTablet) {
+                        // Tablet layout: keep content width stable while the rail expands as an overlay.
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(contentPadding)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(start = 76.dp)
+                            ) {
+                                CurrentTab()
+                            }
+
+                            if (isNavigationRailExpanded) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(start = 76.dp)
+                                        .zIndex(0.5f)
+                                        .background(Color.Black.copy(alpha = 0.02f))
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = null
+                                        ) {
+                                            isNavigationRailExpanded = false
+                                        }
+                                )
+                            }
+
+                            VerticalNavigationRail(
+                                items = navItems,
+                                selectedIndex = selectedIndex,
+                                onItemSelected = { index ->
+                                    tabNavigator.current = tabs[index]
+                                },
+                                isExpanded = isNavigationRailExpanded,
+                                onExpandedChange = { isNavigationRailExpanded = it },
+                                modifier = Modifier
+                                    .align(Alignment.CenterStart)
+                                    .zIndex(1f)
+                                    .fillMaxHeight()
+                            )
+                        }
+                    } else {
+                        // Mobile Layout: Scaffold content under status bar and bottom bar
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(contentPadding)
+                        ) {
                             CurrentTab()
                         }
                     }

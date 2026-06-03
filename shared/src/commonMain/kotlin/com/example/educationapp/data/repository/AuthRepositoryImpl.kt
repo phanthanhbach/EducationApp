@@ -12,8 +12,11 @@ import com.example.educationapp.domain.entity.UserInfo
 import com.example.educationapp.domain.repository.AuthRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+
 
 class AuthRepositoryImpl(
     private val httpClient: HttpClient,
@@ -33,6 +36,9 @@ class AuthRepositoryImpl(
                 fullName = response.data.fullName
             )
 
+            // Clear Ktor Bearer Token cache so that it reloads from TokenManager
+            clearKtorAuthCache()
+
             UserInfo(
                 userRole = AppRole.fromString(response.data.userRole),
                 fullName = response.data.fullName
@@ -44,7 +50,17 @@ class AuthRepositoryImpl(
         return safeApiCall {
             httpClient.post(AuthEndpoint.LOGOUT)
             tokenManager.clearTokens()
+            
+            // Clear Ktor Bearer Token cache
+            clearKtorAuthCache()
+            
             Unit
         }
     }
+
+    private fun clearKtorAuthCache() {
+        httpClient.authProvider<BearerAuthProvider>()?.clearToken()
+    }
 }
+
+

@@ -15,7 +15,7 @@ import com.example.educationapp.core.util.optional
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun CoreImage(
+fun AppImage(
     source: CoreMediaSource,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,

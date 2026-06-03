@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.main
+package com.example.educationapp.presentation.screen.setting
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
@@ -9,30 +9,29 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface MainState {
-    object Idle : MainState
-    object Loading : MainState
-    object LoggedOut : MainState
-    data class Error(val message: String) : MainState
+sealed interface SettingState {
+    object Idle : SettingState
+    object Loading : SettingState
+    object LoggedOut : SettingState
+    data class Error(val message: String) : SettingState
 }
 
-class MainScreenModel(
+class SettingScreenModel(
     private val logoutUseCase: LogoutUseCase
 ) : ScreenModel {
 
-    private val _state = MutableStateFlow<MainState>(MainState.Idle)
-    val state: StateFlow<MainState> = _state.asStateFlow()
+    private val _state = MutableStateFlow<SettingState>(SettingState.Idle)
+    val state: StateFlow<SettingState> = _state.asStateFlow()
 
     fun logout() {
         screenModelScope.launch {
-            _state.value = MainState.Loading
+            _state.value = SettingState.Loading
             when (logoutUseCase()) {
                 is ApiResult.Success -> {
-                    _state.value = MainState.LoggedOut
+                    _state.value = SettingState.LoggedOut
                 }
                 is ApiResult.Error -> {
-                    // Dù lỗi server hay không, ta vẫn logout thành công vì token cục bộ đã xóa
-                    _state.value = MainState.LoggedOut
+                    _state.value = SettingState.LoggedOut
                 }
             }
         }

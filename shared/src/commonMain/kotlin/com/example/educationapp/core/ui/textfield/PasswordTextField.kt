@@ -4,7 +4,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -20,8 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import educationapp.shared.generated.resources.*
-import com.example.educationapp.core.ui.icon.CoreIcon
-import androidx.compose.ui.graphics.Color
+import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.theme.AppDimen
 
 /**
@@ -88,7 +86,7 @@ fun PasswordTextField(
                 if (toggleContent != null) {
                     toggleContent(passwordVisible)
                 } else {
-                    CoreIcon(
+                    AppIcon(
                         drawableRes = if (passwordVisible) Res.drawable.ic_visibility else Res.drawable.ic_visibility_off,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
