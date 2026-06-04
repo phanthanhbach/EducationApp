@@ -6,11 +6,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,6 +66,7 @@ class MainScreen(private val role: AppRole) : Screen {
                 val layoutDirection = LocalLayoutDirection.current
 
                 Scaffold(
+                    contentWindowInsets = if (isTablet) WindowInsets(0) else WindowInsets.systemBars,
                     bottomBar = {
                         if (!isTablet) {
                             BottomNavigation(
@@ -75,37 +79,45 @@ class MainScreen(private val role: AppRole) : Screen {
                         }
                     }
                 ) { innerPadding ->
-                    val contentPadding = if (tabNavigator.current is ProfileTab) {
-                        PaddingValues(
-                            start = innerPadding.calculateStartPadding(layoutDirection),
-                            top = 0.dp,
-                            end = innerPadding.calculateEndPadding(layoutDirection),
-                            bottom = innerPadding.calculateBottomPadding()
-                        )
-                    } else {
-                        innerPadding
-                    }
-
                     if (isTablet) {
-                        // Tablet layout: keep content width stable while the rail expands as an overlay.
+                        // Tablet / landscape layout.
+                        // The navigation rail background extends edge-to-edge
+                        // (behind the status bar and left system inset) while
+                        // its interactive content stays within the safe area.
+                        // Tab content is padded for top (except ProfileTab),
+                        // end and bottom system insets.
+                        val systemInsets = WindowInsets.systemBars.asPaddingValues()
+                        val topInset = systemInsets.calculateTopPadding()
+                        val endInset = systemInsets.calculateEndPadding(layoutDirection)
+                        val bottomInset = systemInsets.calculateBottomPadding()
+                        val startInset = systemInsets.calculateStartPadding(layoutDirection)
+                        val isProfile = tabNavigator.current is ProfileTab
+
+                        val tabContentPadding = PaddingValues(
+                            start = 76.dp + startInset, // space for the collapsed rail + left safe area
+                            top = if (isProfile) 0.dp else topInset,
+                            end = endInset,
+                            bottom = bottomInset
+                        )
+
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(contentPadding)
+                            modifier = Modifier.fillMaxSize()
                         ) {
+                            // Tab content
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(start = 76.dp)
+                                    .padding(tabContentPadding)
                             ) {
                                 CurrentTab()
                             }
 
+                            // Scrim when rail is expanded
                             if (isNavigationRailExpanded) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(start = 76.dp)
+                                        .padding(start = 76.dp + startInset)
                                         .zIndex(0.5f)
                                         .background(Color.Black.copy(alpha = 0.02f))
                                         .clickable(
@@ -117,6 +129,7 @@ class MainScreen(private val role: AppRole) : Screen {
                                 )
                             }
 
+                            // Navigation rail – full-bleed, handles its own insets
                             VerticalNavigationRail(
                                 items = navItems,
                                 selectedIndex = selectedIndex,
@@ -132,7 +145,18 @@ class MainScreen(private val role: AppRole) : Screen {
                             )
                         }
                     } else {
-                        // Mobile Layout: Scaffold content under status bar and bottom bar
+                        // Mobile layout
+                        val contentPadding = if (tabNavigator.current is ProfileTab) {
+                            PaddingValues(
+                                start = innerPadding.calculateStartPadding(layoutDirection),
+                                top = 0.dp,
+                                end = innerPadding.calculateEndPadding(layoutDirection),
+                                bottom = innerPadding.calculateBottomPadding()
+                            )
+                        } else {
+                            innerPadding
+                        }
+
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()

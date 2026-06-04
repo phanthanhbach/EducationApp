@@ -6,8 +6,12 @@ import com.example.educationapp.core.network.safeApiCall
 import com.example.educationapp.data.dto.response.ParentDTO
 import com.example.educationapp.data.dto.response.StudentDTO
 import com.example.educationapp.data.dto.response.TeacherDTO
+import com.example.educationapp.data.dto.response.TeacherRatingSummaryDTO
+import com.example.educationapp.data.dto.response.toDomainEntity
 import com.example.educationapp.data.endpoint.ProfileEndpoint
+import com.example.educationapp.data.endpoint.FeedbackEndpoint
 import com.example.educationapp.domain.entity.UserProfile
+import com.example.educationapp.domain.entity.TeacherRatingSummary
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.repository.ProfileRepository
 import io.ktor.client.HttpClient
@@ -91,6 +95,14 @@ class ProfileRepositoryImpl(
                 img = dto.img,
                 createdAt = dto.createdAt
             )
+        }
+    }
+
+    override suspend fun getTeacherRatingSummary(teacherId: Long): ApiResult<TeacherRatingSummary> {
+        return safeApiCall {
+            val response = httpClient.get(FeedbackEndpoint.ratingSummary(teacherId))
+                .body<BaseResponse<TeacherRatingSummaryDTO>>()
+            response.data.toDomainEntity()
         }
     }
 }

@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +24,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -69,8 +74,14 @@ fun VerticalNavigationRail(
     collapsedWidth: Dp = 76.dp,
     expandedWidth: Dp = 212.dp
 ) {
+    // System insets so the background fills edge-to-edge while content stays safe.
+    val layoutDirection = LocalLayoutDirection.current
+    val systemInsets = WindowInsets.systemBars.asPaddingValues()
+    val topInset = systemInsets.calculateTopPadding()
+    val startInset = systemInsets.calculateStartPadding(layoutDirection)
+
     val surfaceWidth by animateDpAsState(
-        targetValue = if (isExpanded) expandedWidth else collapsedWidth,
+        targetValue = if (isExpanded) expandedWidth + startInset else collapsedWidth + startInset,
         animationSpec = tween(durationMillis = 240, easing = FastOutSlowInEasing)
     )
     val expandedProgress by animateFloatAsState(
@@ -81,7 +92,7 @@ fun VerticalNavigationRail(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxHeight()
-            .width(expandedWidth)
+            .width(expandedWidth + startInset)
             .clipToBounds()
     ) {
         val isCompactHeight = maxHeight < 450.dp
@@ -91,7 +102,8 @@ fun VerticalNavigationRail(
         val afterMenuSpacing = if (isCompactHeight) 16.dp else 28.dp
         val itemHeight = if (isCompactHeight) 48.dp else 56.dp
         val itemSpacing = if (isCompactHeight) 8.dp else 12.dp
-        val navStartY = paddingTop + menuSize + afterMenuSpacing
+        val contentTop = topInset + paddingTop
+        val navStartY = contentTop + menuSize + afterMenuSpacing
 
         val indicatorHeight = if (isCompactHeight) 28.dp else 34.dp
         val selectedPillY = navStartY + (itemHeight + itemSpacing) * selectedIndex
@@ -106,6 +118,7 @@ fun VerticalNavigationRail(
             animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
         )
 
+        // Background – extends edge-to-edge (behind status bar & left safe area)
         Box(
             modifier = Modifier
                 .fillMaxHeight()
@@ -113,29 +126,36 @@ fun VerticalNavigationRail(
                 .background(barColor)
         )
 
+        // Left-edge indicator strip – offset by startInset
         Box(
             modifier = Modifier
-                .offset(x = 0.dp, y = animatedIndicatorY)
+                .offset(x = startInset, y = animatedIndicatorY)
                 .width(4.dp)
                 .height(indicatorHeight)
                 .clip(RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
                 .background(indicatorColor)
         )
 
+        // Selected-item pill – offset by startInset
         Box(
             modifier = Modifier
-                .offset(x = sidePadding, y = animatedSelectedPillY)
-                .width(surfaceWidth - sidePadding * 2)
+                .offset(x = startInset + sidePadding, y = animatedSelectedPillY)
+                .width(surfaceWidth - startInset - sidePadding * 2)
                 .height(itemHeight)
                 .clip(RoundedCornerShape(18.dp))
                 .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.86f))
         )
 
+        // Content column – padded by topInset and startInset so items stay safe
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .requiredWidth(expandedWidth)
-                .padding(top = paddingTop, start = sidePadding, end = sidePadding),
+                .requiredWidth(expandedWidth + startInset)
+                .padding(
+                    top = contentTop,
+                    start = startInset + sidePadding,
+                    end = sidePadding
+                ),
             horizontalAlignment = Alignment.Start
         ) {
             Box(
@@ -160,6 +180,7 @@ fun VerticalNavigationRail(
                     isSelected = index == selectedIndex,
                     expandedProgress = expandedProgress,
                     height = itemHeight,
+                    width = surfaceWidth - startInset - sidePadding * 2,
                     collapsedWidth = collapsedWidth - sidePadding * 2,
                     selectedIconTint = selectedIconTint,
                     unselectedIconTint = unselectedIconTint,
@@ -217,6 +238,7 @@ private fun VerticalNavigationItem(
     isSelected: Boolean,
     expandedProgress: Float,
     height: Dp,
+    width: Dp,
     collapsedWidth: Dp,
     selectedIconTint: Color,
     unselectedIconTint: Color,
@@ -235,7 +257,7 @@ private fun VerticalNavigationItem(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(width)
             .height(height)
             .clip(RoundedCornerShape(18.dp))
             .clickable(
@@ -243,7 +265,7 @@ private fun VerticalNavigationItem(
                 indication = null,
                 onClick = onClick
             )
-            .padding(start = 0.dp, end = 12.dp),
+            .padding(start = 0.dp, end = 12.dp * expandedProgress),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {

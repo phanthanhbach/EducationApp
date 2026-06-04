@@ -54,6 +54,9 @@ kotlin {
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
 
+            // Datetime
+            implementation(libs.kotlinx.datetime)
+
             // Logging
             implementation(libs.kermit)
 

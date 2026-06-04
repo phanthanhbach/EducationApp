@@ -69,3 +69,32 @@ suspend inline fun <reified T> safeApiCall(
         }
     }
 }
+
+/**
+ * A generic helper to perform paginated safe API calls and automatically map DTOs to Domain Entities.
+ * Recursively fetches all subsequent pages until the 'last' page is reached.
+ */
+suspend inline fun <reified DTO, Entity> safePaginatedApiCall(
+    crossinline fetchPage: suspend (page: Int) -> BaseResponse<PaginationResponse<DTO>>,
+    crossinline mapDto: (DTO) -> Entity
+): ApiResult<List<Entity>> {
+    return safeApiCall {
+        val allItems = mutableListOf<Entity>()
+        var currentPage = 0
+        var hasMore = true
+        while (hasMore) {
+            val response = fetchPage(currentPage)
+            val pageData = response.data
+            val mapped = pageData.content.map(mapDto)
+            allItems.addAll(mapped)
+
+            if (pageData.last || pageData.number >= pageData.totalPages - 1 || mapped.isEmpty()) {
+                hasMore = false
+            } else {
+                currentPage++
+            }
+        }
+        allItems
+    }
+}
+
