@@ -1,0 +1,419 @@
+package com.example.educationapp.presentation.screen.my_classes
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import com.example.educationapp.core.theme.AppColor
+import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.chip.AppChip
+import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.domain.enums.ClassStatus
+import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabState
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.lb_status_all
+import educationapp.shared.generated.resources.my_classes_empty
+import educationapp.shared.generated.resources.my_classes_no_homework_desc
+import educationapp.shared.generated.resources.my_classes_other_assignment_title
+import educationapp.shared.generated.resources.my_classes_parent_assignment_title
+import educationapp.shared.generated.resources.my_classes_search_placeholder
+import educationapp.shared.generated.resources.my_classes_student_assignment_title
+import educationapp.shared.generated.resources.profile_retry
+import educationapp.shared.generated.resources.tab_assignment
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
+import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun MyClassScreenContent(
+    role: AppRole,
+    state: AssignmentTabState,
+    searchQuery: String,
+    selectedStatus: String?,
+    onSearch: (String) -> Unit,
+    onStatusSelect: (String?) -> Unit,
+    onLoadNextPage: () -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (role == AppRole.TEACHER) {
+        TeacherClassesContent(
+            state = state,
+            searchQuery = searchQuery,
+            selectedStatus = selectedStatus,
+            onSearch = onSearch,
+            onStatusSelect = onStatusSelect,
+            onLoadNextPage = onLoadNextPage,
+            onRetry = onRetry,
+            modifier = modifier
+        )
+    } else {
+        OtherRolesClassesContent(
+            role = role,
+            modifier = modifier
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TeacherClassesContent(
+    state: AssignmentTabState,
+    searchQuery: String,
+    selectedStatus: String?,
+    onSearch: (String) -> Unit,
+    onStatusSelect: (String?) -> Unit,
+    onLoadNextPage: () -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val focusManager = LocalFocusManager.current
+    var toastMessage by remember { mutableStateOf<String?>(null) }
+
+    // Auto dismiss toast
+    LaunchedEffect(toastMessage) {
+        if (toastMessage != null) {
+            delay(2500.milliseconds)
+            toastMessage = null
+        }
+    }
+
+    Scaffold(
+        modifier = modifier,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            val statuses = listOf(
+                null to stringResource(Res.string.lb_status_all)
+            ) + ClassStatus.entries.map { status ->
+                status.name to stringResource(status.labelRes)
+            }
+
+            SearchTopBar(
+                title = stringResource(Res.string.tab_assignment),
+                searchQuery = searchQuery,
+                onSearch = onSearch,
+                placeholder = stringResource(Res.string.my_classes_search_placeholder),
+                filterContent = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        statuses.forEach { (statusKey, statusLabel) ->
+                            val isSelected = selectedStatus == statusKey
+
+                            AppChip(
+                                text = statusLabel,
+                                selected = isSelected,
+                                onClick = {
+                                    onStatusSelect(statusKey)
+                                }
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
+        ) {
+            when (state) {
+                is AssignmentTabState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = AppColor.Primary)
+                    }
+                }
+
+                is AssignmentTabState.Error -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(AppDimen.p16),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer.copy(
+                                    alpha = 0.1f
+                                )
+                            ),
+                            border = BorderStroke(1.dp, AppColor.Error.copy(alpha = 0.3f))
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(AppDimen.p16),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                AppText(
+                                    text = state.message,
+                                    fontSize = 14.sp,
+                                    color = AppColor.Error,
+                                    textAlign = TextAlign.Center
+                                )
+                                Button(
+                                    onClick = onRetry,
+                                    colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
+                                ) {
+                                    AppText(
+                                        text = stringResource(Res.string.profile_retry),
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                is AssignmentTabState.Success -> {
+                    if (state.classes.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(AppDimen.p16),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
+                                        alpha = 0.3f
+                                    )
+                                ),
+                                border = BorderStroke(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(AppDimen.p24),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AppText(
+                                        text = stringResource(Res.string.my_classes_empty),
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        val lazyListState = rememberLazyListState()
+
+                        LaunchedEffect(lazyListState) {
+                            snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
+                                .filter { visibleItems ->
+                                    val lastVisibleItem = visibleItems.lastOrNull()
+                                    lastVisibleItem != null && lastVisibleItem.index >= lazyListState.layoutInfo.totalItemsCount - 3
+                                }
+                                .collect {
+                                    onLoadNextPage()
+                                }
+                        }
+
+                        LazyColumn(
+                            state = lazyListState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                start = AppDimen.p16,
+                                end = AppDimen.p16,
+                                top = AppDimen.p12,
+                                bottom = AppDimen.p24
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            itemsIndexed(state.classes) { index, schoolClass ->
+                                ClassCard(
+                                    schoolClass = schoolClass,
+                                    onAssignmentsClick = {
+                                        toastMessage =
+                                            "Tính năng quản lý Bài tập lớp ${schoolClass.name} đang được phát triển."
+                                    },
+                                    onFeedbacksClick = {
+                                        toastMessage =
+                                            "Tính năng xem Phản hồi lớp ${schoolClass.name} đang được phát triển."
+                                    }
+                                )
+                            }
+
+                            if (state.hasNextPage) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = AppDimen.p16),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            strokeWidth = 2.dp,
+                                            color = AppColor.Primary
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Toast overlay
+            AnimatedVisibility(
+                visible = toastMessage != null,
+                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .zIndex(10f)
+                    .padding(bottom = AppDimen.p24, start = AppDimen.p24, end = AppDimen.p24)
+            ) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(
+                            horizontal = AppDimen.p16,
+                            vertical = AppDimen.p12
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        AppText(
+                            text = toastMessage ?: "",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.inverseOnSurface,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun OtherRolesClassesContent(
+    role: AppRole,
+    modifier: Modifier = Modifier
+) {
+    val focusManager = LocalFocusManager.current
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                focusManager.clearFocus()
+            }
+            .padding(AppDimen.p16)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
+        ) {
+            AppText(
+                text = stringResource(Res.string.tab_assignment),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            val displayRoleText = when (role) {
+                AppRole.STUDENT -> stringResource(Res.string.my_classes_student_assignment_title)
+                AppRole.PARENT -> stringResource(Res.string.my_classes_parent_assignment_title)
+                else -> stringResource(Res.string.my_classes_other_assignment_title)
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(AppDimen.p16)) {
+                    AppText(
+                        text = displayRoleText,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AppText(
+                        text = stringResource(Res.string.my_classes_no_homework_desc),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}

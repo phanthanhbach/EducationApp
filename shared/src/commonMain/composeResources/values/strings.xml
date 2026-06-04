@@ -72,5 +72,28 @@
     <string name="profile_loading_error">Failed to load profile</string>
     <string name="profile_retry">Retry</string>
     <string name="profile_not_available">N/A</string>
+    <string name="search_placeholder">Search...</string>
+
+    <!-- Class Statuses -->
+    <string name="lb_status_all">All</string>
+    <string name="lb_status_upcoming">Upcoming</string>
+    <string name="lb_status_ongoing">Ongoing</string>
+    <string name="lb_status_completed">Completed</string>
+    <string name="lb_status_cancelled">Cancelled</string>
+
+    <!-- My Class Screen Strings -->
+    <string name="my_classes_search_placeholder">Search by class name, course...</string>
+    <string name="my_classes_empty">No classes found.</string>
+    <string name="my_classes_student_assignment_title">Your Assignments &amp; Tasks</string>
+    <string name="my_classes_parent_assignment_title">Children Assignments Tracker</string>
+    <string name="my_classes_other_assignment_title">Assignments</string>
+    <string name="my_classes_no_homework_desc">No active homework or assignment updates.</string>
+    <string name="my_classes_student_count">Student Count</string>
+    <string name="my_classes_students_count">%1$d/%2$d students</string>
+    <string name="my_classes_course">📚 Course: %1$s</string>
+    <string name="my_classes_branch">🏢 Branch: %1$s</string>
+    <string name="my_classes_time">📅 Time: %1$s - %2$s</string>
+    <string name="my_classes_btn_feedback">Feedback</string>
+    <string name="my_classes_btn_assignment">Assignment</string>
 </resources>
 

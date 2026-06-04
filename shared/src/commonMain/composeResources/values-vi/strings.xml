@@ -74,5 +74,28 @@
     <string name="profile_loading_error">Không thể tải hồ sơ</string>
     <string name="profile_retry">Thử lại</string>
     <string name="profile_not_available">Không có</string>
+    <string name="search_placeholder">Tìm kiếm...</string>
+
+    <!-- Class Statuses -->
+    <string name="lb_status_all">Tất cả</string>
+    <string name="lb_status_upcoming">Sắp diễn ra</string>
+    <string name="lb_status_ongoing">Đang giảng dạy</string>
+    <string name="lb_status_completed">Đã hoàn thành</string>
+    <string name="lb_status_cancelled">Đã hủy</string>
+
+    <!-- My Class Screen Strings -->
+    <string name="my_classes_search_placeholder">Tìm kiếm theo tên lớp, khóa học...</string>
+    <string name="my_classes_empty">Không tìm thấy lớp học nào phù hợp.</string>
+    <string name="my_classes_student_assignment_title">Danh sách bài tập của bạn</string>
+    <string name="my_classes_parent_assignment_title">Theo dõi bài tập của con</string>
+    <string name="my_classes_other_assignment_title">Bài tập</string>
+    <string name="my_classes_no_homework_desc">Không có bài tập hoặc nhiệm vụ nào cần làm.</string>
+    <string name="my_classes_student_count">Sĩ số học viên</string>
+    <string name="my_classes_students_count">%1$d/%2$d học viên</string>
+    <string name="my_classes_course">Khóa học: %1$s</string>
+    <string name="my_classes_branch">Chi nhánh: %1$s</string>
+    <string name="my_classes_time">Thời gian: %1$s - %2$s</string>
+    <string name="my_classes_btn_feedback">Phản hồi</string>
+    <string name="my_classes_btn_assignment">Bài tập</string>
 </resources>
 

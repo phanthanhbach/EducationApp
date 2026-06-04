@@ -36,11 +36,11 @@ class AssignmentTabScreenModel(
 
     private var teacherId: Long? = null
 
-    // Search and filter criteria
-    var searchQuery = ""
-        private set
-    var selectedStatus: String? = null // null means "ALL"
-        private set
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _selectedStatus = MutableStateFlow<String?>(null) // null means "ALL"
+    val selectedStatus: StateFlow<String?> = _selectedStatus.asStateFlow()
 
     init {
         loadProfileAndClasses()
@@ -69,14 +69,14 @@ class AssignmentTabScreenModel(
     }
 
     fun searchClasses(query: String) {
-        searchQuery = query
+        _searchQuery.value = query
         teacherId?.let {
             fetchClasses(page = 0, append = false)
         }
     }
 
     fun filterByStatus(status: String?) {
-        selectedStatus = if (status == "ALL") null else status
+        _selectedStatus.value = if (status == "ALL") null else status
         teacherId?.let {
             fetchClasses(page = 0, append = false)
         }
@@ -97,9 +97,9 @@ class AssignmentTabScreenModel(
             }
 
             val result = filterClassesUseCase(
-                search = searchQuery.takeIf { it.isNotBlank() },
+                search = searchQuery.value.takeIf { it.isNotBlank() },
                 teacherId = tId,
-                status = selectedStatus,
+                status = selectedStatus.value,
                 page = page,
                 size = 20
             )
@@ -125,7 +125,7 @@ class AssignmentTabScreenModel(
                         totalPages = pagination.totalPages,
                         totalElements = pagination.totalElements,
                         hasNextPage = !pagination.last && pagination.content.isNotEmpty(),
-                        isSearchingOrFiltering = searchQuery.isNotBlank() || selectedStatus != null
+                        isSearchingOrFiltering = searchQuery.value.isNotBlank() || selectedStatus.value != null
                     )
                 }
             }
