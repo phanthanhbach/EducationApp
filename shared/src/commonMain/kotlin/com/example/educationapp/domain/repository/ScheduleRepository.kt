@@ -28,6 +28,12 @@ interface ScheduleRepository {
         page: Int,
         size: Int
     ): ApiResult<PaginationResponse<SchoolClass>>
+    suspend fun getStudentClasses(
+        studentId: Long,
+        status: String?,
+        page: Int,
+        size: Int
+    ): ApiResult<PaginationResponse<SchoolClass>>
 }
 
 

@@ -1,6 +1,7 @@
 package com.example.educationapp.presentation.screen.main.tab
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -39,6 +40,10 @@ class AssignmentTab(private val role: AppRole) : Tab {
         val state by screenModel.state.collectAsState()
         val searchQuery by screenModel.searchQuery.collectAsState()
         val selectedStatus by screenModel.selectedStatus.collectAsState()
+
+        LaunchedEffect(role) {
+            screenModel.loadProfileAndClasses(role)
+        }
 
         MyClassScreenContent(
             role = role,

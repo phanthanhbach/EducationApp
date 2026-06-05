@@ -80,6 +80,8 @@
     <string name="lb_status_ongoing">Ongoing</string>
     <string name="lb_status_completed">Completed</string>
     <string name="lb_status_cancelled">Cancelled</string>
+    <string name="lb_status_active">Active</string>
+    <string name="lb_status_dropped">Dropped</string>
 
     <!-- My Class Screen Strings -->
     <string name="my_classes_search_placeholder">Search by class name, course...</string>
@@ -93,6 +95,8 @@
     <string name="my_classes_course">📚 Course: %1$s</string>
     <string name="my_classes_branch">🏢 Branch: %1$s</string>
     <string name="my_classes_time">📅 Time: %1$s - %2$s</string>
+    <string name="my_classes_enrolled">📅 Enrolled: %1$s</string>
+    <string name="my_classes_result">🏆 Result: %1$s</string>
     <string name="my_classes_btn_feedback">Feedback</string>
     <string name="my_classes_btn_assignment">Assignment</string>
 </resources>

@@ -15,5 +15,6 @@ data class SchoolClass(
     val startDate: String,
     val endDate: String,
     val zaloGroupLink: String?,
-    val zaloGroupName: String?
+    val zaloGroupName: String?,
+    val finalResult: String? = null
 )

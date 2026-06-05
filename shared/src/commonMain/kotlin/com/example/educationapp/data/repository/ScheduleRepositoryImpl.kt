@@ -21,6 +21,8 @@ import com.example.educationapp.domain.entity.AttendanceRecord
 import com.example.educationapp.domain.enums.AttendanceStatus
 import com.example.educationapp.core.network.PaginationResponse
 import com.example.educationapp.data.dto.response.SchoolClassDTO
+import com.example.educationapp.data.dto.response.StudentClassDTO
+import com.example.educationapp.data.dto.response.toSchoolClass
 import com.example.educationapp.data.endpoint.ClassEndpoint
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.repository.ScheduleRepository
@@ -145,6 +147,32 @@ class ScheduleRepositoryImpl(
             val paginatedData = response.data
             PaginationResponse(
                 content = paginatedData.content.map { it.toDomainEntity() },
+                number = paginatedData.number,
+                size = paginatedData.size,
+                totalElements = paginatedData.totalElements,
+                totalPages = paginatedData.totalPages,
+                last = paginatedData.last,
+                first = paginatedData.first
+            )
+        }
+    }
+
+    override suspend fun getStudentClasses(
+        studentId: Long,
+        status: String?,
+        page: Int,
+        size: Int
+    ): ApiResult<PaginationResponse<SchoolClass>> {
+        return safeApiCall {
+            val response = httpClient.get(ClassEndpoint.studentClasses(studentId)) {
+                parameter("status", status)
+                parameter("page", page)
+                parameter("size", size)
+            }.body<BaseResponse<PaginationResponse<StudentClassDTO>>>()
+
+            val paginatedData = response.data
+            PaginationResponse(
+                content = paginatedData.content.map { it.toSchoolClass() },
                 number = paginatedData.number,
                 size = paginatedData.size,
                 totalElements = paginatedData.totalElements,

@@ -38,6 +38,7 @@ import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_book_24dp
 import educationapp.shared.generated.resources.ic_event_24dp
 import educationapp.shared.generated.resources.ic_location_on_24dp
+import educationapp.shared.generated.resources.ic_assignment_filled_24dp
 import educationapp.shared.generated.resources.my_classes_branch
 import educationapp.shared.generated.resources.my_classes_btn_assignment
 import educationapp.shared.generated.resources.my_classes_btn_feedback
@@ -45,6 +46,8 @@ import educationapp.shared.generated.resources.my_classes_course
 import educationapp.shared.generated.resources.my_classes_student_count
 import educationapp.shared.generated.resources.my_classes_students_count
 import educationapp.shared.generated.resources.my_classes_time
+import educationapp.shared.generated.resources.my_classes_enrolled
+import educationapp.shared.generated.resources.my_classes_result
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -52,7 +55,7 @@ import org.jetbrains.compose.resources.stringResource
 fun ClassCard(
     schoolClass: SchoolClass,
     onAssignmentsClick: () -> Unit,
-    onFeedbacksClick: () -> Unit,
+    onFeedbacksClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val statusEnum = ClassStatus.fromString(schoolClass.status)
@@ -135,50 +138,91 @@ fun ClassCard(
                     )
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_location_on_24dp),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    AppText(
-                        text = stringResource(Res.string.my_classes_branch, schoolClass.branchName),
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                if (!schoolClass.branchName.isNullOrBlank()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_location_on_24dp),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        AppText(
+                            text = stringResource(Res.string.my_classes_branch, schoolClass.branchName),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_event_24dp),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    AppText(
-                        text = stringResource(
-                            Res.string.my_classes_time,
-                            formattedStartDate,
-                            formattedEndDate
-                        ),
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                if (schoolClass.endDate.isBlank()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_event_24dp),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        AppText(
+                            text = stringResource(
+                                Res.string.my_classes_enrolled,
+                                formattedStartDate
+                            ),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_event_24dp),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        AppText(
+                            text = stringResource(
+                                Res.string.my_classes_time,
+                                formattedStartDate,
+                                formattedEndDate
+                            ),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                if (!schoolClass.finalResult.isNullOrBlank()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_assignment_filled_24dp),
+                            contentDescription = null,
+                            tint = AppColor.Primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        AppText(
+                            text = stringResource(Res.string.my_classes_result, schoolClass.finalResult),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AppColor.Primary
+                        )
+                    }
                 }
             }
 
-                val ratio = if (schoolClass.maxStudents > 0) {
-                    schoolClass.currentStudents.toFloat() / schoolClass.maxStudents.toFloat()
-                } else {
-                    0f
-                }
+            if (schoolClass.maxStudents > 0) {
+                val ratio = schoolClass.currentStudents.toFloat() / schoolClass.maxStudents.toFloat()
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Row(
@@ -220,7 +264,9 @@ fun ClassCard(
                         .height(1.dp)
                         .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 )
+            }
 
+            if (onFeedbacksClick != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -260,7 +306,24 @@ fun ClassCard(
                         )
                     }
                 }
+            } else {
+                Button(
+                    onClick = onAssignmentsClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    )
+                ) {
+                    AppText(
+                        text = stringResource(Res.string.my_classes_btn_assignment),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
+        }
         }
     }
 

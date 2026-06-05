@@ -8,6 +8,7 @@ import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.FilterClassesUseCase
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
+import com.example.educationapp.domain.usecase.GetStudentClassesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,13 +29,15 @@ sealed interface AssignmentTabState {
 
 class AssignmentTabScreenModel(
     private val getMyProfileUseCase: GetMyProfileUseCase,
-    private val filterClassesUseCase: FilterClassesUseCase
+    private val filterClassesUseCase: FilterClassesUseCase,
+    private val getStudentClassesUseCase: GetStudentClassesUseCase
 ) : ScreenModel {
 
     private val _state = MutableStateFlow<AssignmentTabState>(AssignmentTabState.Loading)
     val state: StateFlow<AssignmentTabState> = _state.asStateFlow()
 
-    private var teacherId: Long? = null
+    private var currentRole: AppRole? = null
+    private var userId: Long? = null
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -42,26 +45,30 @@ class AssignmentTabScreenModel(
     private val _selectedStatus = MutableStateFlow<String?>(null) // null means "ALL"
     val selectedStatus: StateFlow<String?> = _selectedStatus.asStateFlow()
 
-    init {
-        loadProfileAndClasses()
-    }
-
-    fun loadProfileAndClasses() {
+    fun loadProfileAndClasses(role: AppRole = currentRole ?: AppRole.TEACHER) {
+        currentRole = role
         screenModelScope.launch {
             _state.value = AssignmentTabState.Loading
-            when (val profileResult = getMyProfileUseCase(AppRole.TEACHER)) {
+            when (val profileResult = getMyProfileUseCase(role)) {
                 is ApiResult.Error -> {
                     _state.value = AssignmentTabState.Error(
-                        profileResult.message ?: "Không thể lấy thông tin profile giáo viên."
+                        profileResult.message ?: "Không thể lấy thông tin profile."
                     )
                 }
                 is ApiResult.Success -> {
                     val profile = profileResult.data
-                    if (profile is UserProfile.Teacher) {
-                        teacherId = profile.teacherId.toLong()
-                        fetchClasses(page = 0, append = false)
-                    } else {
-                        _state.value = AssignmentTabState.Error("Tài khoản không phải giáo viên.")
+                    when {
+                        role == AppRole.TEACHER && profile is UserProfile.Teacher -> {
+                            userId = profile.teacherId.toLong()
+                            fetchClasses(page = 0, append = false)
+                        }
+                        role == AppRole.STUDENT && profile is UserProfile.Student -> {
+                            userId = profile.studentId.toLong()
+                            fetchClasses(page = 0, append = false)
+                        }
+                        else -> {
+                            _state.value = AssignmentTabState.Error("Tài khoản không đúng vai trò.")
+                        }
                     }
                 }
             }
@@ -70,14 +77,14 @@ class AssignmentTabScreenModel(
 
     fun searchClasses(query: String) {
         _searchQuery.value = query
-        teacherId?.let {
+        userId?.let {
             fetchClasses(page = 0, append = false)
         }
     }
 
     fun filterByStatus(status: String?) {
         _selectedStatus.value = if (status == "ALL") null else status
-        teacherId?.let {
+        userId?.let {
             fetchClasses(page = 0, append = false)
         }
     }
@@ -90,19 +97,29 @@ class AssignmentTabScreenModel(
     }
 
     private fun fetchClasses(page: Int, append: Boolean) {
-        val tId = teacherId ?: return
+        val id = userId ?: return
+        val role = currentRole ?: return
         screenModelScope.launch {
             if (!append) {
                 _state.value = AssignmentTabState.Loading
             }
 
-            val result = filterClassesUseCase(
-                search = searchQuery.value.takeIf { it.isNotBlank() },
-                teacherId = tId,
-                status = selectedStatus.value,
-                page = page,
-                size = 20
-            )
+            val result = if (role == AppRole.TEACHER) {
+                filterClassesUseCase(
+                    search = searchQuery.value.takeIf { it.isNotBlank() },
+                    teacherId = id,
+                    status = selectedStatus.value,
+                    page = page,
+                    size = 20
+                )
+            } else {
+                getStudentClassesUseCase(
+                    studentId = id,
+                    status = selectedStatus.value,
+                    page = page,
+                    size = 20
+                )
+            }
 
             when (result) {
                 is ApiResult.Error -> {
@@ -113,10 +130,33 @@ class AssignmentTabScreenModel(
                 is ApiResult.Success -> {
                     val pagination = result.data
                     val newClasses = pagination.content
-                    val currentClasses = if (append && _state.value is AssignmentTabState.Success) {
-                        (_state.value as AssignmentTabState.Success).classes + newClasses
+                    
+                    val filteredNewClasses = if (role == AppRole.STUDENT) {
+                        val searchQueryVal = searchQuery.value
+                        newClasses.filter { schoolClass ->
+                            val matchesStatus = if (selectedStatus.value != null) {
+                                schoolClass.status.equals(selectedStatus.value, ignoreCase = true)
+                            } else {
+                                true
+                            }
+                            
+                            val matchesSearch = if (searchQueryVal.isNotBlank()) {
+                                schoolClass.name.contains(searchQueryVal, ignoreCase = true) ||
+                                        schoolClass.courseName.contains(searchQueryVal, ignoreCase = true)
+                            } else {
+                                true
+                            }
+                            
+                            matchesStatus && matchesSearch
+                        }
                     } else {
                         newClasses
+                    }
+
+                    val currentClasses = if (append && _state.value is AssignmentTabState.Success) {
+                        (_state.value as AssignmentTabState.Success).classes + filteredNewClasses
+                    } else {
+                        filteredNewClasses
                     }
 
                     _state.value = AssignmentTabState.Success(

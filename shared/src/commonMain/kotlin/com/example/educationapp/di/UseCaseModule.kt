@@ -11,6 +11,7 @@ import com.example.educationapp.domain.usecase.SubmitAttendancesUseCase
 import com.example.educationapp.domain.usecase.TeacherCheckOutUseCase
 import com.example.educationapp.domain.usecase.GetTeacherRatingSummaryUseCase
 import com.example.educationapp.domain.usecase.FilterClassesUseCase
+import com.example.educationapp.domain.usecase.GetStudentClassesUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -25,4 +26,5 @@ val useCaseModule = module {
     single { TeacherCheckOutUseCase(get()) }
     single { GetTeacherRatingSummaryUseCase(get()) }
     single { FilterClassesUseCase(get()) }
+    single { GetStudentClassesUseCase(get()) }
 }

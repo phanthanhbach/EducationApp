@@ -60,6 +60,9 @@ import com.example.educationapp.domain.enums.ClassStatus
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.lb_status_all
+import educationapp.shared.generated.resources.lb_status_active
+import educationapp.shared.generated.resources.lb_status_dropped
+import educationapp.shared.generated.resources.lb_status_completed
 import educationapp.shared.generated.resources.my_classes_empty
 import educationapp.shared.generated.resources.my_classes_no_homework_desc
 import educationapp.shared.generated.resources.my_classes_other_assignment_title
@@ -85,8 +88,9 @@ fun MyClassScreenContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (role == AppRole.TEACHER) {
-        TeacherClassesContent(
+    if (role == AppRole.TEACHER || role == AppRole.STUDENT) {
+        ClassesContent(
+            role = role,
             state = state,
             searchQuery = searchQuery,
             selectedStatus = selectedStatus,
@@ -106,7 +110,8 @@ fun MyClassScreenContent(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TeacherClassesContent(
+private fun ClassesContent(
+    role: AppRole,
     state: AssignmentTabState,
     searchQuery: String,
     selectedStatus: String?,
@@ -131,10 +136,19 @@ private fun TeacherClassesContent(
         modifier = modifier,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            val statuses = listOf(
-                null to stringResource(Res.string.lb_status_all)
-            ) + ClassStatus.entries.map { status ->
-                status.name to stringResource(status.labelRes)
+            val statuses = if (role == AppRole.TEACHER) {
+                listOf(
+                    null to stringResource(Res.string.lb_status_all)
+                ) + ClassStatus.entries.map { status ->
+                    status.name to stringResource(status.labelRes)
+                }
+            } else {
+                listOf(
+                    null to stringResource(Res.string.lb_status_all),
+                    "ACTIVE" to stringResource(Res.string.lb_status_active),
+                    "COMPLETED" to stringResource(Res.string.lb_status_completed),
+                    "DROPPED" to stringResource(Res.string.lb_status_dropped)
+                )
             }
 
             SearchTopBar(
@@ -294,12 +308,19 @@ private fun TeacherClassesContent(
                                 ClassCard(
                                     schoolClass = schoolClass,
                                     onAssignmentsClick = {
-                                        toastMessage =
+                                        toastMessage = if (role == AppRole.TEACHER) {
                                             "Tính năng quản lý Bài tập lớp ${schoolClass.name} đang được phát triển."
+                                        } else {
+                                            "Tính năng xem Bài tập lớp ${schoolClass.name} đang được phát triển."
+                                        }
                                     },
-                                    onFeedbacksClick = {
-                                        toastMessage =
-                                            "Tính năng xem Phản hồi lớp ${schoolClass.name} đang được phát triển."
+                                    onFeedbacksClick = if (role == AppRole.TEACHER) {
+                                        {
+                                            toastMessage =
+                                                "Tính năng xem Phản hồi lớp ${schoolClass.name} đang được phát triển."
+                                        }
+                                    } else {
+                                        null
                                     }
                                 )
                             }
