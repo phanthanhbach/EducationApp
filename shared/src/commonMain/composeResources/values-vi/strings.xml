@@ -56,6 +56,7 @@
     <string name="lb_logout">Đăng xuất</string>
     <string name="dialog_logout_desc">Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?</string>
     <string name="btn_cancel">Hủy</string>
+    <string name="btn_confirm">Xác nhận</string>
 
     <!-- Profile Info Fields -->
     <string name="profile_email">Email</string>
@@ -150,7 +151,14 @@
     <!-- Calendar General Labels -->
     <string name="calendar_year_suffix">Năm %1$d</string>
     <string name="calendar_dialog_title">Chọn Thời Gian</string>
-    <string name="calendar_dialog_btn_cancel">Hủy</string>
-    <string name="calendar_dialog_btn_confirm">Xác nhận</string>
+
+    <!-- Lịch Dạy Giáo Viên -->
+    <string name="schedule_header_today">Tiết dạy hôm nay</string>
+    <string name="schedule_header_date_format">Tiết dạy ngày %1$d/%2$d</string>
+    <string name="schedule_btn_today">Hôm nay</string>
+    <string name="schedule_empty_title">Lịch Trống</string>
+    <string name="schedule_empty_desc">Hôm nay bạn không có lịch giảng dạy. Hãy tận hưởng thời gian thư giãn!</string>
+    <string name="schedule_error_title">Đã xảy ra lỗi</string>
+    <string name="schedule_btn_retry">Thử lại</string>
 </resources>
 

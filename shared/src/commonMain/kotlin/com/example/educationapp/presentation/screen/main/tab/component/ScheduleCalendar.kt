@@ -25,8 +25,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,20 +35,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_arrow_back_ios_new_24dp
-import educationapp.shared.generated.resources.ic_arrow_forward_ios_24dp
-import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
 import educationapp.shared.generated.resources.calendar_day_1_short
 import educationapp.shared.generated.resources.calendar_day_2_short
 import educationapp.shared.generated.resources.calendar_day_3_short
@@ -59,8 +53,11 @@ import educationapp.shared.generated.resources.calendar_day_5_short
 import educationapp.shared.generated.resources.calendar_day_6_short
 import educationapp.shared.generated.resources.calendar_day_7_short
 import educationapp.shared.generated.resources.calendar_year_suffix
+import educationapp.shared.generated.resources.ic_arrow_back_ios_new_24dp
+import educationapp.shared.generated.resources.ic_arrow_forward_ios_24dp
+import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
 import kotlinx.datetime.LocalDate
-import org.jetbrains.compose.resources.painterResource
+import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -74,7 +71,8 @@ fun ScheduleCalendar(
     highlightDates: Set<LocalDate>,
     isMonthExpanded: Boolean,
     onToggleExpand: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isLandscape: Boolean = false
 ) {
     val today = remember { CalendarHelper.getCurrentDate() }
     var showYearMonthPicker by remember { mutableStateOf(false) }
@@ -145,6 +143,7 @@ fun ScheduleCalendar(
     if (showYearMonthPicker) {
         YearMonthPickerDialog(
             currentDate = selectedDate,
+            isLandscape = isLandscape,
             onDismiss = { showYearMonthPicker = false },
             onConfirm = { year, month ->
                 onDateSelected(LocalDate(year, month, 1))
@@ -200,40 +199,36 @@ private fun CalendarControlHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppDimen.p4)
         ) {
-            IconButton(onClick = onPrevClick) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_arrow_back_ios_new_24dp),
-                    contentDescription = "Previous",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
+            AppIcon(
+                drawableRes = Res.drawable.ic_arrow_back_ios_new_24dp,
+                tint = MaterialTheme.colorScheme.primary,
+                iconModifier = Modifier.size(16.dp),
+                boxModifier = Modifier.size(40.dp),
+                onClick = onPrevClick
+            )
 
-            IconButton(onClick = onNextClick) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_arrow_forward_ios_24dp),
-                    contentDescription = "Next",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
+            AppIcon(
+                drawableRes = Res.drawable.ic_arrow_forward_ios_24dp,
+                tint = MaterialTheme.colorScheme.primary,
+                iconModifier = Modifier.size(16.dp),
+                boxModifier = Modifier.size(40.dp),
+                onClick = onNextClick
+            )
 
-            IconButton(
-                onClick = onToggleExpand,
-                modifier = Modifier
+            AppIcon(
+                drawableRes = Res.drawable.ic_calendar_month_filled_24dp,
+                tint = if (isMonthExpanded) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+                iconModifier = Modifier.size(20.dp),
+                boxModifier = Modifier
+                    .size(40.dp)
                     .clip(CircleShape)
                     .background(
-                        if (isMonthExpanded) MaterialTheme.colorScheme.primaryContainer
+                        if (isMonthExpanded) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                         else Color.Transparent
-                    )
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_calendar_month_filled_24dp),
-                    contentDescription = "Toggle Month View",
-                    tint = if (isMonthExpanded) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+                    ),
+                onClick = onToggleExpand
+            )
         }
     }
 }
@@ -274,7 +269,7 @@ private fun WeekStripView(
                     .clip(RoundedCornerShape(12.dp))
                     .background(
                         if (isSelected) {
-                            MaterialTheme.colorScheme.primary
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                         } else {
                             Color.Transparent
                         }
@@ -297,16 +292,16 @@ private fun WeekStripView(
                     text = dayName,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(AppDimen.p6))
 
                 AppText(
-                    text = date.dayOfMonth.toString(),
+                    text = date.day.toString(),
                     fontSize = 15.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(AppDimen.p4))
@@ -317,8 +312,10 @@ private fun WeekStripView(
                         .size(4.dp)
                         .clip(CircleShape)
                         .background(
-                            if (isSelected && hasClasses) Color.White
-                            else if (!isSelected && hasClasses) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                            if (isSelected && hasClasses) MaterialTheme.colorScheme.primary
+                            else if (!isSelected && hasClasses) MaterialTheme.colorScheme.primary.copy(
+                                alpha = 0.6f
+                            )
                             else Color.Transparent
                         )
                 )
@@ -333,14 +330,14 @@ private fun MonthGridView(
     onDateSelected: (LocalDate) -> Unit,
     highlightDates: Set<LocalDate>
 ) {
-    val dates = remember(selectedDate.year, selectedDate.monthNumber) {
+    val dates = remember(selectedDate.year, selectedDate.month.number) {
         CalendarHelper.getMonthGridDates(selectedDate)
     }
 
     val rowsCount = remember(dates, selectedDate) {
         when {
-            dates[28].monthNumber != selectedDate.monthNumber -> 4
-            dates[35].monthNumber != selectedDate.monthNumber -> 5
+            dates[28].month.number != selectedDate.month.number -> 4
+            dates[35].month.number != selectedDate.month.number -> 5
             else -> 6
         }
     }
@@ -380,7 +377,7 @@ private fun MonthGridView(
                     val dateIndex = row * 7 + col
                     val date = dates[dateIndex]
                     val isSelected = date == selectedDate
-                    val isCurrentMonth = date.monthNumber == selectedDate.monthNumber
+                    val isCurrentMonth = date.month.number == selectedDate.month.number
 
                     Box(
                         modifier = Modifier
@@ -389,9 +386,10 @@ private fun MonthGridView(
                             .padding(AppDimen.p2)
                             .clip(CircleShape)
                             .background(
-                                when {
-                                    isSelected -> AppColor.Primary
-                                    else -> Color.Transparent
+                                if (isSelected) {
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                } else {
+                                    Color.Transparent
                                 }
                             )
                             .clickable { onDateSelected(date) },
@@ -399,11 +397,11 @@ private fun MonthGridView(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             AppText(
-                                text = date.dayOfMonth.toString(),
+                                text = date.day.toString(),
                                 fontSize = 14.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 color = when {
-                                    isSelected -> Color.White
+                                    isSelected -> MaterialTheme.colorScheme.primary
                                     isCurrentMonth -> MaterialTheme.colorScheme.onSurface
                                     else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                                 }
@@ -417,7 +415,7 @@ private fun MonthGridView(
                                         .size(3.dp)
                                         .clip(CircleShape)
                                         .background(
-                                            if (isSelected) Color.White
+                                            if (isSelected) MaterialTheme.colorScheme.primary
                                             else if (isCurrentMonth) MaterialTheme.colorScheme.primary.copy(
                                                 alpha = 0.6f
                                             )
@@ -434,7 +432,7 @@ private fun MonthGridView(
 }
 
 private fun getOffsetMonth(date: LocalDate, offset: Int): LocalDate {
-    var newMonth = date.monthNumber + offset
+    var newMonth = date.month.number + offset
     var newYear = date.year
     while (newMonth > 12) {
         newMonth -= 12
@@ -449,6 +447,6 @@ private fun getOffsetMonth(date: LocalDate, offset: Int): LocalDate {
         4, 6, 9, 11 -> 30
         else -> 31
     }
-    val targetDay = date.dayOfMonth.coerceAtMost(lastDay)
+    val targetDay = date.day.coerceAtMost(lastDay)
     return LocalDate(newYear, newMonth, targetDay)
 }

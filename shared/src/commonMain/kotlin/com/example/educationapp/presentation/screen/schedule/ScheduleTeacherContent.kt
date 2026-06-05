@@ -1,25 +1,11 @@
 package com.example.educationapp.presentation.screen.schedule
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,11 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -41,41 +27,38 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.button.AppTextButton
+import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
-import com.example.educationapp.core.ui.layout.AppTopBar
-import com.example.educationapp.domain.enums.SessionStatus
 import com.example.educationapp.presentation.screen.main.tab.component.ScheduleCalendar
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
+import educationapp.shared.generated.resources.schedule_btn_retry
+import educationapp.shared.generated.resources.schedule_btn_today
+import educationapp.shared.generated.resources.schedule_empty_desc
+import educationapp.shared.generated.resources.schedule_empty_title
+import educationapp.shared.generated.resources.schedule_error_title
+import educationapp.shared.generated.resources.schedule_header_date_format
+import educationapp.shared.generated.resources.schedule_header_today
 import educationapp.shared.generated.resources.schedule_screen_title
-import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Clock
 
 @Composable
 fun ScheduleTeacherContent(
@@ -95,7 +78,7 @@ fun ScheduleTeacherContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         AppTopBar(
             titleContent = {
@@ -106,7 +89,7 @@ fun ScheduleTeacherContent(
                     color = MaterialTheme.colorScheme.primary
                 )
             },
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.surface,
             isTitleCentered = false
         )
 
@@ -165,6 +148,8 @@ fun TeacherScheduleMobileLayout(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
+        Spacer(modifier = Modifier.height(AppDimen.p12))
+
         // Calendar Component
         ScheduleCalendar(
             selectedDate = selectedDate,
@@ -179,33 +164,35 @@ fun TeacherScheduleMobileLayout(
 
         Spacer(modifier = Modifier.height(AppDimen.p16))
 
-        // Sessions Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(40.dp)
                 .padding(horizontal = AppDimen.p20),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             AppText(
-                text = if (selectedDate == today) "Tiết Dạy Hôm Nay" else "Tiết Dạy Ngày ${selectedDate.dayOfMonth}/${selectedDate.monthNumber}",
+                text = if (selectedDate == today) {
+                    stringResource(Res.string.schedule_header_today)
+                } else {
+                    stringResource(
+                        Res.string.schedule_header_date_format,
+                        selectedDate.day,
+                        selectedDate.month.number
+                    )
+                },
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
             if (selectedDate != today) {
-                TextButton(
+                AppTextButton(
+                    text = stringResource(Res.string.schedule_btn_today),
                     onClick = { onDateSelected(today) },
-                    contentPadding = PaddingValues(horizontal = AppDimen.p8, vertical = 0.dp)
-                ) {
-                    AppText(
-                        text = "Hôm nay",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                    modifier = Modifier.height(36.dp)
+                )
             }
         }
 
@@ -284,125 +271,135 @@ fun TeacherScheduleTabletLayout(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(AppDimen.p24),
-        horizontalArrangement = Arrangement.spacedBy(AppDimen.p24)
-    ) {
-        // Left Column: Interactive Calendar
-        Column(
-            modifier = Modifier
-                .weight(1.1f)
-                .fillMaxHeight()
-        ) {
-            Spacer(modifier = Modifier.height(AppDimen.p20))
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val isLandscapePhone = maxHeight < 420.dp
 
-            ScheduleCalendar(
-                selectedDate = selectedDate,
-                onDateSelected = onDateSelected,
-                highlightDates = highlightDates,
-                isMonthExpanded = isMonthExpanded,
-                onToggleExpand = onToggleExpand,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        // Right Column: Session Details List
-        Column(
+        Row(
             modifier = Modifier
-                .weight(1.3f)
-                .fillMaxHeight()
+                .fillMaxSize()
+                .padding(horizontal = AppDimen.p16),
+            horizontalArrangement = Arrangement.spacedBy(if (isLandscapePhone) AppDimen.p12 else AppDimen.p24)
         ) {
-            // Header for details
-            Row(
+            // Left Column: Interactive Calendar
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = AppDimen.p8, vertical = AppDimen.p4),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1.1f)
+                    .fillMaxHeight()
+                    .verticalScroll(rememberScrollState())
             ) {
-                AppText(
-                    text = if (selectedDate == today) "Tiết Dạy Hôm Nay" else "Tiết Dạy Ngày ${selectedDate.dayOfMonth}/${selectedDate.monthNumber}",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Spacer(modifier = Modifier.height(AppDimen.p16))
 
-                if (selectedDate != today) {
-                    TextButton(
-                        onClick = { onDateSelected(today) },
-                        contentPadding = PaddingValues(horizontal = AppDimen.p8, vertical = 0.dp)
-                    ) {
-                        AppText(
-                            text = "Hôm nay",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
+                ScheduleCalendar(
+                    selectedDate = selectedDate,
+                    onDateSelected = onDateSelected,
+                    highlightDates = highlightDates,
+                    isMonthExpanded = isMonthExpanded,
+                    onToggleExpand = onToggleExpand,
+                    isLandscape = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
-            Spacer(modifier = Modifier.height(AppDimen.p12))
+            // Right Column: Session Details List
+            Column(
+                modifier = Modifier
+                    .weight(1.3f)
+                    .fillMaxHeight()
+            ) {
+                // Header for details
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .padding(top = AppDimen.p16)
+                        .padding(horizontal = AppDimen.p8),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AppText(
+                        text = if (selectedDate == today) {
+                            stringResource(Res.string.schedule_header_today)
+                        } else {
+                            stringResource(
+                                Res.string.schedule_header_date_format,
+                                selectedDate.day,
+                                selectedDate.month.number
+                            )
+                        },
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
 
-            when (schedulesState) {
-                is ScheduleState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(36.dp),
-                            strokeWidth = 3.dp
+                    if (selectedDate != today) {
+                        AppTextButton(
+                            text = stringResource(Res.string.schedule_btn_today),
+                            onClick = { onDateSelected(today) },
+                            modifier = Modifier.height(36.dp)
                         )
                     }
                 }
 
-                is ScheduleState.Error -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ScheduleErrorView(
-                            message = schedulesState.message,
-                            onRetry = onRetry
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(if (isLandscapePhone) AppDimen.p8 else AppDimen.p12))
 
-                else -> {
-                    if (filteredSchedules.isEmpty()) {
+                when (schedulesState) {
+                    is ScheduleState.Loading -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .weight(1f),
                             contentAlignment = Alignment.Center
                         ) {
-                            EmptyScheduleView()
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(36.dp),
+                                strokeWidth = 3.dp
+                            )
                         }
-                    } else {
-                        LazyColumn(
+                    }
+
+                    is ScheduleState.Error -> {
+                        Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .weight(1f),
-                            contentPadding = PaddingValues(
-                                start = AppDimen.p4,
-                                end = AppDimen.p4,
-                                bottom = AppDimen.p24
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                            contentAlignment = Alignment.Center
                         ) {
-                            items(filteredSchedules, key = { it.id }) { session ->
-                                ClassSessionCard(
-                                    session = session,
-                                    onClick = { onSessionClick(session) }
-                                )
+                            ScheduleErrorView(
+                                message = schedulesState.message,
+                                onRetry = onRetry
+                            )
+                        }
+                    }
+
+                    else -> {
+                        if (filteredSchedules.isEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                EmptyScheduleView()
+                            }
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(1f),
+                                contentPadding = PaddingValues(
+                                    start = AppDimen.p4,
+                                    end = AppDimen.p4,
+                                    bottom = AppDimen.p24
+                                ),
+                                verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                            ) {
+                                items(filteredSchedules, key = { it.id }) { session ->
+                                    ClassSessionCard(
+                                        session = session,
+                                        onClick = { onSessionClick(session) }
+                                    )
+                                }
                             }
                         }
                     }
@@ -416,45 +413,55 @@ fun TeacherScheduleTabletLayout(
 fun EmptyScheduleView(
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(AppDimen.p32),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val isLandscape = maxHeight < 360.dp
+
         Box(
             modifier = Modifier
-                .size(100.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_calendar_month_filled_24dp),
-                contentDescription = "Empty Schedule",
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                modifier = Modifier.size(48.dp)
-            )
+            Column(
+                modifier = Modifier
+                    .padding(if (isLandscape) AppDimen.p12 else AppDimen.p32),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(if (isLandscape) 50.dp else 100.dp)
+                        .clip(RoundedCornerShape(if (isLandscape) 12.dp else 20.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_calendar_month_filled_24dp),
+                        contentDescription = "Empty Schedule",
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                        modifier = Modifier.size(if (isLandscape) 28.dp else 48.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(if (isLandscape) AppDimen.p8 else AppDimen.p24))
+
+                AppText(
+                    text = stringResource(Res.string.schedule_empty_title),
+                    fontSize = if (isLandscape) 16.sp else 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(AppDimen.p4))
+
+                AppText(
+                    text = stringResource(Res.string.schedule_empty_desc),
+                    fontSize = if (isLandscape) 12.sp else 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-
-        Spacer(modifier = Modifier.height(AppDimen.p24))
-
-        AppText(
-            text = "Lịch Trống",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(AppDimen.p8))
-
-        AppText(
-            text = "Hôm nay bạn không có lịch giảng dạy. Hãy tận hưởng thời gian thư giãn!",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
     }
 }
 
@@ -480,7 +487,7 @@ fun ScheduleErrorView(
             verticalArrangement = Arrangement.spacedBy(AppDimen.p8)
         ) {
             AppText(
-                text = "Đã xảy ra lỗi",
+                text = stringResource(Res.string.schedule_error_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.error
@@ -498,7 +505,7 @@ fun ScheduleErrorView(
                 shape = RoundedCornerShape(8.dp)
             ) {
                 AppText(
-                    text = "Thử lại",
+                    text = stringResource(Res.string.schedule_btn_retry),
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )

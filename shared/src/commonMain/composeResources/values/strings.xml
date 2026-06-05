@@ -54,6 +54,7 @@
     <string name="lb_logout">Sign Out</string>
     <string name="dialog_logout_desc">Are you sure you want to sign out of your account?</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="btn_confirm">Confirm</string>
 
     <!-- Profile Info Fields -->
     <string name="profile_email">Email</string>
@@ -148,7 +149,14 @@
     <!-- Calendar General Labels -->
     <string name="calendar_year_suffix">Year %1$d</string>
     <string name="calendar_dialog_title">Select Month &amp; Year</string>
-    <string name="calendar_dialog_btn_cancel">Cancel</string>
-    <string name="calendar_dialog_btn_confirm">Confirm</string>
+
+    <!-- Teacher Schedule Screen -->
+    <string name="schedule_header_today">Today's Classes</string>
+    <string name="schedule_header_date_format">Classes on %1$d/%2$d</string>
+    <string name="schedule_btn_today">Today</string>
+    <string name="schedule_empty_title">No Classes</string>
+    <string name="schedule_empty_desc">You have no classes scheduled for today. Enjoy your relaxing time!</string>
+    <string name="schedule_error_title">An error occurred</string>
+    <string name="schedule_btn_retry">Retry</string>
 </resources>
 
