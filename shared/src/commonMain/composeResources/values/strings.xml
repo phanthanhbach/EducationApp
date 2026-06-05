@@ -108,6 +108,7 @@
     <string name="schedule_status_ongoing">Ongoing</string>
     <string name="schedule_status_upcoming">Upcoming</string>
     <string name="schedule_screen_title">Teaching Schedule</string>
+    <string name="schedule_screen_title_student">Study Schedule</string>
 
     <!-- Calendar Month Names -->
     <string name="calendar_month_1">January</string>
@@ -156,6 +157,12 @@
     <string name="schedule_btn_today">Today</string>
     <string name="schedule_empty_title">No Classes</string>
     <string name="schedule_empty_desc">You have no classes scheduled for today. Enjoy your relaxing time!</string>
+    
+    <!-- Student Schedule Screen -->
+    <string name="schedule_header_today_student">Today\'s Classes</string>
+    <string name="schedule_header_date_format_student">Classes on %1$d/%2$d</string>
+    <string name="schedule_empty_desc_student">You have no classes scheduled for today. Enjoy your relaxing time!</string>
+    
     <string name="schedule_error_title">An error occurred</string>
     <string name="schedule_btn_retry">Retry</string>
 </resources>

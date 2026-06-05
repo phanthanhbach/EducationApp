@@ -59,7 +59,7 @@ import kotlin.time.Clock
 @Composable
 fun ClassSessionCard(
     session: ScheduleSessionUiModel,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val now = remember { Clock.System.now() }
@@ -78,7 +78,13 @@ fun ClassSessionCard(
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onClick() },
+            .let {
+                if (onClick != null) {
+                    it.clickable { onClick() }
+                } else {
+                    it
+                }
+            },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = indicatorColor)
     ) {

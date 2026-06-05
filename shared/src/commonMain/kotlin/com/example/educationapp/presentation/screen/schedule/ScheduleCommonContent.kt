@@ -1,105 +1,104 @@
 package com.example.educationapp.presentation.screen.schedule
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.schedule_screen_title
+import educationapp.shared.generated.resources.schedule_screen_title_student
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ScheduleScreenContent(
+fun ScheduleCommonContent(
     role: AppRole,
     selectedDate: LocalDate,
     isMonthExpanded: Boolean,
     schedulesState: ScheduleState,
     filteredSchedules: List<ScheduleSessionUiModel>,
     highlightDates: Set<LocalDate>,
-    onSessionClick: (ScheduleSessionUiModel) -> Unit,
+    onSessionClick: ((ScheduleSessionUiModel) -> Unit)?,
     onDateSelected: (LocalDate) -> Unit,
     onToggleExpand: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
-        when (role) {
-            AppRole.TEACHER -> {
-                ScheduleCommonContent(
-                    role = role,
-                    selectedDate = selectedDate,
-                    isMonthExpanded = isMonthExpanded,
-                    schedulesState = schedulesState,
-                    filteredSchedules = filteredSchedules,
-                    highlightDates = highlightDates,
-                    onSessionClick = onSessionClick,
-                    onDateSelected = onDateSelected,
-                    onToggleExpand = onToggleExpand,
-                    onRetry = onRetry
-                )
-            }
-            AppRole.STUDENT -> {
-                ScheduleCommonContent(
-                    role = role,
-                    selectedDate = selectedDate,
-                    isMonthExpanded = isMonthExpanded,
-                    schedulesState = schedulesState,
-                    filteredSchedules = filteredSchedules,
-                    highlightDates = highlightDates,
-                    onSessionClick = null,
-                    onDateSelected = onDateSelected,
-                    onToggleExpand = onToggleExpand,
-                    onRetry = onRetry
-                )
-            }
-            else -> OtherRolesScheduleView(role)
-        }
-    }
-}
+    val today = remember { CalendarHelper.getCurrentDate() }
 
-@Composable
-fun OtherRolesScheduleView(
-    role: AppRole,
-    modifier: Modifier = Modifier
-) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(AppDimen.p24),
-        contentAlignment = Alignment.Center
+            .background(MaterialTheme.colorScheme.surface)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            AppText(
-                text = "Lịch Trình",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(AppDimen.p12))
-            val roleText = when (role) {
-                AppRole.PARENT -> "Phụ huynh"
-                else -> "Người dùng"
+        val titleRes = if (role == AppRole.TEACHER) {
+            Res.string.schedule_screen_title
+        } else {
+            Res.string.schedule_screen_title_student
+        }
+
+        AppTopBar(
+            titleContent = {
+                AppText(
+                    text = stringResource(titleRes),
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            isTitleCentered = false
+        )
+
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+        ) {
+            val isTablet = maxWidth >= 600.dp
+
+            if (isTablet) {
+                CommonScheduleTabletLayout(
+                    role = role,
+                    selectedDate = selectedDate,
+                    isMonthExpanded = isMonthExpanded,
+                    schedulesState = schedulesState,
+                    filteredSchedules = filteredSchedules,
+                    highlightDates = highlightDates,
+                    today = today,
+                    onDateSelected = onDateSelected,
+                    onToggleExpand = onToggleExpand,
+                    onSessionClick = onSessionClick,
+                    onRetry = onRetry
+                )
+            } else {
+                CommonScheduleMobileLayout(
+                    role = role,
+                    selectedDate = selectedDate,
+                    isMonthExpanded = isMonthExpanded,
+                    schedulesState = schedulesState,
+                    filteredSchedules = filteredSchedules,
+                    highlightDates = highlightDates,
+                    today = today,
+                    onDateSelected = onDateSelected,
+                    onToggleExpand = onToggleExpand,
+                    onSessionClick = onSessionClick,
+                    onRetry = onRetry
+                )
             }
-            AppText(
-                text = "Giao diện lịch của $roleText sẽ được thiết lập ở giai đoạn sau.",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }

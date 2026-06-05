@@ -110,6 +110,7 @@
     <string name="schedule_status_ongoing">Đang diễn ra</string>
     <string name="schedule_status_upcoming">Sắp diễn ra</string>
     <string name="schedule_screen_title">Lịch Dạy</string>
+    <string name="schedule_screen_title_student">Lịch Học</string>
 
     <!-- Calendar Month Names -->
     <string name="calendar_month_1">Tháng 1</string>
@@ -158,6 +159,12 @@
     <string name="schedule_btn_today">Hôm nay</string>
     <string name="schedule_empty_title">Lịch Trống</string>
     <string name="schedule_empty_desc">Hôm nay bạn không có lịch giảng dạy. Hãy tận hưởng thời gian thư giãn!</string>
+
+    <!-- Lịch Học Học Sinh -->
+    <string name="schedule_header_today_student">Lịch học hôm nay</string>
+    <string name="schedule_header_date_format_student">Lịch học ngày %1$d/%2$d</string>
+    <string name="schedule_empty_desc_student">Hôm nay bạn không có lịch học. Hãy tận hưởng thời gian thư giãn!</string>
+
     <string name="schedule_error_title">Đã xảy ra lỗi</string>
     <string name="schedule_btn_retry">Thử lại</string>
 </resources>
