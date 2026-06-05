@@ -13,9 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,18 +21,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,18 +43,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_arrow_back_24dp
 import educationapp.shared.generated.resources.ic_arrow_back_ios_new_24dp
 import educationapp.shared.generated.resources.ic_arrow_forward_ios_24dp
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
+import educationapp.shared.generated.resources.calendar_day_1_short
+import educationapp.shared.generated.resources.calendar_day_2_short
+import educationapp.shared.generated.resources.calendar_day_3_short
+import educationapp.shared.generated.resources.calendar_day_4_short
+import educationapp.shared.generated.resources.calendar_day_5_short
+import educationapp.shared.generated.resources.calendar_day_6_short
+import educationapp.shared.generated.resources.calendar_day_7_short
+import educationapp.shared.generated.resources.calendar_year_suffix
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * A beautiful, adaptive calendar component for KMP.
@@ -190,7 +190,7 @@ private fun CalendarControlHeader(
                 )
             }
             AppText(
-                text = "Năm ${selectedDate.year}",
+                text = stringResource(Res.string.calendar_year_suffix, selectedDate.year),
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -249,7 +249,15 @@ private fun WeekStripView(
         CalendarHelper.getWeekDates(selectedDate)
     }
 
-    val dayNames = listOf("T2", "T3", "T4", "T5", "T6", "T7", "CN")
+    val dayNames = listOf(
+        stringResource(Res.string.calendar_day_1_short),
+        stringResource(Res.string.calendar_day_2_short),
+        stringResource(Res.string.calendar_day_3_short),
+        stringResource(Res.string.calendar_day_4_short),
+        stringResource(Res.string.calendar_day_5_short),
+        stringResource(Res.string.calendar_day_6_short),
+        stringResource(Res.string.calendar_day_7_short)
+    )
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -266,13 +274,9 @@ private fun WeekStripView(
                     .clip(RoundedCornerShape(12.dp))
                     .background(
                         if (isSelected) {
-                            Brush.verticalGradient(
-                                colors = listOf(AppColor.Primary, AppColor.Secondary)
-                            )
+                            MaterialTheme.colorScheme.primary
                         } else {
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Transparent)
-                            )
+                            Color.Transparent
                         }
                     )
                     .border(
@@ -341,7 +345,15 @@ private fun MonthGridView(
         }
     }
 
-    val dayNames = listOf("T2", "T3", "T4", "T5", "T6", "T7", "CN")
+    val dayNames = listOf(
+        stringResource(Res.string.calendar_day_1_short),
+        stringResource(Res.string.calendar_day_2_short),
+        stringResource(Res.string.calendar_day_3_short),
+        stringResource(Res.string.calendar_day_4_short),
+        stringResource(Res.string.calendar_day_5_short),
+        stringResource(Res.string.calendar_day_6_short),
+        stringResource(Res.string.calendar_day_7_short)
+    )
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -411,317 +423,6 @@ private fun MonthGridView(
                                             )
                                             else MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                                         )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun YearMonthPickerDialog(
-    currentDate: LocalDate,
-    onDismiss: () -> Unit,
-    onConfirm: (year: Int, month: Int) -> Unit
-) {
-    var chosenYear by remember { mutableStateOf(currentDate.year) }
-    var chosenMonth by remember { mutableStateOf(currentDate.monthNumber) }
-
-    val monthNamesShort = listOf(
-        "Th1", "Th2", "Th3", "Th4", "Th5", "Th6",
-        "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"
-    )
-
-    Dialog(onDismissRequest = onDismiss) {
-        BoxWithConstraints {
-            val isLandscape = maxHeight < 420.dp
-
-            Surface(
-                modifier = Modifier
-                    .width(if (isLandscape) 480.dp else 320.dp)
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(24.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp
-            ) {
-                Column(
-                    modifier = Modifier.padding(AppDimen.p20)
-                ) {
-                    AppText(
-                        text = "Chọn Thời Gian",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Spacer(modifier = Modifier.height(AppDimen.p16))
-
-                    if (isLandscape) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(AppDimen.p16),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(AppDimen.p16),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            color = MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                alpha = 0.3f
-                                            ),
-                                            shape = RoundedCornerShape(12.dp)
-                                        )
-                                        .padding(horizontal = AppDimen.p4, vertical = AppDimen.p2),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    IconButton(onClick = { chosenYear-- }) {
-                                        Icon(
-                                            painter = painterResource(Res.drawable.ic_arrow_back_24dp),
-                                            contentDescription = "Previous Year",
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
-
-                                    AppText(
-                                        text = "$chosenYear",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-
-                                    IconButton(onClick = { chosenYear++ }) {
-                                        Icon(
-                                            painter = painterResource(Res.drawable.ic_arrow_forward_ios_24dp),
-                                            contentDescription = "Next Year",
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                    }
-                                }
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    TextButton(onClick = onDismiss) {
-                                        AppText(
-                                            text = "Hủy",
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-
-                                    Button(
-                                        onClick = { onConfirm(chosenYear, chosenMonth) },
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                                        contentPadding = PaddingValues(
-                                            horizontal = AppDimen.p12,
-                                            vertical = AppDimen.p8
-                                        )
-                                    ) {
-                                        AppText(
-                                            text = "Chọn",
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                    }
-                                }
-                            }
-
-                            Column(
-                                modifier = Modifier.weight(1.3f)
-                            ) {
-                                for (row in 0 until 3) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(AppDimen.p6)
-                                    ) {
-                                        for (col in 0 until 4) {
-                                            val monthIndex = row * 4 + col
-                                            val monthNum = monthIndex + 1
-                                            val isSelected = monthNum == chosenMonth
-                                            val monthName = monthNamesShort[monthIndex]
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .weight(1f)
-                                                    .clip(RoundedCornerShape(8.dp))
-                                                    .background(
-                                                        if (isSelected) {
-                                                            Brush.verticalGradient(
-                                                                colors = listOf(
-                                                                    AppColor.Primary,
-                                                                    AppColor.Secondary
-                                                                )
-                                                            )
-                                                        } else {
-                                                            Brush.verticalGradient(
-                                                                colors = listOf(
-                                                                    MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                                        alpha = 0.4f
-                                                                    ),
-                                                                    MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                                        alpha = 0.4f
-                                                                    )
-                                                                )
-                                                            )
-                                                        }
-                                                    )
-                                                    .clickable { chosenMonth = monthNum }
-                                                    .padding(vertical = AppDimen.p8),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                AppText(
-                                                    text = monthName,
-                                                    fontSize = 13.sp,
-                                                    fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold,
-                                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
-                                                )
-                                            }
-                                        }
-                                    }
-                                    if (row < 2) {
-                                        Spacer(modifier = Modifier.height(AppDimen.p6))
-                                    }
-                                }
-                            }
-                        }
-                     } else {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .padding(horizontal = AppDimen.p8, vertical = AppDimen.p4),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(onClick = { chosenYear-- }) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.ic_arrow_back_24dp),
-                                    contentDescription = "Previous Year",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-
-                            AppText(
-                                text = "Năm $chosenYear",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            IconButton(onClick = { chosenYear++ }) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.ic_arrow_forward_ios_24dp),
-                                    contentDescription = "Next Year",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(AppDimen.p20))
-
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(AppDimen.p8)
-                        ) {
-                            for (row in 0 until 4) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(AppDimen.p8)
-                                ) {
-                                    for (col in 0 until 3) {
-                                        val monthIndex = row * 3 + col
-                                        val monthNum = monthIndex + 1
-                                        val isSelected = monthNum == chosenMonth
-                                        val monthName = monthNamesShort[monthIndex]
-
-                                        Box(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .clip(RoundedCornerShape(10.dp))
-                                                .background(
-                                                    if (isSelected) {
-                                                        Brush.verticalGradient(
-                                                            colors = listOf(
-                                                                AppColor.Primary,
-                                                                AppColor.Secondary
-                                                            )
-                                                        )
-                                                    } else {
-                                                        Brush.verticalGradient(
-                                                            colors = listOf(
-                                                                MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                                    alpha = 0.4f
-                                                                ),
-                                                                MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                                    alpha = 0.4f
-                                                                )
-                                                            )
-                                                        )
-                                                    }
-                                                )
-                                                .clickable { chosenMonth = monthNum }
-                                                .padding(vertical = AppDimen.p12),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            AppText(
-                                                text = monthName,
-                                                fontSize = 14.sp,
-                                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.SemiBold,
-                                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(AppDimen.p24))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            TextButton(onClick = onDismiss) {
-                                AppText(
-                                    text = "Hủy",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(AppDimen.p8))
-
-                            Button(
-                                onClick = { onConfirm(chosenYear, chosenMonth) },
-                                shape = RoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                            ) {
-                                AppText(
-                                    text = "Xác nhận",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
                                 )
                             }
                         }

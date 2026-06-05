@@ -20,8 +20,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +47,8 @@ fun AppButton(
         contentColor = MaterialTheme.colorScheme.onPrimary,
         disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
         disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-    )
+    ),
+    style: TextStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
 ) {
     Button(
         onClick = onClick,
@@ -74,8 +75,7 @@ fun AppButton(
                 }
                 AppText(
                     text = text,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    style = style,
                     color = LocalContentColor.current,
                     allCaps = allCaps
                 )
@@ -106,7 +106,8 @@ fun AppOutlinedButton(
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
         contentColor = MaterialTheme.colorScheme.primary,
         disabledContentColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-    )
+    ),
+    style: TextStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -134,8 +135,7 @@ fun AppOutlinedButton(
                 }
                 AppText(
                     text = text,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    style = style,
                     color = LocalContentColor.current,
                     allCaps = allCaps
                 )

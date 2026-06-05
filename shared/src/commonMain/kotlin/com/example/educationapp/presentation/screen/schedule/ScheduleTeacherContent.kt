@@ -63,15 +63,18 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
+import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.domain.enums.SessionStatus
 import com.example.educationapp.presentation.screen.main.tab.component.ScheduleCalendar
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
+import educationapp.shared.generated.resources.schedule_screen_title
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 
 @Composable
@@ -89,39 +92,58 @@ fun ScheduleTeacherContent(
 ) {
     val today = remember { CalendarHelper.getCurrentDate() }
 
-    BoxWithConstraints(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        val isTablet = maxWidth >= 600.dp
+        AppTopBar(
+            titleContent = {
+                AppText(
+                    text = stringResource(Res.string.schedule_screen_title),
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            containerColor = Color.White,
+            isTitleCentered = false
+        )
 
-        if (isTablet) {
-            TeacherScheduleTabletLayout(
-                selectedDate = selectedDate,
-                isMonthExpanded = isMonthExpanded,
-                schedulesState = schedulesState,
-                filteredSchedules = filteredSchedules,
-                highlightDates = highlightDates,
-                today = today,
-                onDateSelected = onDateSelected,
-                onToggleExpand = onToggleExpand,
-                onSessionClick = onSessionClick,
-                onRetry = onRetry
-            )
-        } else {
-            TeacherScheduleMobileLayout(
-                selectedDate = selectedDate,
-                isMonthExpanded = isMonthExpanded,
-                schedulesState = schedulesState,
-                filteredSchedules = filteredSchedules,
-                highlightDates = highlightDates,
-                today = today,
-                onDateSelected = onDateSelected,
-                onToggleExpand = onToggleExpand,
-                onSessionClick = onSessionClick,
-                onRetry = onRetry
-            )
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+        ) {
+            val isTablet = maxWidth >= 600.dp
+
+            if (isTablet) {
+                TeacherScheduleTabletLayout(
+                    selectedDate = selectedDate,
+                    isMonthExpanded = isMonthExpanded,
+                    schedulesState = schedulesState,
+                    filteredSchedules = filteredSchedules,
+                    highlightDates = highlightDates,
+                    today = today,
+                    onDateSelected = onDateSelected,
+                    onToggleExpand = onToggleExpand,
+                    onSessionClick = onSessionClick,
+                    onRetry = onRetry
+                )
+            } else {
+                TeacherScheduleMobileLayout(
+                    selectedDate = selectedDate,
+                    isMonthExpanded = isMonthExpanded,
+                    schedulesState = schedulesState,
+                    filteredSchedules = filteredSchedules,
+                    highlightDates = highlightDates,
+                    today = today,
+                    onDateSelected = onDateSelected,
+                    onToggleExpand = onToggleExpand,
+                    onSessionClick = onSessionClick,
+                    onRetry = onRetry
+                )
+            }
         }
     }
 }
@@ -143,20 +165,6 @@ fun TeacherScheduleMobileLayout(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // Screen Title & Header
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppDimen.p16, vertical = AppDimen.p12)
-        ) {
-            AppText(
-                text = "Lịch Dạy",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-
         // Calendar Component
         ScheduleCalendar(
             selectedDate = selectedDate,
@@ -288,13 +296,6 @@ fun TeacherScheduleTabletLayout(
                 .weight(1.1f)
                 .fillMaxHeight()
         ) {
-            AppText(
-                text = "Lịch Dạy",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
             Spacer(modifier = Modifier.height(AppDimen.p20))
 
             ScheduleCalendar(
@@ -407,201 +408,6 @@ fun TeacherScheduleTabletLayout(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ClassSessionCard(
-    session: ScheduleSessionUiModel,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val now = remember { Clock.System.now() }
-    val status = session.getStatus(now)
-    val indicatorColor = when (status) {
-        SessionStatus.COMPLETED -> AppColor.Success
-        SessionStatus.ONGOING -> AppColor.Primary
-        SessionStatus.UPCOMING -> MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-    }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 2.dp,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clip(RoundedCornerShape(12.dp))
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(6.dp)
-                    .background(indicatorColor)
-            )
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(AppDimen.p16)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AppText(
-                        text = session.subjectName,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Spacer(modifier = Modifier.width(AppDimen.p8))
-
-                    SessionStatusBadge(status = status)
-                }
-
-                Spacer(modifier = Modifier.height(AppDimen.p4))
-
-                AppText(
-                    text = "Lớp: ${session.className}",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(AppDimen.p12))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(AppDimen.p16)
-                ) {
-                    Column {
-                        AppText(
-                            text = "Thời Gian",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                        )
-                        AppText(
-                            text = "${session.startTimeFormatted} - ${session.endTimeFormatted}",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Column {
-                        AppText(
-                            text = "Phòng Học",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                        )
-                        AppText(
-                            text = session.room,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    if (status == SessionStatus.COMPLETED && session.attendanceText.isNotBlank()) {
-                        Column {
-                            AppText(
-                                text = "Điểm Danh",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                            )
-                            AppText(
-                                text = session.attendanceText,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = AppColor.Success
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SessionStatusBadge(
-    status: SessionStatus,
-    modifier: Modifier = Modifier
-) {
-    val (badgeText, badgeColor, textColor) = when (status) {
-        SessionStatus.COMPLETED -> Triple(
-            "Hoàn thành",
-            AppColor.Success.copy(alpha = 0.15f),
-            AppColor.Success
-        )
-
-        SessionStatus.ONGOING -> Triple(
-            "Đang diễn ra",
-            AppColor.Primary.copy(alpha = 0.15f),
-            AppColor.Primary
-        )
-
-        SessionStatus.UPCOMING -> Triple(
-            "Sắp diễn ra",
-            MaterialTheme.colorScheme.surfaceVariant,
-            MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(badgeColor)
-            .padding(horizontal = AppDimen.p8, vertical = AppDimen.p4),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            if (status == SessionStatus.ONGOING) {
-                val infiniteTransition = rememberInfiniteTransition()
-                val pulseAlpha by infiniteTransition.animateFloat(
-                    initialValue = 0.2f,
-                    targetValue = 1f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(800, easing = LinearEasing),
-                        repeatMode = RepeatMode.Reverse
-                    )
-                )
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .clip(CircleShape)
-                        .background(textColor.copy(alpha = pulseAlpha * 0.4f))
-                        .zIndex(1f)
-                )
-            }
-
-            AppText(
-                text = badgeText,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = textColor
-            )
         }
     }
 }

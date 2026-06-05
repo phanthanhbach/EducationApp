@@ -101,5 +101,56 @@
     <string name="my_classes_result">Kết quả: %1$s</string>
     <string name="my_classes_btn_feedback">Phản hồi</string>
     <string name="my_classes_btn_assignment">Bài tập</string>
+    <string name="schedule_session_class">Lớp: %1$s</string>
+    <string name="schedule_session_time">Thời Gian</string>
+    <string name="schedule_session_room">Phòng Học</string>
+    <string name="schedule_session_attendance">Điểm Danh</string>
+    <string name="schedule_status_completed">Hoàn thành</string>
+    <string name="schedule_status_ongoing">Đang diễn ra</string>
+    <string name="schedule_status_upcoming">Sắp diễn ra</string>
+    <string name="schedule_screen_title">Lịch Dạy</string>
+
+    <!-- Calendar Month Names -->
+    <string name="calendar_month_1">Tháng 1</string>
+    <string name="calendar_month_2">Tháng 2</string>
+    <string name="calendar_month_3">Tháng 3</string>
+    <string name="calendar_month_4">Tháng 4</string>
+    <string name="calendar_month_5">Tháng 5</string>
+    <string name="calendar_month_6">Tháng 6</string>
+    <string name="calendar_month_7">Tháng 7</string>
+    <string name="calendar_month_8">Tháng 8</string>
+    <string name="calendar_month_9">Tháng 9</string>
+    <string name="calendar_month_10">Tháng 10</string>
+    <string name="calendar_month_11">Tháng 11</string>
+    <string name="calendar_month_12">Tháng 12</string>
+
+    <!-- Calendar Short Month Names -->
+    <string name="calendar_month_1_short">Th1</string>
+    <string name="calendar_month_2_short">Th2</string>
+    <string name="calendar_month_3_short">Th3</string>
+    <string name="calendar_month_4_short">Th4</string>
+    <string name="calendar_month_5_short">Th5</string>
+    <string name="calendar_month_6_short">Th6</string>
+    <string name="calendar_month_7_short">Th7</string>
+    <string name="calendar_month_8_short">Th8</string>
+    <string name="calendar_month_9_short">Th9</string>
+    <string name="calendar_month_10_short">Th10</string>
+    <string name="calendar_month_11_short">Th11</string>
+    <string name="calendar_month_12_short">Th12</string>
+
+    <!-- Calendar Weekday Initials -->
+    <string name="calendar_day_1_short">T2</string>
+    <string name="calendar_day_2_short">T3</string>
+    <string name="calendar_day_3_short">T4</string>
+    <string name="calendar_day_4_short">T5</string>
+    <string name="calendar_day_5_short">T6</string>
+    <string name="calendar_day_6_short">T7</string>
+    <string name="calendar_day_7_short">CN</string>
+
+    <!-- Calendar General Labels -->
+    <string name="calendar_year_suffix">Năm %1$d</string>
+    <string name="calendar_dialog_title">Chọn Thời Gian</string>
+    <string name="calendar_dialog_btn_cancel">Hủy</string>
+    <string name="calendar_dialog_btn_confirm">Xác nhận</string>
 </resources>
 
