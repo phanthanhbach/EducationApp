@@ -5,4 +5,5 @@ object AttendanceEndpoint {
         return "attendances/schedule/$classId/$sessionNumber"
     }
     const val SUBMIT = "attendances"
+    const val RATE = "attendances/rate"
 }

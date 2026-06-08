@@ -6,6 +6,7 @@ import com.example.educationapp.presentation.screenmodel.schedule.ScheduleScreen
 import com.example.educationapp.presentation.screenmodel.schedule.SessionDetailScreenModel
 import com.example.educationapp.presentation.screenmodel.schedule.AttendanceScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
+import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import com.example.educationapp.presentation.screen.setting.SettingScreenModel
 import org.koin.dsl.module
@@ -18,6 +19,7 @@ val screenModelModule = module {
     factory { SessionDetailScreenModel(get(), get(), get(), get()) }
     factory { AttendanceScreenModel(get(), get()) }
     factory { TeacherDashboardScreenModel(get(), get(), get()) }
+    factory { StudentDashboardScreenModel(get(), get(), get(), get(), get(), get()) }
     factory { AssignmentTabScreenModel(get(), get(), get()) }
 }
 

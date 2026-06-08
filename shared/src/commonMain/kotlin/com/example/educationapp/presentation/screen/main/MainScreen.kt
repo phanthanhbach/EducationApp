@@ -91,7 +91,7 @@ class MainScreen(private val role: AppRole) : Screen {
                         val endInset = systemInsets.calculateEndPadding(layoutDirection)
                         val bottomInset = systemInsets.calculateBottomPadding()
                         val startInset = systemInsets.calculateStartPadding(layoutDirection)
-                        val isBleedingTab = tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab
+                        val isBleedingTab = tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab
 
                         val tabContentPadding = PaddingValues(
                             start = 76.dp + startInset, // space for the collapsed rail + left safe area
@@ -146,7 +146,7 @@ class MainScreen(private val role: AppRole) : Screen {
                         }
                     } else {
                         // Mobile layout
-                        val isBleedingTab = tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab
+                        val isBleedingTab = tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab
                         val contentPadding = if (isBleedingTab) {
                             PaddingValues(
                                 start = innerPadding.calculateStartPadding(layoutDirection),

@@ -1,17 +1,21 @@
 package com.example.educationapp.core.network
 
-import io.ktor.client.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
+import com.example.educationapp.core.data.TokenManager
+import com.example.educationapp.getPlatform
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import com.example.educationapp.core.data.TokenManager
 import co.touchlab.kermit.Logger as KermitLogger
 
 fun createHttpClient(tokenManager: TokenManager): HttpClient = HttpClient {
@@ -45,8 +49,12 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient = HttpClient {
             }
         }
     }
+    val host = if (getPlatform().name.startsWith("Android"))
+        "10.11.11.212"
+    // "10.0.2.2" 
+    else "localhost"
     defaultRequest {
-        url("http://10.11.11.211:8081/api/v1/") // Thay đổi thành API URL của bạn sau này
+        url("http://$host:8085/api/v1/")
         header(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 }
