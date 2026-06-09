@@ -6,9 +6,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.feedback.ClassFeedbackScreen
+import com.example.educationapp.presentation.screen.assignment.ClassAssignmentsScreen
 import com.example.educationapp.presentation.screen.my_classes.MyClassScreenContent
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import educationapp.shared.generated.resources.Res
@@ -36,6 +40,7 @@ class AssignmentTab(private val role: AppRole) : Tab {
 
     @Composable
     override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<AssignmentTabScreenModel>()
         val state by screenModel.state.collectAsState()
         val searchQuery by screenModel.searchQuery.collectAsState()
@@ -52,6 +57,12 @@ class AssignmentTab(private val role: AppRole) : Tab {
             selectedStatus = selectedStatus,
             onSearch = { query -> screenModel.searchClasses(query) },
             onStatusSelect = { status -> screenModel.filterByStatus(status) },
+            onAssignmentsClick = { classId, className ->
+                navigator.parent?.push(ClassAssignmentsScreen(classId.toInt(), className))
+            },
+            onFeedbacksClick = { classId, className ->
+                navigator.parent?.push(ClassFeedbackScreen(classId, className))
+            },
             onLoadNextPage = { screenModel.loadNextPage() },
             onRetry = { screenModel.loadProfileAndClasses() }
         )

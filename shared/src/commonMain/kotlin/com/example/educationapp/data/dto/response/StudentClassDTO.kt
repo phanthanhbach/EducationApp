@@ -1,6 +1,7 @@
 package com.example.educationapp.data.dto.response
 
 import com.example.educationapp.domain.entity.SchoolClass
+import com.example.educationapp.domain.entity.StudentClassFeedback
 import com.example.educationapp.domain.entity.StudentClassInfo
 import kotlinx.serialization.Serializable
 
@@ -56,4 +57,19 @@ fun StudentClassDTO.toStudentClassInfo() = StudentClassInfo(
     teacherEmail = teacherEmail,
     teacherPhone = teacherPhone,
     status = status
+)
+
+fun StudentClassDTO.toStudentClassFeedback() = StudentClassFeedback(
+    classId = classId,
+    studentId = studentId,
+    studentName = studentName ?: "",
+    className = className,
+    courseName = courseName,
+    enrolledDate = enrolledDate,
+    status = status,
+    teacherFeedback = teacherFeedback,
+    teacherFeedbackDate = teacherFeedbackDate,
+    finalResult = finalResult,
+    resultNote = resultNote,
+    resultDate = resultDate
 )

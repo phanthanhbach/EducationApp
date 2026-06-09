@@ -84,6 +84,8 @@ fun MyClassScreenContent(
     selectedStatus: String?,
     onSearch: (String) -> Unit,
     onStatusSelect: (String?) -> Unit,
+    onAssignmentsClick: (Long, String) -> Unit,
+    onFeedbacksClick: (Long, String) -> Unit,
     onLoadNextPage: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
@@ -96,6 +98,8 @@ fun MyClassScreenContent(
             selectedStatus = selectedStatus,
             onSearch = onSearch,
             onStatusSelect = onStatusSelect,
+            onAssignmentsClick = onAssignmentsClick,
+            onFeedbacksClick = onFeedbacksClick,
             onLoadNextPage = onLoadNextPage,
             onRetry = onRetry,
             modifier = modifier
@@ -117,6 +121,8 @@ private fun ClassesContent(
     selectedStatus: String?,
     onSearch: (String) -> Unit,
     onStatusSelect: (String?) -> Unit,
+    onAssignmentsClick: (Long, String) -> Unit,
+    onFeedbacksClick: (Long, String) -> Unit,
     onLoadNextPage: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
@@ -308,16 +314,11 @@ private fun ClassesContent(
                                 ClassCard(
                                     schoolClass = schoolClass,
                                     onAssignmentsClick = {
-                                        toastMessage = if (role == AppRole.TEACHER) {
-                                            "Tính năng quản lý Bài tập lớp ${schoolClass.name} đang được phát triển."
-                                        } else {
-                                            "Tính năng xem Bài tập lớp ${schoolClass.name} đang được phát triển."
-                                        }
+                                        onAssignmentsClick(schoolClass.id, schoolClass.name)
                                     },
                                     onFeedbacksClick = if (role == AppRole.TEACHER) {
                                         {
-                                            toastMessage =
-                                                "Tính năng xem Phản hồi lớp ${schoolClass.name} đang được phát triển."
+                                            onFeedbacksClick(schoolClass.id, schoolClass.name)
                                         }
                                     } else {
                                         null

@@ -104,6 +104,19 @@
     <string name="my_classes_result">Result: %1$s</string>
     <string name="my_classes_btn_feedback">Feedback</string>
     <string name="my_classes_btn_assignment">Assignment</string>
+    <string name="assignment_active">Active</string>
+    <string name="assignment_inactive">Inactive</string>
+    <string name="assignment_final_exam">Final exam</string>
+    <string name="assignment_due_date">Due: %1$s</string>
+    <string name="assignment_submitted_count">Submitted: %1$d</string>
+    <string name="assignment_not_submitted_count">Not submitted: %1$d</string>
+    <string name="assignment_empty">No assignments found for %1$s.</string>
+    <string name="class_feedback_title">Class Feedback</string>
+    <string name="class_feedback_empty">No students found for %1$s.</string>
+    <string name="class_feedback_field_label">Teacher feedback</string>
+    <string name="class_feedback_field_placeholder">Enter feedback for this student</string>
+    <string name="class_feedback_updated_at">Feedback date: %1$s</string>
+    <string name="class_feedback_send">Send feedback</string>
     <string name="schedule_session_class">Class: %1$s</string>
     <string name="schedule_session_time">Time</string>
     <string name="schedule_session_room">Room</string>
@@ -188,4 +201,3 @@
     <string name="teacher_contact_no_phone_app">No phone dialer app found</string>
     <string name="teacher_contact_phone_copied">Phone number copied to clipboard</string>
 </resources>
-

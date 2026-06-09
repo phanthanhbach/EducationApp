@@ -8,6 +8,8 @@ import com.example.educationapp.presentation.screenmodel.schedule.AttendanceScre
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
+import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
+import com.example.educationapp.presentation.screenmodel.feedback.ClassFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ParentMainScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.MyChildrenScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.FeedbackScreenModel
@@ -25,6 +27,8 @@ val screenModelModule = module {
     factory { TeacherDashboardScreenModel(get(), get(), get()) }
     factory { StudentDashboardScreenModel(get(), get(), get(), get(), get(), get()) }
     factory { AssignmentTabScreenModel(get(), get(), get()) }
+    factory { ClassAssignmentsScreenModel(get()) }
+    factory { ClassFeedbackScreenModel(get()) }
     factory { ParentMainScreenModel(get(), get()) }
     factory { MyChildrenScreenModel(get(), get(), get(), get(), get()) }
     factory { FeedbackScreenModel() }
