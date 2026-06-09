@@ -49,12 +49,8 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient = HttpClient {
             }
         }
     }
-    val host = if (getPlatform().name.startsWith("Android"))
-        "10.11.11.212"
-    // "10.0.2.2" 
-    else "localhost"
     defaultRequest {
-        url("http://$host:8085/api/v1/")
+        url("http://10.11.11.212:8085/api/v1/")
         header(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 }
