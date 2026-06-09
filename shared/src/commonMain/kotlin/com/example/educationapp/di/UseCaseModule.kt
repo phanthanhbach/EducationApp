@@ -1,6 +1,8 @@
 package com.example.educationapp.di
 
 import com.example.educationapp.domain.usecase.GetChildrenUseCase
+import com.example.educationapp.domain.usecase.FilterAssignmentsUseCase
+import com.example.educationapp.domain.usecase.GetClassFeedbacksUseCase
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.GetMySchedulesUseCase
 import com.example.educationapp.domain.usecase.LoginUseCase
@@ -22,6 +24,8 @@ import org.koin.dsl.module
 val useCaseModule = module {
     single { LoginUseCase(get()) }
     single { LogoutUseCase(get()) }
+    single { FilterAssignmentsUseCase(get()) }
+    single { GetClassFeedbacksUseCase(get()) }
     single { GetMyProfileUseCase(get()) }
     single { GetMySchedulesUseCase(get()) }
     single { TeacherCheckInUseCase(get()) }
