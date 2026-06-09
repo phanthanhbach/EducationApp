@@ -1,5 +1,6 @@
 package com.example.educationapp.di
 
+import com.example.educationapp.domain.usecase.GetChildrenUseCase
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.GetMySchedulesUseCase
 import com.example.educationapp.domain.usecase.LoginUseCase
@@ -35,4 +36,5 @@ val useCaseModule = module {
     single { GetMyCoursesUseCase(get()) }
     single { GetAssignmentRemindersUseCase(get()) }
     single { GetStudentClassesInfoUseCase(get()) }
+    single { GetChildrenUseCase(get()) }
 }

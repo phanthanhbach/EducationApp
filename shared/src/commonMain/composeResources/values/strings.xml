@@ -35,6 +35,10 @@
     <string name="tab_schedule">Schedule</string>
     <string name="tab_assignment">Assignment</string>
     <string name="tab_profile">Profile</string>
+    <string name="tab_my_children">My Children</string>
+    <string name="tab_feedback">Feedback</string>
+    <string name="tab_payments">Payments</string>
+
     <string name="btn_change_password">Change Password</string>
     <string name="section_account">Account Management</string>
     <string name="btn_edit_profile">Edit Profile</string>

@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,142 +30,186 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.main.tab.AssignmentTab
 import com.example.educationapp.presentation.screen.main.tab.DashboardTab
+import com.example.educationapp.presentation.screen.main.tab.FeedbackTab
+import com.example.educationapp.presentation.screen.main.tab.MyChildrenTab
+import com.example.educationapp.presentation.screen.main.tab.PaymentsTab
 import com.example.educationapp.presentation.screen.main.tab.ProfileTab
 import com.example.educationapp.presentation.screen.main.tab.ScheduleTab
+import com.example.educationapp.presentation.screenmodel.parent.ParentMainScreenModel
 
 class MainScreen(private val role: AppRole) : Screen {
 
     @Composable
     override fun Content() {
         val tabs = remember(role) {
-            listOf(
-                DashboardTab(role),
-                ScheduleTab(role),
-                AssignmentTab(role),
-                ProfileTab()
-            )
-        }
-
-        TabNavigator(tabs.first()) { tabNavigator ->
-            val selectedIndex = tabs.indexOfFirst { it.options.index == tabNavigator.current.options.index }.coerceAtLeast(0)
-
-            val navItems = tabs.mapIndexed { index, tab ->
-                BottomNavItem(
-                    title = tab.options.title,
-                    icon = tab.options.icon!!,
-                    index = index
+            if (role == AppRole.PARENT) {
+                listOf(
+                    MyChildrenTab(),
+                    FeedbackTab(),
+                    PaymentsTab(),
+                    ProfileTab()
+                )
+            } else {
+                listOf(
+                    DashboardTab(role),
+                    ScheduleTab(role),
+                    AssignmentTab(role),
+                    ProfileTab()
                 )
             }
+        }
 
-            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                val isTablet = maxWidth >= 600.dp
-                var isNavigationRailExpanded by rememberSaveable { mutableStateOf(false) }
-                val layoutDirection = LocalLayoutDirection.current
+        @Composable
+        fun ParentWrapper(content: @Composable () -> Unit) {
+            if (role == AppRole.PARENT) {
+                val parentScreenModel = koinScreenModel<ParentMainScreenModel>()
+                CompositionLocalProvider(
+                    LocalParentMainScreenModel provides parentScreenModel
+                ) {
+                    content()
+                }
+            } else {
+                content()
+            }
+        }
 
-                Scaffold(
-                    contentWindowInsets = if (isTablet) WindowInsets(0) else WindowInsets.systemBars,
-                    bottomBar = {
-                        if (!isTablet) {
-                            BottomNavigation(
-                                items = navItems,
-                                selectedIndex = selectedIndex,
-                                onItemSelected = { index ->
-                                    tabNavigator.current = tabs[index]
-                                }
-                            )
-                        }
-                    }
-                ) { innerPadding ->
-                    if (isTablet) {
-                        // Tablet / landscape layout.
-                        // The navigation rail background extends edge-to-edge
-                        // (behind the status bar and left system inset) while
-                        // its interactive content stays within the safe area.
-                        // Tab content is padded for top (except ProfileTab),
-                        // end and bottom system insets.
-                        val systemInsets = WindowInsets.systemBars.asPaddingValues()
-                        val topInset = systemInsets.calculateTopPadding()
-                        val endInset = systemInsets.calculateEndPadding(layoutDirection)
-                        val bottomInset = systemInsets.calculateBottomPadding()
-                        val startInset = systemInsets.calculateStartPadding(layoutDirection)
-                        val isBleedingTab = tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab
+        ParentWrapper {
+            TabNavigator(tabs.first()) { tabNavigator ->
+                val selectedIndex =
+                    tabs.indexOfFirst { it.options.index == tabNavigator.current.options.index }
+                        .coerceAtLeast(0)
 
-                        val tabContentPadding = PaddingValues(
-                            start = 76.dp + startInset, // space for the collapsed rail + left safe area
-                            top = if (isBleedingTab) 0.dp else topInset,
-                            end = endInset,
-                            bottom = bottomInset
-                        )
+                val navItems = tabs.mapIndexed { index, tab ->
+                    BottomNavItem(
+                        title = tab.options.title,
+                        icon = tab.options.icon!!,
+                        index = index
+                    )
+                }
 
-                        Box(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            // Tab content
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(tabContentPadding)
-                            ) {
-                                CurrentTab()
+                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    val isTablet = maxWidth >= 600.dp
+                    var isNavigationRailExpanded by rememberSaveable { mutableStateOf(false) }
+                    val layoutDirection = LocalLayoutDirection.current
+
+                    Scaffold(
+                        contentWindowInsets = if (isTablet) WindowInsets(0) else WindowInsets.systemBars,
+                        containerColor = if (role == AppRole.PARENT) {
+                            MaterialTheme.colorScheme.surface
+                        } else {
+                            MaterialTheme.colorScheme.background
+                        },
+                        bottomBar = {
+                            if (!isTablet) {
+                                BottomNavigation(
+                                    items = navItems,
+                                    selectedIndex = selectedIndex,
+                                    onItemSelected = { index ->
+                                        tabNavigator.current = tabs[index]
+                                    },
+                                    barColor = if (role == AppRole.PARENT) {
+                                        MaterialTheme.colorScheme.surface
+                                    } else {
+                                        MaterialTheme.colorScheme.surfaceContainer
+                                    }
+                                )
                             }
+                        }
+                    ) { innerPadding ->
+                        if (isTablet) {
+                            // Tablet / landscape layout.
+                            // The navigation rail background extends edge-to-edge
+                            // (behind the status bar and left system inset) while
+                            // its interactive content stays within the safe area.
+                            // Tab content is padded for top (except ProfileTab),
+                            // end and bottom system insets.
+                            val systemInsets = WindowInsets.systemBars.asPaddingValues()
+                            val topInset = systemInsets.calculateTopPadding()
+                            val endInset = systemInsets.calculateEndPadding(layoutDirection)
+                            val bottomInset = systemInsets.calculateBottomPadding()
+                            val startInset = systemInsets.calculateStartPadding(layoutDirection)
+                            val isBleedingTab =
+                                tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
 
-                            // Scrim when rail is expanded
-                            if (isNavigationRailExpanded) {
+                            val tabContentPadding = PaddingValues(
+                                start = 76.dp + startInset, // space for the collapsed rail + left safe area
+                                top = if (isBleedingTab) 0.dp else topInset,
+                                end = endInset,
+                                bottom = bottomInset
+                            )
+
+                            Box(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                // Tab content
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(start = 76.dp + startInset)
-                                        .zIndex(0.5f)
-                                        .background(Color.Black.copy(alpha = 0.02f))
-                                        .clickable(
-                                            interactionSource = remember { MutableInteractionSource() },
-                                            indication = null
-                                        ) {
-                                            isNavigationRailExpanded = false
-                                        }
+                                        .padding(tabContentPadding)
+                                ) {
+                                    CurrentTab()
+                                }
+
+                                // Scrim when rail is expanded
+                                if (isNavigationRailExpanded) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(start = 76.dp + startInset)
+                                            .zIndex(0.5f)
+                                            .background(Color.Black.copy(alpha = 0.02f))
+                                            .clickable(
+                                                interactionSource = remember { MutableInteractionSource() },
+                                                indication = null
+                                            ) {
+                                                isNavigationRailExpanded = false
+                                            }
+                                    )
+                                }
+
+                                // Navigation rail – full-bleed, handles its own insets
+                                VerticalNavigationRail(
+                                    items = navItems,
+                                    selectedIndex = selectedIndex,
+                                    onItemSelected = { index ->
+                                        tabNavigator.current = tabs[index]
+                                    },
+                                    isExpanded = isNavigationRailExpanded,
+                                    onExpandedChange = { isNavigationRailExpanded = it },
+                                    modifier = Modifier
+                                        .align(Alignment.CenterStart)
+                                        .zIndex(1f)
+                                        .fillMaxHeight()
                                 )
                             }
-
-                            // Navigation rail – full-bleed, handles its own insets
-                            VerticalNavigationRail(
-                                items = navItems,
-                                selectedIndex = selectedIndex,
-                                onItemSelected = { index ->
-                                    tabNavigator.current = tabs[index]
-                                },
-                                isExpanded = isNavigationRailExpanded,
-                                onExpandedChange = { isNavigationRailExpanded = it },
-                                modifier = Modifier
-                                    .align(Alignment.CenterStart)
-                                    .zIndex(1f)
-                                    .fillMaxHeight()
-                            )
-                        }
-                    } else {
-                        // Mobile layout
-                        val isBleedingTab = tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab
-                        val contentPadding = if (isBleedingTab) {
-                            PaddingValues(
-                                start = innerPadding.calculateStartPadding(layoutDirection),
-                                top = 0.dp,
-                                end = innerPadding.calculateEndPadding(layoutDirection),
-                                bottom = innerPadding.calculateBottomPadding()
-                            )
                         } else {
-                            innerPadding
-                        }
+                            // Mobile layout
+                            val isBleedingTab =
+                                tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
+                            val contentPadding = if (isBleedingTab) {
+                                PaddingValues(
+                                    start = innerPadding.calculateStartPadding(layoutDirection),
+                                    top = 0.dp,
+                                    end = innerPadding.calculateEndPadding(layoutDirection),
+                                    bottom = innerPadding.calculateBottomPadding()
+                                )
+                            } else {
+                                innerPadding
+                            }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(contentPadding)
-                        ) {
-                            CurrentTab()
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(contentPadding)
+                            ) {
+                                CurrentTab()
+                            }
                         }
                     }
                 }

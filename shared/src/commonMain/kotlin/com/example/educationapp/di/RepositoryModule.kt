@@ -2,10 +2,12 @@ package com.example.educationapp.di
 
 import com.example.educationapp.core.data.TokenManager
 import com.example.educationapp.data.repository.AuthRepositoryImpl
+import com.example.educationapp.data.repository.ParentRepositoryImpl
 import com.example.educationapp.data.repository.ProfileRepositoryImpl
 import com.example.educationapp.data.repository.ScheduleRepositoryImpl
 import com.example.educationapp.data.repository.StudentDashboardRepositoryImpl
 import com.example.educationapp.domain.repository.AuthRepository
+import com.example.educationapp.domain.repository.ParentRepository
 import com.example.educationapp.domain.repository.ProfileRepository
 import com.example.educationapp.domain.repository.ScheduleRepository
 import com.example.educationapp.domain.repository.StudentDashboardRepository
@@ -17,4 +19,5 @@ val repositoryModule = module {
     single<ProfileRepository> { ProfileRepositoryImpl(get()) }
     single<ScheduleRepository> { ScheduleRepositoryImpl(get()) }
     single<StudentDashboardRepository> { StudentDashboardRepositoryImpl(get()) }
+    single<ParentRepository> { ParentRepositoryImpl(get()) }
 }

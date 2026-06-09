@@ -38,6 +38,7 @@ import com.example.educationapp.core.ui.dialog.AppAlertDialog
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.ThreeSectionRow
+import com.example.educationapp.core.ui.row.OptionRow
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.presentation.screen.login.LoginScreen
 import educationapp.shared.generated.resources.Res
@@ -125,7 +126,7 @@ class SettingScreen : Screen {
                         )
                     ) {
                         Column {
-                            SettingOptionRow(
+                            OptionRow(
                                 iconRes = Res.drawable.ic_edit_24dp,
                                 title = stringResource(Res.string.btn_edit_profile),
                                 onClick = { /* TODO: Handle edit profile */ }
@@ -139,7 +140,7 @@ class SettingScreen : Screen {
                                     .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                             )
 
-                            SettingOptionRow(
+                            OptionRow(
                                 iconRes = Res.drawable.ic_lock_24dp,
                                 title = stringResource(Res.string.btn_change_password),
                                 onClick = { /* TODO: Handle change password */ }
@@ -181,42 +182,4 @@ class SettingScreen : Screen {
 
     }
 
-    @Composable
-    private fun SettingOptionRow(
-        iconRes: org.jetbrains.compose.resources.DrawableResource,
-        title: String,
-        onClick: () -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        ThreeSectionRow(
-            modifier = modifier
-                .fillMaxWidth()
-                .clickable { onClick() }
-                .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
-            spacing = AppDimen.p16,
-            verticalAlignment = Alignment.CenterVertically,
-            first = {
-                AppIcon(
-                    drawableRes = iconRes,
-                    tint = MaterialTheme.colorScheme.primary,
-                    iconModifier = Modifier.size(24.dp)
-                )
-            },
-            second = {
-                AppText(
-                    text = title,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f)
-                )
-            },
-            third = {
-                AppIcon(
-                    drawableRes = Res.drawable.ic_arrow_forward_ios_24dp,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                    iconModifier = Modifier.size(16.dp)
-                )
-            }
-        )
-    }
 }

@@ -35,7 +35,9 @@
     <string name="tab_schedule">Lịch học</string>
     <string name="tab_assignment">Bài tập</string>
     <string name="tab_profile">Hồ sơ</string>
-
+    <string name="tab_my_children">Các con</string>
+    <string name="tab_feedback">Nhận xét</string>
+    <string name="tab_payments">Thanh toán</string>
 
     <string name="btn_change_password">Đổi mật khẩu</string>
     <string name="section_account">Quản lý tài khoản</string>
