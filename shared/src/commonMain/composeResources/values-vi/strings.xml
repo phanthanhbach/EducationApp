@@ -167,5 +167,23 @@
 
     <string name="schedule_error_title">Đã xảy ra lỗi</string>
     <string name="schedule_btn_retry">Thử lại</string>
+
+    <!-- Student Dashboard Section Strings -->
+    <string name="lb_dashboard_schedules">Lịch học sắp tới</string>
+    <string name="lb_dashboard_assignments">Bài tập sắp đến hạn</string>
+    <string name="dashboard_assignments_empty">Không có bài tập nào sắp đến hạn.</string>
+    <string name="dashboard_attendance_title">Tỷ lệ chuyên cần theo lớp</string>
+    <string name="dashboard_attendance_empty">Không có thông tin chuyên cần.</string>
+    <string name="dashboard_teacher_contact_title">Liên hệ giáo viên</string>
+    <string name="dashboard_teacher_contact_empty">Không có thông tin liên hệ giáo viên.</string>
+    <string name="dashboard_courses_title">Khóa học hiện tại</string>
+    <string name="dashboard_courses_empty">Không có khóa học nào hiện tại.</string>
+    <string name="dashboard_btn_retry">Thử lại</string>
+
+    <!-- Teacher Contact actions -->
+    <string name="teacher_contact_no_email_app">Không tìm thấy app email</string>
+    <string name="teacher_contact_email_copied">Đã copy Email</string>
+    <string name="teacher_contact_no_phone_app">Không tìm thấy app gọi điện</string>
+    <string name="teacher_contact_phone_copied">Đã copy số điện thoại</string>
 </resources>
 

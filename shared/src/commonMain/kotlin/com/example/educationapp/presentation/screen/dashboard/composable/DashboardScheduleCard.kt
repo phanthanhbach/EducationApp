@@ -1,9 +1,8 @@
-package com.example.educationapp.presentation.screen.main.tab.component
+package com.example.educationapp.presentation.screen.dashboard.composable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,9 +35,6 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_door_open_24dp
-import educationapp.shared.generated.resources.ic_location_on_24dp
-import educationapp.shared.generated.resources.ic_person_filled_24dp
-import educationapp.shared.generated.resources.ic_schedule_24dp
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

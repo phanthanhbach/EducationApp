@@ -28,6 +28,8 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.dashboard.StudentDashboardContent
+import com.example.educationapp.presentation.screen.dashboard.TeacherDashboardContent
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
 import educationapp.shared.generated.resources.Res
@@ -80,8 +82,7 @@ class DashboardTab(private val role: AppRole) : Tab {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
                 ) {
                     val tabNavigator = cafe.adriel.voyager.navigator.tab.LocalTabNavigator.current

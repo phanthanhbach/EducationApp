@@ -165,5 +165,23 @@
     
     <string name="schedule_error_title">An error occurred</string>
     <string name="schedule_btn_retry">Retry</string>
+
+    <!-- Student Dashboard Section Strings -->
+    <string name="lb_dashboard_schedules">Study Schedule</string>
+    <string name="lb_dashboard_assignments">Assignments &amp; Homework</string>
+    <string name="dashboard_assignments_empty">No assignments due soon.</string>
+    <string name="dashboard_attendance_title">Attendance Rate by Class</string>
+    <string name="dashboard_attendance_empty">No attendance records available.</string>
+    <string name="dashboard_teacher_contact_title">Teacher Contacts</string>
+    <string name="dashboard_teacher_contact_empty">No teacher contact information.</string>
+    <string name="dashboard_courses_title">Current Courses</string>
+    <string name="dashboard_courses_empty">No current courses.</string>
+    <string name="dashboard_btn_retry">Retry</string>
+
+    <!-- Teacher Contact actions -->
+    <string name="teacher_contact_no_email_app">No email app found</string>
+    <string name="teacher_contact_email_copied">Email copied to clipboard</string>
+    <string name="teacher_contact_no_phone_app">No phone dialer app found</string>
+    <string name="teacher_contact_phone_copied">Phone number copied to clipboard</string>
 </resources>
 

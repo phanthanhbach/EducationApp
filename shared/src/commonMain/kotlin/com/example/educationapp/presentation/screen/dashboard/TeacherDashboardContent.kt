@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.main.tab
+package com.example.educationapp.presentation.screen.dashboard
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -38,8 +38,8 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
-import com.example.educationapp.presentation.screen.main.tab.component.DashboardScheduleCard
-import com.example.educationapp.presentation.screen.main.tab.component.UpcomingSchedulesSection
+import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
 import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardState
@@ -73,7 +73,11 @@ fun TeacherDashboardContent(
             Card(
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(
+                        alpha = 0.1f
+                    )
+                ),
                 border = BorderStroke(1.dp, AppColor.Error.copy(alpha = 0.3f))
             ) {
                 Column(
@@ -224,7 +228,7 @@ fun TeacherDashboardContent(
                     )
 
                     UpcomingSchedulesSection(
-                        role = com.example.educationapp.domain.enums.AppRole.TEACHER,
+                        role = AppRole.TEACHER,
                         schedules = currentState.upcomingSchedules,
                         today = today,
                         onScheduleClick = { schedule ->

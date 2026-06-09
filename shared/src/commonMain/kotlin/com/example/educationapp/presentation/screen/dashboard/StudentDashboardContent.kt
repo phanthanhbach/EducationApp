@@ -1,9 +1,10 @@
-package com.example.educationapp.presentation.screen.main.tab
+package com.example.educationapp.presentation.screen.dashboard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,16 +38,30 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
-import com.example.educationapp.presentation.screen.main.tab.component.AssignmentDeadlineSection
-import com.example.educationapp.presentation.screen.main.tab.component.AttendanceByClassSection
-import com.example.educationapp.presentation.screen.main.tab.component.CurrentCoursesSection
-import com.example.educationapp.presentation.screen.main.tab.component.TeacherContactSection
-import com.example.educationapp.presentation.screen.main.tab.component.UpcomingSchedulesSection
+import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.dashboard.composable.AssignmentDeadlineSection
+import com.example.educationapp.presentation.screen.dashboard.composable.AttendanceByClassSection
+import com.example.educationapp.presentation.screen.dashboard.composable.CurrentCoursesSection
+import com.example.educationapp.presentation.screen.dashboard.composable.TeacherContactSection
+import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
 import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardState
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.dashboard_assignments_empty
+import educationapp.shared.generated.resources.dashboard_attendance_empty
+import educationapp.shared.generated.resources.dashboard_attendance_title
+import educationapp.shared.generated.resources.dashboard_btn_retry
+import educationapp.shared.generated.resources.dashboard_courses_empty
+import educationapp.shared.generated.resources.dashboard_courses_title
+import educationapp.shared.generated.resources.dashboard_teacher_contact_empty
+import educationapp.shared.generated.resources.dashboard_teacher_contact_title
+import educationapp.shared.generated.resources.lb_dashboard_assignments
+import educationapp.shared.generated.resources.lb_dashboard_schedules
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun StudentDashboardContent(
@@ -64,7 +79,7 @@ fun StudentDashboardContent(
     fun showToast(message: String) {
         coroutineScope.launch {
             toastMessage = message
-            delay(2000)
+            delay(2000.milliseconds)
             if (toastMessage == message) {
                 toastMessage = null
             }
@@ -110,7 +125,10 @@ fun StudentDashboardContent(
                             onClick = { screenModel.loadDashboardData() },
                             colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
                         ) {
-                            AppText(text = "Thử lại", color = Color.White)
+                            AppText(
+                                text = stringResource(Res.string.dashboard_btn_retry),
+                                color = Color.White
+                            )
                         }
                     }
                 }
@@ -119,14 +137,18 @@ fun StudentDashboardContent(
             is StudentDashboardState.Success -> {
                 val today = remember { CalendarHelper.getCurrentDate() }
 
-                Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p24)) {
+                Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p4)) {
 
                     // 1. Upcoming Schedules
-                    Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p12)) {
-                        SectionHeader(title = "Lịch học 3 ngày tới")
+                    Column(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                    ) {
+                        SectionHeader(title = stringResource(Res.string.lb_dashboard_schedules))
 
                         UpcomingSchedulesSection(
-                            role = com.example.educationapp.domain.enums.AppRole.STUDENT,
+                            role = AppRole.STUDENT,
                             schedules = currentState.upcomingSchedules,
                             today = today,
                             onScheduleClick = { schedule ->
@@ -137,33 +159,45 @@ fun StudentDashboardContent(
                     }
 
                     // 2. Assignment Deadlines (Due within 48 hours)
-                    Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p12)) {
-                        SectionHeader(title = "Bài tập sắp đến hạn (48h)")
+                    Column(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                    ) {
+                        SectionHeader(title = stringResource(Res.string.lb_dashboard_assignments))
 
                         if (currentState.assignmentReminders.isEmpty()) {
-                            EmptySectionCard(message = "Không có bài tập nào sắp đến hạn.")
+                            EmptySectionCard(message = stringResource(Res.string.dashboard_assignments_empty))
                         } else {
                             AssignmentDeadlineSection(reminders = currentState.assignmentReminders)
                         }
                     }
 
                     // 3. Attendance by Class
-                    Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p12)) {
-                        SectionHeader(title = "Tỷ lệ chuyên cần theo lớp")
+                    Column(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                    ) {
+                        SectionHeader(title = stringResource(Res.string.dashboard_attendance_title))
 
                         if (currentState.attendanceByClass.isEmpty()) {
-                            EmptySectionCard(message = "Không có thông tin chuyên cần.")
+                            EmptySectionCard(message = stringResource(Res.string.dashboard_attendance_empty))
                         } else {
                             AttendanceByClassSection(attendanceList = currentState.attendanceByClass)
                         }
                     }
 
                     // 4. Teacher Contact
-                    Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p12)) {
-                        SectionHeader(title = "Liên hệ giáo viên")
+                    Column(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                    ) {
+                        SectionHeader(title = stringResource(Res.string.dashboard_teacher_contact_title))
 
                         if (currentState.teacherContacts.isEmpty()) {
-                            EmptySectionCard(message = "Không có thông tin liên hệ giáo viên.")
+                            EmptySectionCard(message = stringResource(Res.string.dashboard_teacher_contact_empty))
                         } else {
                             TeacherContactSection(
                                 contacts = currentState.teacherContacts,
@@ -173,11 +207,15 @@ fun StudentDashboardContent(
                     }
 
                     // 5. Current Courses
-                    Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p12)) {
-                        SectionHeader(title = "Khóa học hiện tại")
+                    Column(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                    ) {
+                        SectionHeader(title = stringResource(Res.string.dashboard_courses_title))
 
                         if (currentState.currentCourses.isEmpty()) {
-                            EmptySectionCard(message = "Không có khóa học nào hiện tại.")
+                            EmptySectionCard(message = stringResource(Res.string.dashboard_courses_empty))
                         } else {
                             CurrentCoursesSection(courses = currentState.currentCourses)
                         }

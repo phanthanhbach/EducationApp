@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.main.tab.component
+package com.example.educationapp.presentation.screen.dashboard.composable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

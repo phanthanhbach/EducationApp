@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.main.tab.component
+package com.example.educationapp.presentation.screen.dashboard.composable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -8,10 +8,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.AssignmentReminder
@@ -67,7 +63,11 @@ private fun AssignmentReminderCard(
 
     val formattedTime = try {
         val ldt = LocalDateTime.parse(reminder.dueDate)
-        "${ldt.hour.toString().padStart(2, '0')}:${ldt.minute.toString().padStart(2, '0')} ${ldt.dayOfMonth.toString().padStart(2, '0')}/${ldt.monthNumber.toString().padStart(2, '0')}"
+        "${ldt.hour.toString().padStart(2, '0')}:${
+            ldt.minute.toString().padStart(2, '0')
+        } ${ldt.dayOfMonth.toString().padStart(2, '0')}/${
+            ldt.monthNumber.toString().padStart(2, '0')
+        }"
     } catch (e: Exception) {
         reminder.dueDate
     }

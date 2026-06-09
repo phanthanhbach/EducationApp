@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.main.tab.component
+package com.example.educationapp.presentation.screen.dashboard.composable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -32,11 +32,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherContactUiModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_call_24dp
 import educationapp.shared.generated.resources.ic_mail_24dp
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import educationapp.shared.generated.resources.teacher_contact_no_email_app
+import educationapp.shared.generated.resources.teacher_contact_email_copied
+import educationapp.shared.generated.resources.teacher_contact_no_phone_app
+import educationapp.shared.generated.resources.teacher_contact_phone_copied
 
 @Composable
 fun TeacherContactSection(
@@ -74,9 +80,14 @@ private fun TeacherContactItem(
     val uriHandler = LocalUriHandler.current
     val clipboardManager = LocalClipboardManager.current
 
+    val noEmailAppMsg = stringResource(Res.string.teacher_contact_no_email_app)
+    val emailCopiedMsg = stringResource(Res.string.teacher_contact_email_copied)
+    val noPhoneAppMsg = stringResource(Res.string.teacher_contact_no_phone_app)
+    val phoneCopiedMsg = stringResource(Res.string.teacher_contact_phone_copied)
+
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         AppText(
             text = contact.className,
@@ -90,9 +101,9 @@ private fun TeacherContactItem(
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium
         )
-        
+
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -107,11 +118,10 @@ private fun TeacherContactItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_mail_24dp),
-                            contentDescription = null,
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_mail_24dp,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(14.dp)
+                            iconModifier = Modifier.size(14.dp)
                         )
                         AppText(
                             text = email,
@@ -125,11 +135,10 @@ private fun TeacherContactItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_call_24dp),
-                            contentDescription = null,
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_call_24dp,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(14.dp)
+                            iconModifier = Modifier.size(14.dp)
                         )
                         AppText(
                             text = phone,
@@ -139,11 +148,11 @@ private fun TeacherContactItem(
                     }
                 }
             }
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
+
+            Spacer(modifier = Modifier.width(8.dp))
+
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 contact.teacherEmail?.let { email ->
@@ -157,21 +166,20 @@ private fun TeacherContactItem(
                                     try {
                                         uriHandler.openUri("mailto:$email")
                                     } catch (e: Exception) {
-                                        onShowToast("Không tìm thấy app email")
+                                        onShowToast(noEmailAppMsg)
                                     }
                                 },
                                 onLongClick = {
                                     clipboardManager.setText(AnnotatedString(email))
-                                    onShowToast("Đã copy Email")
+                                    onShowToast(emailCopiedMsg)
                                 }
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_mail_24dp),
-                            contentDescription = "Email",
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_mail_24dp,
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(18.dp)
+                            iconModifier = Modifier.size(18.dp)
                         )
                     }
                 }
@@ -187,21 +195,20 @@ private fun TeacherContactItem(
                                     try {
                                         uriHandler.openUri("tel:$phone")
                                     } catch (e: Exception) {
-                                        onShowToast("Không tìm thấy app gọi điện")
+                                        onShowToast(noPhoneAppMsg)
                                     }
                                 },
                                 onLongClick = {
                                     clipboardManager.setText(AnnotatedString(phone))
-                                    onShowToast("Đã copy số điện thoại")
+                                    onShowToast(phoneCopiedMsg)
                                 }
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_call_24dp),
-                            contentDescription = "Phone",
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_call_24dp,
                             tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.size(18.dp)
+                            iconModifier = Modifier.size(18.dp)
                         )
                     }
                 }
