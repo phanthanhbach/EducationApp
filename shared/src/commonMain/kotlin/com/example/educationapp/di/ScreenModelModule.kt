@@ -9,6 +9,7 @@ import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashbo
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
+import com.example.educationapp.presentation.screenmodel.assignment.StudentClassAssignmentsScreenModel
 
 import com.example.educationapp.presentation.screenmodel.feedback.ClassFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ParentMainScreenModel
@@ -17,6 +18,7 @@ import com.example.educationapp.presentation.screenmodel.parent.FeedbackScreenMo
 import com.example.educationapp.presentation.screenmodel.parent.PaymentsScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ChildScheduleScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ChildAttendanceRateScreenModel
+import com.example.educationapp.presentation.screenmodel.invoice.ClassInvoicesScreenModel
 import com.example.educationapp.domain.usecase.GetStudentClassesNoPaginationUseCase
 import com.example.educationapp.domain.usecase.GetAttendanceRateUseCase
 import com.example.educationapp.domain.usecase.FilterSchedulesNoPaginationUseCase
@@ -43,7 +45,7 @@ val screenModelModule = module {
             getFeedbackNoPaginationUseCase = get()
         )
     }
-    factory { PaymentsScreenModel() }
+    factory { PaymentsScreenModel(get(), get()) }
     factory { (studentId: Long) ->
         ChildScheduleScreenModel(
             studentId = studentId,
@@ -58,4 +60,14 @@ val screenModelModule = module {
             getAttendanceRateUseCase = get()
         )
     }
+    factory { (classId: Int, studentId: Int) ->
+        ClassInvoicesScreenModel(
+            classId = classId,
+            studentId = studentId,
+            getMyInvoicesUseCase = get(),
+            getPaymentQrUseCase = get(),
+            getInvoiceByIdUseCase = get()
+        )
+    }
+    factory { StudentClassAssignmentsScreenModel(get()) }
 }

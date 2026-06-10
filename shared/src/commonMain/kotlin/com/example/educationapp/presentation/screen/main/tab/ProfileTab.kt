@@ -18,7 +18,7 @@ import educationapp.shared.generated.resources.tab_profile
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class ProfileTab : Tab {
+class ProfileTab(private val tabIndex: UShort = 3u) : Tab {
 
     override val options: TabOptions
         @Composable
@@ -28,7 +28,7 @@ class ProfileTab : Tab {
 
             return remember {
                 TabOptions(
-                    index = 3u,
+                    index = tabIndex,
                     title = title,
                     icon = icon
                 )

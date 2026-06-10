@@ -5,9 +5,11 @@ import com.example.educationapp.core.network.BaseResponse
 import com.example.educationapp.core.network.PaginationResponse
 import com.example.educationapp.core.network.safeApiCall
 import com.example.educationapp.data.dto.response.AssignmentDTO
+import com.example.educationapp.data.dto.response.StudentAssignmentDTO
 import com.example.educationapp.data.dto.response.toDomainEntity
 import com.example.educationapp.data.endpoint.AssignmentEndpoint
 import com.example.educationapp.domain.entity.Assignment
+import com.example.educationapp.domain.entity.StudentAssignment
 import com.example.educationapp.domain.repository.AssignmentRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -29,6 +31,33 @@ class AssignmentRepositoryImpl(
                 parameter("page", page)
                 parameter("size", size)
             }.body<BaseResponse<PaginationResponse<AssignmentDTO>>>()
+
+            val paginatedData = response.data
+            PaginationResponse(
+                content = paginatedData.content.map { it.toDomainEntity() },
+                number = paginatedData.number,
+                size = paginatedData.size,
+                totalElements = paginatedData.totalElements,
+                totalPages = paginatedData.totalPages,
+                last = paginatedData.last,
+                first = paginatedData.first
+            )
+        }
+    }
+
+    override suspend fun getMyAssignmentsFiltered(
+        classId: Int,
+        submitted: Boolean,
+        page: Int,
+        size: Int
+    ): ApiResult<PaginationResponse<StudentAssignment>> {
+        return safeApiCall {
+            val response = httpClient.get(AssignmentEndpoint.MY_FILTER) {
+                parameter("classId", classId)
+                parameter("submitted", submitted)
+                parameter("page", page)
+                parameter("size", size)
+            }.body<BaseResponse<PaginationResponse<StudentAssignmentDTO>>>()
 
             val paginatedData = response.data
             PaginationResponse(

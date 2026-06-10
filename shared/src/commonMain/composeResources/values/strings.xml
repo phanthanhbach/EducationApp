@@ -104,6 +104,7 @@
     <string name="my_classes_result">Result: %1$s</string>
     <string name="my_classes_btn_feedback">Feedback</string>
     <string name="my_classes_btn_assignment">Assignment</string>
+    <string name="my_classes_btn_invoice">Invoice</string>
     <string name="assignment_active">Active</string>
     <string name="assignment_inactive">Inactive</string>
     <string name="assignment_final_exam">Final exam</string>

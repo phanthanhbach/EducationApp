@@ -23,10 +23,18 @@ import com.example.educationapp.domain.usecase.FilterSchedulesNoPaginationUseCas
 import com.example.educationapp.domain.usecase.GetStudentClassesNoPaginationUseCase
 import com.example.educationapp.domain.usecase.SubmitTeacherFeedbackUseCase
 import com.example.educationapp.domain.usecase.GetFeedbackNoPaginationUseCase
+import com.example.educationapp.domain.usecase.GetMyInvoicesUseCase
+import com.example.educationapp.domain.usecase.GetPaymentQrUseCase
+import com.example.educationapp.domain.usecase.GetInvoiceByIdUseCase
+import com.example.educationapp.domain.usecase.GetMyAssignmentsFilteredUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
     single { LoginUseCase(get()) }
+    single { GetMyInvoicesUseCase(get()) }
+    single { GetPaymentQrUseCase(get()) }
+    single { GetInvoiceByIdUseCase(get()) }
+    single { GetMyAssignmentsFilteredUseCase(get()) }
     single { LogoutUseCase(get()) }
     single { FilterAssignmentsUseCase(get()) }
     single { GetClassFeedbacksUseCase(get()) }

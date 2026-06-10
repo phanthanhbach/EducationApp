@@ -48,19 +48,25 @@ class MainScreen(private val role: AppRole) : Screen {
     @Composable
     override fun Content() {
         val tabs = remember(role) {
-            if (role == AppRole.PARENT) {
-                listOf(
+            when (role) {
+                AppRole.PARENT -> listOf(
                     MyChildrenTab(),
                     FeedbackTab(),
-                    PaymentsTab(),
-                    ProfileTab()
+                    PaymentsTab(role),
+                    ProfileTab(3u)
                 )
-            } else {
-                listOf(
+                AppRole.TEACHER -> listOf(
                     DashboardTab(role),
                     ScheduleTab(role),
                     AssignmentTab(role),
-                    ProfileTab()
+                    ProfileTab(3u)
+                )
+                else -> listOf( // STUDENT or other roles if any
+                    DashboardTab(role),
+                    ScheduleTab(role),
+                    AssignmentTab(role),
+                    PaymentsTab(role),
+                    ProfileTab(4u)
                 )
             }
         }

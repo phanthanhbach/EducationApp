@@ -13,6 +13,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.feedback.ClassFeedbackScreen
 import com.example.educationapp.presentation.screen.assignment.ClassAssignmentsScreen
+import com.example.educationapp.presentation.screen.assignment.StudentClassAssignmentsScreen
 import com.example.educationapp.presentation.screen.my_classes.MyClassScreenContent
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import educationapp.shared.generated.resources.Res
@@ -58,7 +59,11 @@ class AssignmentTab(private val role: AppRole) : Tab {
             onSearch = { query -> screenModel.searchClasses(query) },
             onStatusSelect = { status -> screenModel.filterByStatus(status) },
             onAssignmentsClick = { classId, className ->
-                navigator.parent?.push(ClassAssignmentsScreen(classId.toInt(), className))
+                if (role == AppRole.STUDENT) {
+                    navigator.parent?.push(StudentClassAssignmentsScreen(classId.toInt(), className))
+                } else {
+                    navigator.parent?.push(ClassAssignmentsScreen(classId.toInt(), className))
+                }
             },
             onFeedbacksClick = { classId, className ->
                 navigator.parent?.push(ClassFeedbackScreen(classId, className))

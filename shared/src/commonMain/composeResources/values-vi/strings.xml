@@ -104,6 +104,7 @@
     <string name="my_classes_result">Kết quả: %1$s</string>
     <string name="my_classes_btn_feedback">Phản hồi</string>
     <string name="my_classes_btn_assignment">Bài tập</string>
+    <string name="my_classes_btn_invoice">Hóa đơn</string>
     <string name="assignment_active">Đang mở</string>
     <string name="assignment_inactive">Đã đóng</string>
     <string name="assignment_final_exam">Bài cuối kỳ</string>

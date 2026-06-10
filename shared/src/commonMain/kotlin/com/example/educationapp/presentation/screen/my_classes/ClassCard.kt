@@ -42,6 +42,7 @@ import educationapp.shared.generated.resources.ic_assignment_filled_24dp
 import educationapp.shared.generated.resources.my_classes_branch
 import educationapp.shared.generated.resources.my_classes_btn_assignment
 import educationapp.shared.generated.resources.my_classes_btn_feedback
+import educationapp.shared.generated.resources.my_classes_btn_invoice
 import educationapp.shared.generated.resources.my_classes_course
 import educationapp.shared.generated.resources.my_classes_student_count
 import educationapp.shared.generated.resources.my_classes_students_count
@@ -54,8 +55,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ClassCard(
     schoolClass: SchoolClass,
-    onAssignmentsClick: () -> Unit,
+    onAssignmentsClick: (() -> Unit)? = null,
     onFeedbacksClick: (() -> Unit)? = null,
+    onInvoiceClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val statusEnum = ClassStatus.fromString(schoolClass.status)
@@ -266,7 +268,23 @@ fun ClassCard(
                 )
             }
 
-            if (onFeedbacksClick != null) {
+            if (onInvoiceClick != null) {
+                Button(
+                    onClick = onInvoiceClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    )
+                ) {
+                    AppText(
+                        text = stringResource(Res.string.my_classes_btn_invoice),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            } else if (onFeedbacksClick != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -291,7 +309,7 @@ fun ClassCard(
                     }
 
                     Button(
-                        onClick = onAssignmentsClick,
+                        onClick = onAssignmentsClick ?: {},
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -308,7 +326,7 @@ fun ClassCard(
                 }
             } else {
                 Button(
-                    onClick = onAssignmentsClick,
+                    onClick = onAssignmentsClick ?: {},
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(

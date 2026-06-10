@@ -8,6 +8,7 @@ import com.example.educationapp.data.repository.ParentRepositoryImpl
 import com.example.educationapp.data.repository.ProfileRepositoryImpl
 import com.example.educationapp.data.repository.ScheduleRepositoryImpl
 import com.example.educationapp.data.repository.StudentDashboardRepositoryImpl
+import com.example.educationapp.data.repository.InvoiceRepositoryImpl
 import com.example.educationapp.domain.repository.AssignmentRepository
 import com.example.educationapp.domain.repository.AuthRepository
 import com.example.educationapp.domain.repository.ClassFeedbackRepository
@@ -15,6 +16,7 @@ import com.example.educationapp.domain.repository.ParentRepository
 import com.example.educationapp.domain.repository.ProfileRepository
 import com.example.educationapp.domain.repository.ScheduleRepository
 import com.example.educationapp.domain.repository.StudentDashboardRepository
+import com.example.educationapp.domain.repository.InvoiceRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {
@@ -26,4 +28,5 @@ val repositoryModule = module {
     single<ScheduleRepository> { ScheduleRepositoryImpl(get()) }
     single<StudentDashboardRepository> { StudentDashboardRepositoryImpl(get()) }
     single<ParentRepository> { ParentRepositoryImpl(get()) }
+    single<InvoiceRepository> { InvoiceRepositoryImpl(get()) }
 }
