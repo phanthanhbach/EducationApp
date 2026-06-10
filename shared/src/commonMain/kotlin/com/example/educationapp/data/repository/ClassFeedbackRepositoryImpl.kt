@@ -4,15 +4,20 @@ import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.network.BaseResponse
 import com.example.educationapp.core.network.PaginationResponse
 import com.example.educationapp.core.network.safeApiCall
+import com.example.educationapp.data.dto.request.TeacherFeedbackRequest
 import com.example.educationapp.data.dto.response.StudentClassDTO
+import com.example.educationapp.data.dto.response.TeacherFeedbackDTO
 import com.example.educationapp.data.dto.response.toStudentClassFeedback
 import com.example.educationapp.data.endpoint.ClassEndpoint
+import com.example.educationapp.data.endpoint.FeedbackEndpoint
 import com.example.educationapp.domain.entity.StudentClassFeedback
 import com.example.educationapp.domain.repository.ClassFeedbackRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 
 class ClassFeedbackRepositoryImpl(
     private val httpClient: HttpClient
@@ -41,4 +46,38 @@ class ClassFeedbackRepositoryImpl(
             )
         }
     }
+
+    override suspend fun submitTeacherFeedback(
+        classId: Long,
+        studentId: Long,
+        teacherFeedback: String
+    ): ApiResult<StudentClassFeedback> {
+        return safeApiCall {
+            val response = httpClient.post(
+                FeedbackEndpoint.teacherClassStudentFeedback(classId, studentId)
+            ) {
+                setBody(TeacherFeedbackRequest(teacherFeedback = teacherFeedback))
+            }.body<BaseResponse<TeacherFeedbackDTO>>()
+
+            response.data.toStudentClassFeedback()
+        }
+    }
 }
+
+private fun TeacherFeedbackDTO.toStudentClassFeedback() = StudentClassFeedback(
+    classId = classId,
+    studentId = studentId,
+    studentName = studentName.orEmpty(),
+    className = className.orEmpty(),
+    courseName = "",
+    enrolledDate = null,
+    status = status ?: classStudentStatus.orEmpty(),
+    feedbackRating = feedbackRating?.toString(),
+    feedbackComment = feedbackComment,
+    feedbackAt = feedbackAt,
+    teacherFeedback = teacherFeedback,
+    teacherFeedbackDate = teacherFeedbackDate,
+    finalResult = null,
+    resultNote = null,
+    resultDate = null
+)

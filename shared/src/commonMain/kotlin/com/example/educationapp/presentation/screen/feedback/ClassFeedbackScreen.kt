@@ -83,7 +83,7 @@ class ClassFeedbackScreen(
             onBackClick = { navigator.pop() },
             onRetry = { screenModel.retry() },
             onLoadNextPage = { screenModel.loadNextPage() },
-            onSubmitFeedback = { _, _ -> }
+            onSubmitFeedback = screenModel::submitTeacherFeedback
         )
     }
 }
@@ -186,9 +186,23 @@ private fun FeedbackList(
         ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        state.submitErrorMessage?.let { message ->
+            item {
+                AppText(
+                    text = message,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = AppColor.Error,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
         items(state.feedbacks, key = { "${it.classId}-${it.studentId}" }) { feedback ->
+            val feedbackKey = "${feedback.classId}-${feedback.studentId}"
             StudentFeedbackCard(
                 feedback = feedback,
+                isSubmitting = feedbackKey in state.submittingFeedbackKeys,
                 onSubmitFeedback = onSubmitFeedback
             )
         }
@@ -215,9 +229,11 @@ private fun FeedbackList(
 @Composable
 private fun StudentFeedbackCard(
     feedback: StudentClassFeedback,
+    isSubmitting: Boolean,
     onSubmitFeedback: (StudentClassFeedback, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val hasTeacherFeedback = !feedback.teacherFeedback.isNullOrBlank()
     var feedbackText by remember(feedback.classId, feedback.studentId, feedback.teacherFeedback) {
         mutableStateOf(feedback.teacherFeedback.orEmpty())
     }
@@ -261,12 +277,17 @@ private fun StudentFeedbackCard(
                 }
             }
 
+            if (!feedback.feedbackComment.isNullOrBlank()) {
+                StudentFeedbackComment(feedback = feedback)
+            }
+
             AppTextField(
                 value = feedbackText,
                 onValueChange = { feedbackText = it },
                 label = stringResource(Res.string.class_feedback_field_label),
                 labelStyle = AppTextFieldLabelStyle.External,
                 placeholder = stringResource(Res.string.class_feedback_field_placeholder),
+                readOnly = hasTeacherFeedback,
                 singleLine = false,
                 minLines = 3,
                 maxLines = 5,
@@ -284,22 +305,83 @@ private fun StudentFeedbackCard(
                 )
             }
 
-            Button(
-                onClick = { onSubmitFeedback(feedback, feedbackText) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
-                )
-            ) {
+            if (!hasTeacherFeedback) {
+                Button(
+                    onClick = { onSubmitFeedback(feedback, feedbackText) },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isSubmitting,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    )
+                ) {
+                    if (isSubmitting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                            color = Color.White
+                        )
+                    } else {
+                        AppText(
+                            text = stringResource(Res.string.class_feedback_send),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StudentFeedbackComment(
+    feedback: StudentClassFeedback,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(AppDimen.p12),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AppText(
+                text = "Nhận xét của học sinh",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            if (!feedback.feedbackRating.isNullOrBlank()) {
                 AppText(
-                    text = stringResource(Res.string.class_feedback_send),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    text = "${feedback.feedbackRating}★",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColor.Tertiary
                 )
             }
+        }
+        AppText(
+            text = feedback.feedbackComment.orEmpty(),
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        if (!feedback.feedbackAt.isNullOrBlank()) {
+            AppText(
+                text = formatFeedbackDate(feedback.feedbackAt),
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+            )
         }
     }
 }
