@@ -34,7 +34,7 @@ val screenModelModule = module {
     factory { StudentDashboardScreenModel(get(), get(), get(), get(), get(), get()) }
     factory { AssignmentTabScreenModel(get(), get(), get()) }
     factory { ClassAssignmentsScreenModel(get()) }
-    factory { ClassFeedbackScreenModel(get()) }
+    factory { ClassFeedbackScreenModel(get(), get()) }
     factory { ParentMainScreenModel(get(), get()) }
     factory { MyChildrenScreenModel(get(), get(), get(), get(), get()) }
     factory { FeedbackScreenModel() }

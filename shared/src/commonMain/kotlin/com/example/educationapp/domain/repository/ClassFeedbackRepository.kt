@@ -10,4 +10,10 @@ interface ClassFeedbackRepository {
         page: Int,
         size: Int
     ): ApiResult<PaginationResponse<StudentClassFeedback>>
+
+    suspend fun submitTeacherFeedback(
+        classId: Long,
+        studentId: Long,
+        teacherFeedback: String
+    ): ApiResult<StudentClassFeedback>
 }
