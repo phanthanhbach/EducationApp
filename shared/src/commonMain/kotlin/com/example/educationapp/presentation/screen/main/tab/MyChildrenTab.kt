@@ -31,9 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.core.theme.AppColor
+import com.example.educationapp.presentation.screen.parent.ChildScheduleScreen
+import com.example.educationapp.presentation.screen.parent.ChildAttendanceRateScreen
 import com.example.educationapp.core.ui.image.AppImage
 import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.layout.AppTopBar
@@ -313,6 +317,7 @@ class MyChildrenTab : Tab {
                     )
 
                     // Action: Schedule
+                    val parentNavigator = LocalNavigator.currentOrThrow.parent
                     OptionRow(
                         title = "Lịch học của con",
                         description = "Xem lịch học chi tiết các ngày trong tuần",
@@ -320,7 +325,12 @@ class MyChildrenTab : Tab {
                         iconBgColor = MaterialTheme.colorScheme.primaryContainer,
                         iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
                         onClick = {
-                            // Click handler (TBD)
+                            parentNavigator?.push(
+                                ChildScheduleScreen(
+                                    studentId = child.studentId.toLong(),
+                                    studentName = child.fullName
+                                )
+                            )
                         }
                     )
 
@@ -332,7 +342,12 @@ class MyChildrenTab : Tab {
                         iconBgColor = MaterialTheme.colorScheme.secondaryContainer,
                         iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
                         onClick = {
-                            // Click handler (TBD)
+                            parentNavigator?.push(
+                                ChildAttendanceRateScreen(
+                                    studentId = child.studentId.toLong(),
+                                    studentName = child.fullName
+                                )
+                            )
                         }
                     )
                 }

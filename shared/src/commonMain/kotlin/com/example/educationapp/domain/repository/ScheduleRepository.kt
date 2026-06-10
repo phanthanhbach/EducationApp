@@ -34,6 +34,18 @@ interface ScheduleRepository {
         page: Int,
         size: Int
     ): ApiResult<PaginationResponse<SchoolClass>>
+
+    suspend fun getStudentClassesNoPagination(
+        studentId: Long,
+        status: String?
+    ): ApiResult<List<SchoolClass>>
+
+    suspend fun filterSchedulesNoPagination(
+        classId: Long?,
+        roomId: Long?,
+        fromTime: String?,
+        toTime: String?
+    ): ApiResult<List<ScheduleItem>>
 }
 
 
