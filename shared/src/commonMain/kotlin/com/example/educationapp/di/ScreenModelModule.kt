@@ -9,11 +9,17 @@ import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashbo
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
+
 import com.example.educationapp.presentation.screenmodel.feedback.ClassFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ParentMainScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.MyChildrenScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.FeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.PaymentsScreenModel
+import com.example.educationapp.presentation.screenmodel.parent.ChildScheduleScreenModel
+import com.example.educationapp.presentation.screenmodel.parent.ChildAttendanceRateScreenModel
+import com.example.educationapp.domain.usecase.GetStudentClassesNoPaginationUseCase
+import com.example.educationapp.domain.usecase.GetAttendanceRateUseCase
+import com.example.educationapp.domain.usecase.FilterSchedulesNoPaginationUseCase
 import com.example.educationapp.presentation.screen.setting.SettingScreenModel
 import org.koin.dsl.module
 
@@ -33,4 +39,18 @@ val screenModelModule = module {
     factory { MyChildrenScreenModel(get(), get(), get(), get(), get()) }
     factory { FeedbackScreenModel() }
     factory { PaymentsScreenModel() }
+    factory { (studentId: Long) ->
+        ChildScheduleScreenModel(
+            studentId = studentId,
+            getStudentClassesNoPaginationUseCase = get(),
+            filterSchedulesNoPaginationUseCase = get()
+        )
+    }
+    factory { (studentId: Long) ->
+        ChildAttendanceRateScreenModel(
+            studentId = studentId,
+            getStudentClassesNoPaginationUseCase = get(),
+            getAttendanceRateUseCase = get()
+        )
+    }
 }

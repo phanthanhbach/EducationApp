@@ -182,6 +182,43 @@ class ScheduleRepositoryImpl(
             )
         }
     }
+
+    override suspend fun getStudentClassesNoPagination(
+        studentId: Long,
+        status: String?
+    ): ApiResult<List<SchoolClass>> {
+        return safePaginatedApiCall<StudentClassDTO, SchoolClass>(
+            fetchPage = { page ->
+                httpClient.get(ClassEndpoint.studentClasses(studentId)) {
+                    parameter("status", status)
+                    parameter("page", page)
+                    parameter("size", 20)
+                }.body()
+            },
+            mapDto = { dto -> dto.toSchoolClass() }
+        )
+    }
+
+    override suspend fun filterSchedulesNoPagination(
+        classId: Long?,
+        roomId: Long?,
+        fromTime: String?,
+        toTime: String?
+    ): ApiResult<List<ScheduleItem>> {
+        return safePaginatedApiCall<ScheduleItemDTO, ScheduleItem>(
+            fetchPage = { page ->
+                httpClient.get(ScheduleEndpoint.FILTER) {
+                    parameter("classId", classId)
+                    parameter("roomId", roomId)
+                    parameter("fromTime", fromTime)
+                    parameter("toTime", toTime)
+                    parameter("page", page)
+                    parameter("size", 50)
+                }.body()
+            },
+            mapDto = { dto -> dto.toScheduleItemEntity() }
+        )
+    }
 }
 
 
