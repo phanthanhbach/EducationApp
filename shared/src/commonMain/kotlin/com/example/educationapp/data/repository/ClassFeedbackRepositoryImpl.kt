@@ -11,7 +11,10 @@ import com.example.educationapp.data.dto.response.toStudentClassFeedback
 import com.example.educationapp.data.endpoint.ClassEndpoint
 import com.example.educationapp.data.endpoint.FeedbackEndpoint
 import com.example.educationapp.domain.entity.StudentClassFeedback
+import com.example.educationapp.domain.entity.Feedback
 import com.example.educationapp.domain.repository.ClassFeedbackRepository
+import com.example.educationapp.data.dto.response.FeedbackDTO
+import com.example.educationapp.data.dto.response.toDomainEntity
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -60,6 +63,22 @@ class ClassFeedbackRepositoryImpl(
             }.body<BaseResponse<TeacherFeedbackDTO>>()
 
             response.data.toStudentClassFeedback()
+        }
+    }
+
+    override suspend fun getFeedbackNoPagination(
+        classId: Long,
+        studentId: Long,
+        feedbackType: String
+    ): ApiResult<Feedback?> {
+        return safeApiCall {
+            val response = httpClient.get(FeedbackEndpoint.FILTER) {
+                parameter("classId", classId)
+                parameter("studentId", studentId)
+                parameter("feedbackType", feedbackType)
+            }.body<BaseResponse<PaginationResponse<FeedbackDTO>>>()
+
+            response.data.content.firstOrNull()?.toDomainEntity()
         }
     }
 }

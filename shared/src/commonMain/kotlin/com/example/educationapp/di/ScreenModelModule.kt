@@ -37,7 +37,12 @@ val screenModelModule = module {
     factory { ClassFeedbackScreenModel(get(), get()) }
     factory { ParentMainScreenModel(get(), get()) }
     factory { MyChildrenScreenModel(get(), get(), get(), get(), get()) }
-    factory { FeedbackScreenModel() }
+    factory {
+        FeedbackScreenModel(
+            getStudentClassesNoPaginationUseCase = get(),
+            getFeedbackNoPaginationUseCase = get()
+        )
+    }
     factory { PaymentsScreenModel() }
     factory { (studentId: Long) ->
         ChildScheduleScreenModel(

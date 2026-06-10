@@ -22,6 +22,7 @@ import com.example.educationapp.domain.usecase.GetStudentClassesInfoUseCase
 import com.example.educationapp.domain.usecase.FilterSchedulesNoPaginationUseCase
 import com.example.educationapp.domain.usecase.GetStudentClassesNoPaginationUseCase
 import com.example.educationapp.domain.usecase.SubmitTeacherFeedbackUseCase
+import com.example.educationapp.domain.usecase.GetFeedbackNoPaginationUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -47,4 +48,5 @@ val useCaseModule = module {
     single { FilterSchedulesNoPaginationUseCase(get()) }
     single { GetStudentClassesNoPaginationUseCase(get()) }
     single { SubmitTeacherFeedbackUseCase(get()) }
+    single { GetFeedbackNoPaginationUseCase(get()) }
 }
