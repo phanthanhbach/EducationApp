@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -74,115 +75,95 @@ fun BottomNavigation(
     floatingOffset: Dp = 28.dp,     // Kept for compatibility
     notchRadius: Dp = 36.dp          // Kept for compatibility
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .navigationBarsPadding() // Prevents content from drawing behind OS navigation bar
-            .padding(start = 20.dp, end = 20.dp, bottom = 12.dp)
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(32.dp),
-                clip = false
-            )
-            .clip(RoundedCornerShape(32.dp))
-            .let {
-                if (hazeState != null) {
-                    it.hazeEffect(state = hazeState) {
-                        blurEffect {
-                            blurRadius = 24.dp
-                            colorEffects = listOf(
-                                HazeColorEffect.tint(barColor.copy(alpha = 0.6f))
-                            )
-                        }
-                    }
-                } else {
-                    it.background(barColor)
-                }
-            }
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f),
-                shape = RoundedCornerShape(32.dp)
-            )
-            .height(barHeight)
+    Column(
+        modifier = modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            items.forEachIndexed { index, item ->
-                val isSelected = index == selectedIndex
+        // Subtle top separator line
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f),
+            thickness = 0.5.dp
+        )
 
-                // Animate colors with spring
-                val iconColor by animateColorAsState(
-                    targetValue = if (isSelected) selectedIconTint else unselectedIconTint,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                )
-
-                val labelColor by animateColorAsState(
-                    targetValue = if (isSelected) selectedLabelColor else unselectedLabelColor,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                )
-
-                // Animate scale factor with spring
-                val scale by animateFloatAsState(
-                    targetValue = if (isSelected) 1.12f else 1.0f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessMediumLow
-                    )
-                )
-
-                // Active background pill indicator animation
-                val pillAlpha by animateFloatAsState(
-                    targetValue = if (isSelected) 1.0f else 0.0f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMedium
-                    )
-                )
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { onItemSelected(index) },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .let {
+                    if (hazeState != null) {
+                        it.hazeEffect(state = hazeState) {
+                            blurEffect {
+                                blurRadius = 20.dp
+                                colorEffects = listOf(
+                                    HazeColorEffect.tint(barColor.copy(alpha = 0.6f))
+                                )
                             }
-                            .background(
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = pillAlpha * 0.08f),
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(horizontal = 14.dp, vertical = 6.dp)
+                        }
+                    } else {
+                        it.background(barColor)
+                    }
+                }
+                .navigationBarsPadding() // Prevents content from drawing behind OS navigation bar
+                .height(barHeight)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                items.forEachIndexed { index, item ->
+                    val isSelected = index == selectedIndex
+
+                    // Animate colors with spring
+                    val iconColor by animateColorAsState(
+                        targetValue = if (isSelected) selectedIconTint else unselectedIconTint,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMedium
+                        )
+                    )
+
+                    val labelColor by animateColorAsState(
+                        targetValue = if (isSelected) selectedLabelColor else unselectedLabelColor,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMedium
+                        )
+                    )
+
+                    // Animate scale factor on the icon only
+                    val scale by animateFloatAsState(
+                        targetValue = if (isSelected) 1.12f else 1.0f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        )
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { onItemSelected(index) },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
                             painter = item.icon,
                             contentDescription = item.title,
                             tint = iconColor,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
                         )
-                        Spacer(modifier = Modifier.height(1.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                         AppText(
                             text = item.title,
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             color = labelColor
                         )

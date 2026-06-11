@@ -90,7 +90,7 @@ class MainScreen(private val role: AppRole) : Screen {
         CompositionLocalProvider(
             LocalAppRole provides role,
             LocalSharedHazeState provides sharedHazeState,
-            LocalBottomBarHeight provides 80.dp
+            LocalBottomBarHeight provides 64.dp
         ) {
             ParentWrapper {
                 TabNavigator(tabs.first()) { tabNavigator ->
