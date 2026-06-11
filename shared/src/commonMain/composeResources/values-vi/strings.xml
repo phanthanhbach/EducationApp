@@ -201,4 +201,27 @@
     <string name="teacher_contact_email_copied">Đã copy Email</string>
     <string name="teacher_contact_no_phone_app">Không tìm thấy app gọi điện</string>
     <string name="teacher_contact_phone_copied">Đã copy số điện thoại</string>
+
+    <!-- Dashboard Composable Strings -->
+    <string name="dashboard_today_classes_title">Lịch học hôm nay</string>
+    <string name="dashboard_coming_up_title">SẮP DIỄN RA</string>
+    <string name="dashboard_today_label">HÔM NAY</string>
+    <string name="dashboard_no_classes_title">Hôm nay không có lớp học tại trung tâm</string>
+    <string name="dashboard_no_classes_desc">Thời khóa biểu của bạn không có tiết học nào vào ngày này. Hãy mở Lịch học để xem các ngày khác.</string>
+    <string name="dashboard_view_schedule_btn">Xem lịch học</string>
+    <string name="dashboard_date_format">%2$d %1$s, %3$d</string>
+    <string name="dashboard_assignment_hours_remaining">Còn %1$dh</string>
+    <string name="dashboard_assignment_class_name">Lớp: %1$s</string>
+    <string name="dashboard_assignment_due_date">Hạn: %1$s</string>
+    <string name="dashboard_attendance_sessions_format">%1$d/%2$d buổi</string>
+    <string name="dashboard_course_code">Mã: %1$s</string>
+    <string name="dashboard_course_total_sessions">Tổng: %1$d buổi</string>
+
+    <!-- Greetings -->
+    <string name="greeting_morning">Chào buổi sáng, %1$s</string>
+    <string name="greeting_afternoon">Chào buổi chiều, %1$s</string>
+    <string name="greeting_evening">Chào buổi tối, %1$s</string>
+    <string name="greeting_morning_generic">Chào buổi sáng</string>
+    <string name="greeting_afternoon_generic">Chào buổi chiều</string>
+    <string name="greeting_evening_generic">Chào buổi tối</string>
 </resources>

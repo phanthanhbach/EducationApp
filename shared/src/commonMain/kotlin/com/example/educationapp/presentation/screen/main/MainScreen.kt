@@ -107,11 +107,7 @@ class MainScreen(private val role: AppRole) : Screen {
 
                     Scaffold(
                         contentWindowInsets = if (isTablet) WindowInsets(0) else WindowInsets.systemBars,
-                        containerColor = if (role == AppRole.PARENT) {
-                            MaterialTheme.colorScheme.surface
-                        } else {
-                            MaterialTheme.colorScheme.background
-                        },
+                        containerColor = MaterialTheme.colorScheme.surface,
                         bottomBar = {
                             if (!isTablet) {
                                 BottomNavigation(

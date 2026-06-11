@@ -117,29 +117,53 @@ class PaymentsTab : Tab {
             "DROPPED" to stringResource(Res.string.lb_status_dropped)
         )
 
-        if (role == AppRole.PARENT) {
-            val parentMainScreenModel = LocalParentMainScreenModel.current
-            val childrenState by parentMainScreenModel.childrenState.collectAsState()
-            val selectedChild by parentMainScreenModel.selectedChild.collectAsState()
+        val isParent = role == AppRole.PARENT
+        val bgColor = if (isParent) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                AppTopBar(
-                    titleContent = {
-                        AppText(
-                            text = stringResource(Res.string.tab_payments),
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    isTitleCentered = false
-                )
+        // Parent-specific state
+        val parentMainScreenModel = if (isParent) LocalParentMainScreenModel.current else null
+        val childrenState = parentMainScreenModel?.childrenState?.collectAsState()?.value
+        val selectedChild = parentMainScreenModel?.selectedChild?.collectAsState()?.value
 
-                when (val cState = childrenState) {
+        // Data loading
+        if (isParent) {
+            LaunchedEffect(selectedChild) {
+                screenModel.loadProfileAndClasses(role, selectedChild?.studentId?.toLong())
+            }
+        } else {
+            LaunchedEffect(Unit) {
+                screenModel.loadProfileAndClasses(role)
+            }
+        }
+
+        // Retry callback
+        val onRetry: () -> Unit = if (isParent) {
+            { screenModel.loadProfileAndClasses(role, selectedChild?.studentId?.toLong()) }
+        } else {
+            { screenModel.loadProfileAndClasses(role) }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(bgColor)
+        ) {
+            // Common: Top bar
+            AppTopBar(
+                titleContent = {
+                    AppText(
+                        text = stringResource(Res.string.tab_payments),
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
+                isTitleCentered = false
+            )
+
+            // Parent-only: Children state handling & ChildSelectorBar
+            if (isParent && childrenState != null) {
+                when (childrenState) {
                     is ParentChildrenState.Loading -> {
                         Box(
                             modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -147,6 +171,7 @@ class PaymentsTab : Tab {
                         ) {
                             CircularProgressIndicator(color = AppColor.Primary)
                         }
+                        return@Column
                     }
 
                     is ParentChildrenState.Error -> {
@@ -155,86 +180,17 @@ class PaymentsTab : Tab {
                             contentAlignment = Alignment.Center
                         ) {
                             AppText(
-                                text = cState.message,
+                                text = childrenState.message,
                                 color = MaterialTheme.colorScheme.error,
                                 fontSize = 14.sp
                             )
                         }
+                        return@Column
                     }
 
                     is ParentChildrenState.Success -> {
-                        val childrenList = cState.children
-                        if (childrenList.isNotEmpty()) {
-                            LaunchedEffect(selectedChild) {
-                                screenModel.loadProfileAndClasses(role, selectedChild?.studentId?.toLong())
-                            }
-
-                            ChildSelectorBar(
-                                children = childrenList,
-                                selectedChild = selectedChild,
-                                onChildSelected = { parentMainScreenModel.selectChild(it) }
-                            )
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = AppDimen.p16, vertical = AppDimen.p8),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                SearchTextField(
-                                    value = searchQuery,
-                                    onSearch = { screenModel.searchClasses(it) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(
-                                            if (selectedStatus != null) {
-                                                MaterialTheme.colorScheme.primaryContainer
-                                            } else {
-                                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                                            }
-                                        )
-                                        .clickable {
-                                            tempSelectedStatus = selectedStatus
-                                            showFilterSheet = true
-                                        }
-                                        .padding(10.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    AppIcon(
-                                        drawableRes = Res.drawable.ic_filter_alt_24dp,
-                                        tint = if (selectedStatus != null) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        },
-                                        iconModifier = Modifier.fillMaxSize()
-                                    )
-                                }
-                            }
-
-                            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                                PaymentsListContent(
-                                    state = state,
-                                    onLoadNextPage = { screenModel.loadNextPage() },
-                                    onRetry = { screenModel.loadProfileAndClasses(role, selectedChild?.studentId?.toLong()) },
-                                    onInvoiceClick = { schoolClass ->
-                                        val studentId = (state as? PaymentsTabState.Success)?.studentId ?: 0L
-                                        navigator.parent?.push(
-                                            ClassInvoicesScreen(
-                                                classId = schoolClass.id.toInt(),
-                                                studentId = studentId.toInt(),
-                                                className = schoolClass.name
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        } else {
+                        val childrenList = childrenState.children
+                        if (childrenList.isEmpty()) {
                             Box(
                                 modifier = Modifier.weight(1f).fillMaxWidth(),
                                 contentAlignment = Alignment.Center
@@ -245,94 +201,82 @@ class PaymentsTab : Tab {
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
+                            return@Column
                         }
+
+                        ChildSelectorBar(
+                            children = childrenList,
+                            selectedChild = selectedChild,
+                            onChildSelected = { parentMainScreenModel.selectChild(it) }
+                        )
                     }
                 }
             }
-        } else {
-            LaunchedEffect(Unit) {
-                screenModel.loadProfileAndClasses(role)
-            }
 
-            Column(
+            // Common: Search + Filter row
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxWidth()
+                    .padding(horizontal = AppDimen.p16, vertical = AppDimen.p8),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                AppTopBar(
-                    titleContent = {
-                        AppText(
-                            text = stringResource(Res.string.tab_payments),
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    isTitleCentered = false
+                SearchTextField(
+                    value = searchQuery,
+                    onSearch = { screenModel.searchClasses(it) },
+                    modifier = Modifier.weight(1f)
                 )
-
-                Row(
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = AppDimen.p16, vertical = AppDimen.p8),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    SearchTextField(
-                        value = searchQuery,
-                        onSearch = { screenModel.searchClasses(it) },
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (selectedStatus != null) {
-                                    MaterialTheme.colorScheme.primaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                                }
-                            )
-                            .clickable {
-                                tempSelectedStatus = selectedStatus
-                                showFilterSheet = true
-                            }
-                            .padding(10.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AppIcon(
-                            drawableRes = Res.drawable.ic_filter_alt_24dp,
-                            tint = if (selectedStatus != null) {
-                                MaterialTheme.colorScheme.primary
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            if (selectedStatus != null) {
+                                MaterialTheme.colorScheme.primaryContainer
                             } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                            iconModifier = Modifier.fillMaxSize()
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            }
+                        )
+                        .clickable {
+                            tempSelectedStatus = selectedStatus
+                            showFilterSheet = true
+                        }
+                        .padding(10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AppIcon(
+                        drawableRes = Res.drawable.ic_filter_alt_24dp,
+                        tint = if (selectedStatus != null) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        iconModifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            // Common: List content
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                PaymentsListContent(
+                    state = state,
+                    onLoadNextPage = { screenModel.loadNextPage() },
+                    onRetry = onRetry,
+                    onInvoiceClick = { schoolClass ->
+                        val studentId = (state as? PaymentsTabState.Success)?.studentId ?: 0L
+                        navigator.parent?.push(
+                            ClassInvoicesScreen(
+                                classId = schoolClass.id.toInt(),
+                                studentId = studentId.toInt(),
+                                className = schoolClass.name
+                            )
                         )
                     }
-                }
-
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                    PaymentsListContent(
-                        state = state,
-                        onLoadNextPage = { screenModel.loadNextPage() },
-                        onRetry = { screenModel.loadProfileAndClasses(role) },
-                        onInvoiceClick = { schoolClass ->
-                            val studentId = (state as? PaymentsTabState.Success)?.studentId ?: 0L
-                            navigator.parent?.push(
-                                ClassInvoicesScreen(
-                                    classId = schoolClass.id.toInt(),
-                                    studentId = studentId.toInt(),
-                                    className = schoolClass.name
-                                )
-                            )
-                        }
-                    )
-                }
+                )
             }
         }
 
+        // Common: Filter bottom sheet
         if (showFilterSheet) {
             AppBottomSheet(
                 onDismissRequest = { showFilterSheet = false }

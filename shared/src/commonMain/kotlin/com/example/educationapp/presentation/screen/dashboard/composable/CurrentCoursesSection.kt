@@ -28,6 +28,9 @@ import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.Course
+import educationapp.shared.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
+
 
 @Composable
 fun CurrentCoursesSection(
@@ -98,12 +101,12 @@ private fun CourseCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    text = "Mã: ${course.code}",
+                    text = stringResource(Res.string.dashboard_course_code, course.code),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 AppText(
-                    text = "Tổng: ${course.totalSessions} buổi",
+                    text = stringResource(Res.string.dashboard_course_total_sessions, course.totalSessions),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

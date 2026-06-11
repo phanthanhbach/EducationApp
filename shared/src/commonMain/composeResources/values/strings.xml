@@ -201,4 +201,27 @@
     <string name="teacher_contact_email_copied">Email copied to clipboard</string>
     <string name="teacher_contact_no_phone_app">No phone dialer app found</string>
     <string name="teacher_contact_phone_copied">Phone number copied to clipboard</string>
+
+    <!-- Dashboard Composable Strings -->
+    <string name="dashboard_today_classes_title">Today\'s classes</string>
+    <string name="dashboard_coming_up_title">COMING UP</string>
+    <string name="dashboard_today_label">TODAY</string>
+    <string name="dashboard_no_classes_title">No classes at the center today</string>
+    <string name="dashboard_no_classes_desc">Your timetable has no sessions on this date. Open Schedule to see other days.</string>
+    <string name="dashboard_view_schedule_btn">View schedule</string>
+    <string name="dashboard_date_format">%1$s %2$d, %3$d</string>
+    <string name="dashboard_assignment_hours_remaining">%1$dh left</string>
+    <string name="dashboard_assignment_class_name">Class: %1$s</string>
+    <string name="dashboard_assignment_due_date">Due: %1$s</string>
+    <string name="dashboard_attendance_sessions_format">%1$d/%2$d sessions</string>
+    <string name="dashboard_course_code">Code: %1$s</string>
+    <string name="dashboard_course_total_sessions">Total: %1$d sessions</string>
+
+    <!-- Greetings -->
+    <string name="greeting_morning">Good morning, %1$s</string>
+    <string name="greeting_afternoon">Good afternoon, %1$s</string>
+    <string name="greeting_evening">Good evening, %1$s</string>
+    <string name="greeting_morning_generic">Good morning</string>
+    <string name="greeting_afternoon_generic">Good afternoon</string>
+    <string name="greeting_evening_generic">Good evening</string>
 </resources>

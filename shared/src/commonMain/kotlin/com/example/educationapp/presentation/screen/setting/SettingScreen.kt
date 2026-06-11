@@ -36,8 +36,10 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.dialog.AppAlertDialog
 import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.ThreeSectionRow
+
 import com.example.educationapp.core.ui.row.OptionRow
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.presentation.screen.login.LoginScreen
@@ -86,7 +88,7 @@ class SettingScreen : Screen {
             }
         }
 
-        androidx.compose.material3.Scaffold(
+        AppScaffold(
             topBar = {
                 AppTopBar(
                     title = stringResource(Res.string.title_settings),
@@ -100,6 +102,7 @@ class SettingScreen : Screen {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
+
                 verticalArrangement = Arrangement.spacedBy(AppDimen.p16),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(
                     start = AppDimen.p16,

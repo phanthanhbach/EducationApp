@@ -29,7 +29,10 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import educationapp.shared.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.LocalDate
+
 
 @Composable
 fun UpcomingSchedulesSection(
@@ -64,7 +67,7 @@ fun UpcomingSchedulesSection(
             // Today's classes section (Image 2)
             Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p8)) {
                 AppText(
-                    text = "Today's classes",
+                    text = stringResource(Res.string.dashboard_today_classes_title),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
@@ -89,7 +92,7 @@ fun UpcomingSchedulesSection(
         if (upcomingSchedules.isNotEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p8)) {
                 AppText(
-                    text = "COMING UP",
+                    text = stringResource(Res.string.dashboard_coming_up_title),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
@@ -132,7 +135,7 @@ private fun NoClassesTodayCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppText(
-                text = "TODAY",
+                text = stringResource(Res.string.dashboard_today_label),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
@@ -141,10 +144,25 @@ private fun NoClassesTodayCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            val formattedDate = remember(today) {
-                val monthName = getMonthNameEnglish(today.monthNumber)
-                "$monthName ${today.dayOfMonth}, ${today.year}"
+            val monthRes = remember(today.monthNumber) {
+                when (today.monthNumber) {
+                    1 -> Res.string.calendar_month_1
+                    2 -> Res.string.calendar_month_2
+                    3 -> Res.string.calendar_month_3
+                    4 -> Res.string.calendar_month_4
+                    5 -> Res.string.calendar_month_5
+                    6 -> Res.string.calendar_month_6
+                    7 -> Res.string.calendar_month_7
+                    8 -> Res.string.calendar_month_8
+                    9 -> Res.string.calendar_month_9
+                    10 -> Res.string.calendar_month_10
+                    11 -> Res.string.calendar_month_11
+                    12 -> Res.string.calendar_month_12
+                    else -> Res.string.calendar_month_1
+                }
             }
+            val monthName = stringResource(monthRes)
+            val formattedDate = stringResource(Res.string.dashboard_date_format, monthName, today.dayOfMonth, today.year)
             AppText(
                 text = formattedDate,
                 fontSize = 14.sp,
@@ -154,7 +172,7 @@ private fun NoClassesTodayCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             AppText(
-                text = "No classes at the center today",
+                text = stringResource(Res.string.dashboard_no_classes_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF192252),
@@ -164,7 +182,7 @@ private fun NoClassesTodayCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             AppText(
-                text = "Your timetable has no sessions on this date. Open Schedule to see other days.",
+                text = stringResource(Res.string.dashboard_no_classes_desc),
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -183,7 +201,7 @@ private fun NoClassesTodayCard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 AppText(
-                    text = "View schedule",
+                    text = stringResource(Res.string.dashboard_view_schedule_btn),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppColor.Primary
@@ -200,20 +218,3 @@ private fun NoClassesTodayCard(
     }
 }
 
-private fun getMonthNameEnglish(monthNumber: Int): String {
-    return when (monthNumber) {
-        1 -> "January"
-        2 -> "February"
-        3 -> "March"
-        4 -> "April"
-        5 -> "May"
-        6 -> "June"
-        7 -> "July"
-        8 -> "August"
-        9 -> "September"
-        10 -> "October"
-        11 -> "November"
-        12 -> "December"
-        else -> ""
-    }
-}

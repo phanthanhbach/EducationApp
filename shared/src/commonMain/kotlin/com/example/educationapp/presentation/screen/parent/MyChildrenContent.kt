@@ -1,32 +1,25 @@
 package com.example.educationapp.presentation.screen.parent
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,281 +27,231 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.educationapp.core.theme.AppColor
-import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.image.AppImage
+import com.example.educationapp.core.ui.image.CoreMediaSource
+import com.example.educationapp.core.ui.row.OptionRow
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.core.util.CalendarHelper
-import com.example.educationapp.domain.enums.AppRole
-import com.example.educationapp.presentation.screen.dashboard.composable.AssignmentDeadlineSection
-import com.example.educationapp.presentation.screen.dashboard.composable.AttendanceByClassSection
-import com.example.educationapp.presentation.screen.dashboard.composable.CurrentCoursesSection
-import com.example.educationapp.presentation.screen.dashboard.composable.TeacherContactSection
-import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
-import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
-import com.example.educationapp.presentation.screenmodel.parent.MyChildrenScreenModel
-import com.example.educationapp.presentation.screenmodel.parent.MyChildrenState
+import com.example.educationapp.domain.entity.UserProfile
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.dashboard_assignments_empty
-import educationapp.shared.generated.resources.dashboard_attendance_empty
-import educationapp.shared.generated.resources.dashboard_attendance_title
-import educationapp.shared.generated.resources.dashboard_btn_retry
-import educationapp.shared.generated.resources.dashboard_courses_empty
-import educationapp.shared.generated.resources.dashboard_courses_title
-import educationapp.shared.generated.resources.dashboard_teacher_contact_empty
-import educationapp.shared.generated.resources.dashboard_teacher_contact_title
-import educationapp.shared.generated.resources.lb_dashboard_assignments
-import educationapp.shared.generated.resources.lb_dashboard_schedules
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Duration.Companion.milliseconds
+import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
+import educationapp.shared.generated.resources.ic_event_24dp
+import educationapp.shared.generated.resources.ic_person_filled_24dp
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MyChildrenContent(
-    studentId: Long,
-    screenModel: MyChildrenScreenModel,
-    onViewScheduleClick: () -> Unit,
+fun ChildDetailCard(
+    child: UserProfile.Student,
     modifier: Modifier = Modifier
 ) {
-    val parentNavigator = LocalNavigator.currentOrThrow.parent
-    val state by screenModel.state.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
-    var toastMessage by remember { mutableStateOf<String?>(null) }
-
-    fun showToast(message: String) {
-        coroutineScope.launch {
-            toastMessage = message
-            delay(2000.milliseconds)
-            if (toastMessage == message) {
-                toastMessage = null
-            }
-        }
-    }
-
-    Box(modifier = modifier.fillMaxWidth()) {
-        when (val currentState = state) {
-            is MyChildrenState.Idle -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
+    // Child Info Card with actions inside
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Info section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    AppText(
-                        text = "Vui lòng chọn học sinh",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+                    // Avatar using AppImage
+                    val imageSource = if (!child.img.isNullOrBlank()) {
+                        CoreMediaSource.Url(child.img)
+                    } else {
+                        CoreMediaSource.ComposeResource(Res.drawable.ic_person_filled_24dp)
+                    }
 
-            is MyChildrenState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = AppColor.Primary)
-                }
-            }
-
-            is MyChildrenState.Error -> {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(
-                            alpha = 0.1f
-                        )
-                    ),
-                    border = BorderStroke(1.dp, AppColor.Error.copy(alpha = 0.3f))
-                ) {
-                    Column(
-                        modifier = Modifier.padding(AppDimen.p16),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
                     ) {
-                        AppText(
-                            text = currentState.message,
-                            fontSize = 14.sp,
-                            color = AppColor.Error,
-                            textAlign = TextAlign.Center
+                        AppImage(
+                            source = imageSource,
+                            modifier = Modifier.fillMaxSize(),
+                            placeholder = painterResource(Res.drawable.ic_person_filled_24dp),
+                            error = painterResource(Res.drawable.ic_person_filled_24dp)
                         )
-                        Button(
-                            onClick = { screenModel.loadDashboardData(studentId) },
-                            colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
+                    }
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             AppText(
-                                text = stringResource(Res.string.dashboard_btn_retry),
-                                color = Color.White
+                                text = child.fullName,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+
+                            // Badge status
+                            val isCompleted = child.status?.lowercase() == "completed"
+                            val isCancelled =
+                                child.status?.lowercase() == "cancelled" || child.status?.lowercase() == "dropped"
+                            val statusBgColor = when {
+                                isCompleted -> Color(0xFFE8F5E9)
+                                isCancelled -> Color(0xFFFFEBEE)
+                                else -> Color(0xFFE3F2FD)
+                            }
+                            val statusTextColor = when {
+                                isCompleted -> Color(0xFF2E7D32)
+                                isCancelled -> Color(0xFFC62828)
+                                else -> Color(0xFF1565C0)
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(statusBgColor)
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                AppText(
+                                    text = child.status ?: "Active",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = statusTextColor
+                                )
+                            }
+                        }
+
+                        val studentCodeText = if (!child.studentCode.isNullOrBlank()) {
+                            "Mã học sinh: ${child.studentCode}"
+                        } else {
+                            "Mã học sinh: #${child.studentId}"
+                        }
+                        AppText(
+                            text = studentCodeText,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold
+                        )
+
+                        if (!child.currentLevel.isNullOrBlank()) {
+                            AppText(
+                                text = "Trình độ: ${child.currentLevel}",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
                 }
+
+                // Divider
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                    thickness = 1.dp
+                )
+
+                // Details section
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    DetailRow(label = "Ngày sinh", value = child.dateOfBirth ?: "N/A")
+                    DetailRow(label = "Giới tính", value = child.gender ?: "N/A")
+                    DetailRow(label = "Địa chỉ", value = child.address ?: "N/A")
+                }
             }
 
-            is MyChildrenState.Success -> {
-                val today = remember { CalendarHelper.getCurrentDate() }
+            // Learning Actions Section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                AppText(
+                    text = "Tiện ích học tập",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                )
 
-                Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p4)) {
-
-                    // 1. Upcoming Schedules
-                    Column(
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
-                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
-                    ) {
-                        SectionHeader(title = stringResource(Res.string.lb_dashboard_schedules))
-
-                        UpcomingSchedulesSection(
-                            role = AppRole.STUDENT,
-                            schedules = currentState.upcomingSchedules,
-                            today = today,
-                            onScheduleClick = { schedule ->
-                                parentNavigator?.push(SessionDetailScreen(schedule))
-                            },
-                            onViewScheduleClick = onViewScheduleClick
+                // Action: Schedule
+                val parentNavigator = LocalNavigator.currentOrThrow.parent
+                OptionRow(
+                    title = "Lịch học của con",
+                    description = "Xem lịch học chi tiết các ngày trong tuần",
+                    iconRes = Res.drawable.ic_calendar_month_filled_24dp,
+                    iconBgColor = MaterialTheme.colorScheme.primaryContainer,
+                    iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    onClick = {
+                        parentNavigator?.push(
+                            ChildScheduleScreen(
+                                studentId = child.studentId.toLong(),
+                                studentName = child.fullName
+                            )
                         )
                     }
+                )
 
-                    // 2. Assignment Deadlines (Due within 48 hours)
-                    Column(
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
-                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
-                    ) {
-                        SectionHeader(title = stringResource(Res.string.lb_dashboard_assignments))
-
-                        if (currentState.assignmentReminders.isEmpty()) {
-                            EmptySectionCard(message = stringResource(Res.string.dashboard_assignments_empty))
-                        } else {
-                            AssignmentDeadlineSection(reminders = currentState.assignmentReminders)
-                        }
-                    }
-
-                    // 3. Attendance by Class
-                    Column(
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
-                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
-                    ) {
-                        SectionHeader(title = stringResource(Res.string.dashboard_attendance_title))
-
-                        if (currentState.attendanceByClass.isEmpty()) {
-                            EmptySectionCard(message = stringResource(Res.string.dashboard_attendance_empty))
-                        } else {
-                            AttendanceByClassSection(attendanceList = currentState.attendanceByClass)
-                        }
-                    }
-
-                    // 4. Teacher Contact
-                    Column(
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
-                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
-                    ) {
-                        SectionHeader(title = stringResource(Res.string.dashboard_teacher_contact_title))
-
-                        if (currentState.teacherContacts.isEmpty()) {
-                            EmptySectionCard(message = stringResource(Res.string.dashboard_teacher_contact_empty))
-                        } else {
-                            TeacherContactSection(
-                                contacts = currentState.teacherContacts,
-                                onShowToast = { showToast(it) }
+                // Action: Attendance Rate
+                OptionRow(
+                    title = "Tỉ lệ tham gia buổi học",
+                    description = "Theo dõi chuyên cần và số buổi nghỉ học",
+                    iconRes = Res.drawable.ic_event_24dp,
+                    iconBgColor = MaterialTheme.colorScheme.secondaryContainer,
+                    iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    onClick = {
+                        parentNavigator?.push(
+                            ChildAttendanceRateScreen(
+                                studentId = child.studentId.toLong(),
+                                studentName = child.fullName
                             )
-                        }
+                        )
                     }
-
-                    // 5. Current Courses
-                    Column(
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
-                        verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
-                    ) {
-                        SectionHeader(title = stringResource(Res.string.dashboard_courses_title))
-
-                        if (currentState.currentCourses.isEmpty()) {
-                            EmptySectionCard(message = stringResource(Res.string.dashboard_courses_empty))
-                        } else {
-                            CurrentCoursesSection(courses = currentState.currentCourses)
-                        }
-                    }
-                }
-            }
-        }
-
-        // Beautiful floating Toast
-        AnimatedVisibility(
-            visible = toastMessage != null,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-        ) {
-            toastMessage?.let { msg ->
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF323232)),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                ) {
-                    AppText(
-                        text = msg,
-                        color = Color.White,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun SectionHeader(
-    title: String,
+private fun DetailRow(
+    label: String,
+    value: String,
     modifier: Modifier = Modifier
 ) {
-    AppText(
-        text = title,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun EmptySectionCard(
-    message: String,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                alpha = 0.3f
-            )
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+    Row(
+        modifier = modifier.fillMaxWidth().padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(AppDimen.p20),
-            contentAlignment = Alignment.Center
-        ) {
-            AppText(
-                text = message,
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        AppText(
+            text = label,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        AppText(
+            text = value,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.End
+        )
     }
 }

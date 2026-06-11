@@ -31,6 +31,9 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.presentation.screenmodel.dashboard.AttendanceByClassUiModel
+import educationapp.shared.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
+
 
 @Composable
 fun AttendanceByClassSection(
@@ -98,7 +101,7 @@ fun AttendanceByClassSection(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 AppText(
-                                    text = "${attendance.attendedSessions}/${attendance.totalSessions} buổi",
+                                    text = stringResource(Res.string.dashboard_attendance_sessions_format, attendance.attendedSessions, attendance.totalSessions),
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -182,7 +185,7 @@ private fun CircularAttendanceCard(
                         color = AppColor.Primary
                     )
                     AppText(
-                        text = "${item.attendedSessions}/${item.totalSessions} buổi",
+                        text = stringResource(Res.string.dashboard_attendance_sessions_format, item.attendedSessions, item.totalSessions),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant

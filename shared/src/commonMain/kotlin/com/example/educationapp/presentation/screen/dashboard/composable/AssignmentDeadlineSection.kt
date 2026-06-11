@@ -29,9 +29,10 @@ import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.AssignmentReminder
-import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_docs_24dp
+import educationapp.shared.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.LocalDateTime
+
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -132,7 +133,7 @@ private fun AssignmentReminderCard(
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 AppText(
-                                    text = "Còn ${hoursLeft.toInt()}h",
+                                    text = stringResource(Res.string.dashboard_assignment_hours_remaining, hoursLeft.toInt()),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = badgeTextColor
@@ -145,12 +146,12 @@ private fun AssignmentReminderCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AppText(
-                                text = "Lớp: ${reminder.className}",
+                                text = stringResource(Res.string.dashboard_assignment_class_name, reminder.className),
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             AppText(
-                                text = "Hạn: $formattedTime",
+                                text = stringResource(Res.string.dashboard_assignment_due_date, formattedTime),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -171,7 +172,7 @@ private fun AssignmentReminderCard(
                             overflow = TextOverflow.Ellipsis
                         )
                         AppText(
-                            text = "Lớp: ${reminder.className}",
+                            text = stringResource(Res.string.dashboard_assignment_class_name, reminder.className),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -183,7 +184,7 @@ private fun AssignmentReminderCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AppText(
-                                text = "Hạn: $formattedTime",
+                                text = stringResource(Res.string.dashboard_assignment_due_date, formattedTime),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -195,7 +196,7 @@ private fun AssignmentReminderCard(
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 AppText(
-                                    text = "Còn ${hoursLeft.toInt()}h",
+                                    text = stringResource(Res.string.dashboard_assignment_hours_remaining, hoursLeft.toInt()),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = badgeTextColor
