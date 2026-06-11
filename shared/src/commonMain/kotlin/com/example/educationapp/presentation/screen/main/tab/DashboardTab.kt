@@ -28,6 +28,7 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.dashboard.StudentDashboardContent
 import com.example.educationapp.presentation.screen.dashboard.TeacherDashboardContent
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
@@ -38,7 +39,7 @@ import educationapp.shared.generated.resources.tab_dashboard
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class DashboardTab(private val role: AppRole) : Tab {
+class DashboardTab : Tab {
 
     override val options: TabOptions
         @Composable
@@ -57,6 +58,7 @@ class DashboardTab(private val role: AppRole) : Tab {
 
     @Composable
     override fun Content() {
+        val role = LocalAppRole.current
         val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
@@ -87,7 +89,7 @@ class DashboardTab(private val role: AppRole) : Tab {
                 ) {
                     val tabNavigator = cafe.adriel.voyager.navigator.tab.LocalTabNavigator.current
                     val onViewScheduleClick = {
-                        tabNavigator.current = ScheduleTab(role)
+                        tabNavigator.current = ScheduleTab()
                     }
 
                     // Role-based portals

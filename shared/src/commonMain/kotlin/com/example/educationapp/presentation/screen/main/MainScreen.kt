@@ -52,21 +52,21 @@ class MainScreen(private val role: AppRole) : Screen {
                 AppRole.PARENT -> listOf(
                     MyChildrenTab(),
                     FeedbackTab(),
-                    PaymentsTab(role),
-                    ProfileTab(3u)
+                    PaymentsTab(),
+                    ProfileTab()
                 )
                 AppRole.TEACHER -> listOf(
-                    DashboardTab(role),
-                    ScheduleTab(role),
-                    AssignmentTab(role),
-                    ProfileTab(3u)
+                    DashboardTab(),
+                    ScheduleTab(),
+                    AssignmentTab(),
+                    ProfileTab()
                 )
                 else -> listOf( // STUDENT or other roles if any
-                    DashboardTab(role),
-                    ScheduleTab(role),
-                    AssignmentTab(role),
-                    PaymentsTab(role),
-                    ProfileTab(4u)
+                    DashboardTab(),
+                    ScheduleTab(),
+                    AssignmentTab(),
+                    PaymentsTab(),
+                    ProfileTab()
                 )
             }
         }
@@ -85,8 +85,9 @@ class MainScreen(private val role: AppRole) : Screen {
             }
         }
 
-        ParentWrapper {
-            TabNavigator(tabs.first()) { tabNavigator ->
+        CompositionLocalProvider(LocalAppRole provides role) {
+            ParentWrapper {
+                TabNavigator(tabs.first()) { tabNavigator ->
                 val selectedIndex =
                     tabs.indexOfFirst { it.options.index == tabNavigator.current.options.index }
                         .coerceAtLeast(0)
@@ -219,6 +220,7 @@ class MainScreen(private val role: AppRole) : Screen {
                         }
                     }
                 }
+            }
             }
         }
     }

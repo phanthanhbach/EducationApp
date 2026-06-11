@@ -11,6 +11,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.feedback.ClassFeedbackScreen
 import com.example.educationapp.presentation.screen.assignment.ClassAssignmentsScreen
 import com.example.educationapp.presentation.screen.assignment.StudentClassAssignmentsScreen
@@ -22,7 +23,7 @@ import educationapp.shared.generated.resources.tab_assignment
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class AssignmentTab(private val role: AppRole) : Tab {
+class AssignmentTab : Tab {
 
     override val options: TabOptions
         @Composable
@@ -41,6 +42,7 @@ class AssignmentTab(private val role: AppRole) : Tab {
 
     @Composable
     override fun Content() {
+        val role = LocalAppRole.current
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<AssignmentTabScreenModel>()
         val state by screenModel.state.collectAsState()

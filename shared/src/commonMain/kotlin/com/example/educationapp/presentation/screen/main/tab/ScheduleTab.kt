@@ -10,6 +10,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.schedule.ScheduleScreenContent
 import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleScreenModel
@@ -19,7 +20,7 @@ import educationapp.shared.generated.resources.tab_schedule
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class ScheduleTab(private val role: AppRole) : Tab {
+class ScheduleTab : Tab {
 
     override val options: TabOptions
         @Composable
@@ -38,6 +39,7 @@ class ScheduleTab(private val role: AppRole) : Tab {
 
     @Composable
     override fun Content() {
+        val role = LocalAppRole.current
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<ScheduleScreenModel>()
         val selectedDate by screenModel.selectedDate.collectAsState()

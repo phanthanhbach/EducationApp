@@ -57,6 +57,7 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.ui.textfield.SearchTextField
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
 import com.example.educationapp.presentation.screenmodel.parent.ParentChildrenState
@@ -77,18 +78,17 @@ import educationapp.shared.generated.resources.profile_retry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class PaymentsTab(
-    private val role: AppRole,
-    private val tabIndex: UShort = if (role == AppRole.PARENT) 2u else 3u
-) : Tab {
+class PaymentsTab : Tab {
 
     override val options: TabOptions
         @Composable
         get() {
+            val role = LocalAppRole.current
+            val tabIndex: UShort = if (role == AppRole.PARENT) 2u else 3u
             val title = stringResource(Res.string.tab_payments)
             val icon = painterResource(Res.drawable.ic_account_balance_wallet_24dp)
 
-            return remember {
+            return remember(tabIndex) {
                 TabOptions(
                     index = tabIndex,
                     title = title,
@@ -100,6 +100,7 @@ class PaymentsTab(
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
+        val role = LocalAppRole.current
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<PaymentsScreenModel>()
         val state by screenModel.state.collectAsState()
