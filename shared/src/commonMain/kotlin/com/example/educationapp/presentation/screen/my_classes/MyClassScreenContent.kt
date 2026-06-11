@@ -58,6 +58,9 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.enums.ClassStatus
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabState
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
+import dev.chrisbanes.haze.hazeSource
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.lb_status_all
 import educationapp.shared.generated.resources.lb_status_active
@@ -287,6 +290,8 @@ private fun ClassesContent(
                         }
                     } else {
                         val lazyListState = rememberLazyListState()
+                        val sharedHazeState = LocalSharedHazeState.current
+                        val bottomBarHeight = LocalBottomBarHeight.current
 
                         LaunchedEffect(lazyListState) {
                             snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
@@ -301,12 +306,16 @@ private fun ClassesContent(
 
                         LazyColumn(
                             state = lazyListState,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .let { modifier ->
+                                    if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
+                                },
                             contentPadding = PaddingValues(
                                 start = AppDimen.p16,
                                 end = AppDimen.p16,
                                 top = AppDimen.p12,
-                                bottom = AppDimen.p24
+                                bottom = AppDimen.p24 + bottomBarHeight
                             ),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {

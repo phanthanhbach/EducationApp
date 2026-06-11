@@ -34,6 +34,7 @@ import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.presentation.screen.dashboard.StudentDashboardContent
 import com.example.educationapp.presentation.screen.dashboard.TeacherDashboardContent
 import com.example.educationapp.presentation.screen.main.LocalAppRole
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardState
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
@@ -118,7 +119,7 @@ class DashboardTab : Tab {
         }
 
         val scrollState = rememberScrollState()
-        val hazeState = remember { HazeState() }
+        val hazeState = LocalSharedHazeState.current ?: remember { HazeState() }
 
         AppScaffold(
             topBar = {

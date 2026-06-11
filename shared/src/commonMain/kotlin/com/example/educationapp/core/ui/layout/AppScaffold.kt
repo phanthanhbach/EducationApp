@@ -27,6 +27,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
 
 /**
  * A premium, unified scaffold for the application.
@@ -49,17 +51,20 @@ fun AppScaffold(
     val topBarHeightDp = with(LocalDensity.current) { topBarHeightPx.toDp() }
     val pullToRefreshState = rememberPullToRefreshState()
 
+    val bottomBarHeight = LocalBottomBarHeight.current
     // Calculate system navigation bar padding for edge-to-edge safety at the bottom
     val bottomNavigationBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
-    val paddingValues = remember(topBarHeightDp, bottomNavigationBarPadding) {
+    val paddingValues = remember(topBarHeightDp, bottomNavigationBarPadding, bottomBarHeight) {
         PaddingValues(
             start = 0.dp,
             top = topBarHeightDp,
             end = 0.dp,
-            bottom = bottomNavigationBarPadding
+            bottom = bottomNavigationBarPadding + bottomBarHeight
         )
     }
+
+    val sharedHazeState = hazeState ?: LocalSharedHazeState.current
 
     Box(
         modifier = modifier
@@ -70,7 +75,7 @@ fun AppScaffold(
         val contentModifier = Modifier
             .fillMaxSize()
             .let {
-                if (hazeState != null) it.hazeSource(state = hazeState) else it
+                if (sharedHazeState != null) it.hazeSource(state = sharedHazeState) else it
             }
 
         if (onRefresh != null) {

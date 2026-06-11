@@ -24,7 +24,10 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import dev.chrisbanes.haze.HazeState
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
 import com.example.educationapp.presentation.screen.parent.ChildDetailCard
 import com.example.educationapp.presentation.screenmodel.parent.ParentChildrenState
@@ -58,84 +61,93 @@ class MyChildrenTab : Tab {
         val selectedChild by parentMainScreenModel.selectedChild.collectAsState()
 
         val scrollState = rememberScrollState()
+        val sharedHazeState = LocalSharedHazeState.current
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            AppTopBar(
-                titleContent = {
-                    AppText(
-                        text = stringResource(Res.string.tab_my_children),
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                isTitleCentered = false
-            )
-
-            when (val state = childrenState) {
-                is ParentChildrenState.Loading -> {
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = AppColor.Primary)
-                    }
-                }
-
-                is ParentChildrenState.Error -> {
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+        AppScaffold(
+            topBar = {
+                AppTopBar(
+                    titleContent = {
                         AppText(
-                            text = state.message,
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 14.sp
+                            text = stringResource(Res.string.tab_my_children),
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary
                         )
+                    },
+                    isTitleCentered = false,
+                    scrollState = scrollState,
+                    hazeState = sharedHazeState
+                )
+            },
+            hazeState = sharedHazeState,
+            containerColor = MaterialTheme.colorScheme.surface
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                when (val state = childrenState) {
+                    is ParentChildrenState.Loading -> {
+                        Box(
+                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = AppColor.Primary)
+                        }
                     }
-                }
 
-                is ParentChildrenState.Success -> {
-                    val childrenList = state.children
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        if (childrenList.isNotEmpty()) {
-                            ChildSelectorBar(
-                                children = childrenList,
-                                selectedChild = selectedChild,
-                                onChildSelected = { parentMainScreenModel.selectChild(it) }
+                    is ParentChildrenState.Error -> {
+                        Box(
+                            modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AppText(
+                                text = state.message,
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 14.sp
                             )
+                        }
+                    }
 
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth()
-                            ) {
-                                Column(
+                    is ParentChildrenState.Success -> {
+                        val childrenList = state.children
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (childrenList.isNotEmpty()) {
+                                ChildSelectorBar(
+                                    children = childrenList,
+                                    selectedChild = selectedChild,
+                                    onChildSelected = { parentMainScreenModel.selectChild(it) }
+                                )
+
+                                Box(
                                     modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(scrollState)
+                                        .weight(1f)
+                                        .fillMaxWidth()
                                 ) {
-                                    selectedChild?.let { child ->
-                                        ChildDetailCard(child = child)
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .verticalScroll(scrollState)
+                                    ) {
+                                        selectedChild?.let { child ->
+                                            ChildDetailCard(child = child)
+                                        }
                                     }
                                 }
-                            }
-                        } else {
-                            Box(
-                                modifier = Modifier.weight(1f).fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                AppText(
-                                    text = "Không có thông tin học sinh nào.",
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AppText(
+                                        text = "Không có thông tin học sinh nào.",
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
