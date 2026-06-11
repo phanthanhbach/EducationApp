@@ -42,11 +42,13 @@ import com.example.educationapp.presentation.screen.main.tab.PaymentsTab
 import com.example.educationapp.presentation.screen.main.tab.ProfileTab
 import com.example.educationapp.presentation.screen.main.tab.ScheduleTab
 import com.example.educationapp.presentation.screenmodel.parent.ParentMainScreenModel
+import dev.chrisbanes.haze.HazeState
 
 class MainScreen(private val role: AppRole) : Screen {
 
     @Composable
     override fun Content() {
+        val sharedHazeState = remember { HazeState() }
         val tabs = remember(role) {
             when (role) {
                 AppRole.PARENT -> listOf(
@@ -85,7 +87,11 @@ class MainScreen(private val role: AppRole) : Screen {
             }
         }
 
-        CompositionLocalProvider(LocalAppRole provides role) {
+        CompositionLocalProvider(
+            LocalAppRole provides role,
+            LocalSharedHazeState provides sharedHazeState,
+            LocalBottomBarHeight provides 80.dp
+        ) {
             ParentWrapper {
                 TabNavigator(tabs.first()) { tabNavigator ->
                 val selectedIndex =
@@ -120,7 +126,8 @@ class MainScreen(private val role: AppRole) : Screen {
                                         MaterialTheme.colorScheme.surface
                                     } else {
                                         MaterialTheme.colorScheme.surfaceContainer
-                                    }
+                                    },
+                                    hazeState = sharedHazeState
                                 )
                             }
                         }
@@ -200,7 +207,7 @@ class MainScreen(private val role: AppRole) : Screen {
                                     start = innerPadding.calculateStartPadding(layoutDirection),
                                     top = 0.dp,
                                     end = innerPadding.calculateEndPadding(layoutDirection),
-                                    bottom = innerPadding.calculateBottomPadding()
+                                    bottom = 0.dp
                                 )
                             } else {
                                 innerPadding

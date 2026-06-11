@@ -59,6 +59,9 @@ import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
+import dev.chrisbanes.haze.hazeSource
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
 import com.example.educationapp.presentation.screenmodel.parent.ParentChildrenState
 import com.example.educationapp.presentation.screenmodel.parent.PaymentsScreenModel
@@ -338,6 +341,8 @@ class PaymentsTab : Tab {
         onInvoiceClick: (SchoolClass) -> Unit
     ) {
         val lazyListState = rememberLazyListState()
+        val sharedHazeState = LocalSharedHazeState.current
+        val bottomBarHeight = LocalBottomBarHeight.current
 
         LaunchedEffect(lazyListState) {
             snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
@@ -435,12 +440,16 @@ class PaymentsTab : Tab {
                 } else {
                     LazyColumn(
                         state = lazyListState,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .let { modifier ->
+                                if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
+                            },
                         contentPadding = PaddingValues(
                             start = AppDimen.p16,
                             end = AppDimen.p16,
                             top = AppDimen.p12,
-                            bottom = AppDimen.p24
+                            bottom = AppDimen.p24 + bottomBarHeight
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {

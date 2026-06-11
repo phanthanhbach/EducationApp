@@ -37,6 +37,9 @@ import educationapp.shared.generated.resources.schedule_header_today_student
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
+import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun CommonScheduleMobileLayout(
@@ -53,6 +56,9 @@ fun CommonScheduleMobileLayout(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sharedHazeState = LocalSharedHazeState.current
+    val bottomBarHeight = LocalBottomBarHeight.current
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -158,11 +164,14 @@ fun CommonScheduleMobileLayout(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .weight(1f),
+                            .weight(1f)
+                            .let { modifier ->
+                                if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
+                            },
                         contentPadding = PaddingValues(
                             start = AppDimen.p16,
                             end = AppDimen.p16,
-                            bottom = AppDimen.p24
+                            bottom = AppDimen.p24 + bottomBarHeight
                         ),
                         verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                     ) {
