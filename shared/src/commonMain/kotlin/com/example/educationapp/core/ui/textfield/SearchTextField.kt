@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -65,6 +66,7 @@ enum class SearchTrigger {
  * @param enabled Bật/Tắt tính năng tương tác với ô tìm kiếm.
  * @param shape Hình dạng bo góc của trường nhập liệu (mặc định bo góc tròn dẹt pill shape [AppDimen.p100]).
  * @param height Chiều cao của ô tìm kiếm (mặc định là 44.dp giúp giao diện cân đối và gọn gàng).
+ * @param containerColor Màu nền của ô tìm kiếm.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +80,8 @@ fun SearchTextField(
     searchTrigger: SearchTrigger = SearchTrigger.DEBOUNCE,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(AppDimen.p100),
-    height: Dp = 44.dp
+    height: Dp = 44.dp,
+    containerColor: Color = Color.Transparent
 ) {
     var localText by remember(value) { mutableStateOf(value) }
     val focusManager = LocalFocusManager.current
@@ -93,6 +96,15 @@ fun SearchTextField(
             }
         }
     }
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
+        focusedContainerColor = containerColor,
+        unfocusedContainerColor = containerColor,
+        disabledContainerColor = containerColor
+    )
 
     BasicTextField(
         value = localText,
@@ -158,22 +170,14 @@ fun SearchTextField(
                         )
                     }
                 },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
-                ),
+                colors = textFieldColors,
                 contentPadding = PaddingValues(horizontal = AppDimen.p12, vertical = 0.dp),
                 container = {
                     OutlinedTextFieldDefaults.Container(
                         enabled = enabled,
                         isError = false,
                         interactionSource = interactionSource,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                            disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.38f),
-                        ),
+                        colors = textFieldColors,
                         shape = shape
                     )
                 }

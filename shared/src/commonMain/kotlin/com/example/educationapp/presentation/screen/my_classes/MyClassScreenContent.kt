@@ -18,12 +18,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -33,8 +37,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,12 +52,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.chip.AppChip
+import com.example.educationapp.core.ui.layout.SearchTopBarLayout
+import com.example.educationapp.core.ui.sheet.AppBottomSheet
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.enums.ClassStatus
@@ -62,6 +69,7 @@ import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
 import dev.chrisbanes.haze.hazeSource
 import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.ic_sort_24dp
 import educationapp.shared.generated.resources.lb_status_all
 import educationapp.shared.generated.resources.lb_status_active
 import educationapp.shared.generated.resources.lb_status_dropped
@@ -70,8 +78,8 @@ import educationapp.shared.generated.resources.my_classes_empty
 import educationapp.shared.generated.resources.my_classes_no_homework_desc
 import educationapp.shared.generated.resources.my_classes_other_assignment_title
 import educationapp.shared.generated.resources.my_classes_parent_assignment_title
-import educationapp.shared.generated.resources.my_classes_search_placeholder
 import educationapp.shared.generated.resources.my_classes_student_assignment_title
+import educationapp.shared.generated.resources.my_classes_search_placeholder
 import educationapp.shared.generated.resources.profile_retry
 import educationapp.shared.generated.resources.tab_assignment
 import kotlinx.coroutines.delay
@@ -115,7 +123,7 @@ fun MyClassScreenContent(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun ClassesContent(
     role: AppRole,
@@ -132,8 +140,9 @@ private fun ClassesContent(
 ) {
     val focusManager = LocalFocusManager.current
     var toastMessage by remember { mutableStateOf<String?>(null) }
+    var showFilterSheet by remember { mutableStateOf(false) }
+    var tempSelectedStatus by remember(selectedStatus) { mutableStateOf(selectedStatus) }
 
-    // Auto dismiss toast
     LaunchedEffect(toastMessage) {
         if (toastMessage != null) {
             delay(2500.milliseconds)
@@ -141,59 +150,40 @@ private fun ClassesContent(
         }
     }
 
-    Scaffold(
-        modifier = modifier,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = {
-            val statuses = if (role == AppRole.TEACHER) {
-                listOf(
-                    null to stringResource(Res.string.lb_status_all)
-                ) + ClassStatus.entries.map { status ->
-                    status.name to stringResource(status.labelRes)
-                }
-            } else {
-                listOf(
-                    null to stringResource(Res.string.lb_status_all),
-                    "ACTIVE" to stringResource(Res.string.lb_status_active),
-                    "COMPLETED" to stringResource(Res.string.lb_status_completed),
-                    "DROPPED" to stringResource(Res.string.lb_status_dropped)
-                )
-            }
-
-            SearchTopBar(
-                title = stringResource(Res.string.tab_assignment),
-                searchQuery = searchQuery,
-                onSearch = onSearch,
-                placeholder = stringResource(Res.string.my_classes_search_placeholder),
-                filterContent = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        statuses.forEach { (statusKey, statusLabel) ->
-                            val isSelected = selectedStatus == statusKey
-
-                            AppChip(
-                                text = statusLabel,
-                                selected = isSelected,
-                                onClick = {
-                                    onStatusSelect(statusKey)
-                                }
-                            )
-                        }
-                    }
-                }
-            )
+    val statuses = if (role == AppRole.TEACHER) {
+        listOf(
+            null to stringResource(Res.string.lb_status_all)
+        ) + ClassStatus.entries.map { status ->
+            status.name to stringResource(status.labelRes)
         }
-    ) { paddingValues ->
+    } else {
+        listOf(
+            null to stringResource(Res.string.lb_status_all),
+            "ACTIVE" to stringResource(Res.string.lb_status_active),
+            "COMPLETED" to stringResource(Res.string.lb_status_completed),
+            "DROPPED" to stringResource(Res.string.lb_status_dropped)
+        )
+    }
+
+    val lazyListState = rememberLazyListState()
+
+    SearchTopBarLayout(
+        title = stringResource(Res.string.tab_assignment),
+        searchQuery = searchQuery,
+        onSearch = onSearch,
+        lazyListState = lazyListState,
+        placeholder = stringResource(Res.string.my_classes_search_placeholder),
+        filterIcon = Res.drawable.ic_sort_24dp,
+        isFilterActive = selectedStatus != null,
+        onFilterClick = {
+            tempSelectedStatus = selectedStatus
+            showFilterSheet = true
+        },
+        modifier = modifier
+    ) { maxScrollDp, totalHeaderHeightDp, listTopPaddingDp ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.background)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
@@ -204,7 +194,9 @@ private fun ClassesContent(
             when (state) {
                 is AssignmentTabState.Loading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = totalHeaderHeightDp),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(color = AppColor.Primary)
@@ -215,6 +207,7 @@ private fun ClassesContent(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
+                            .padding(top = totalHeaderHeightDp)
                             .padding(AppDimen.p16),
                         contentAlignment = Alignment.TopCenter
                     ) {
@@ -258,6 +251,7 @@ private fun ClassesContent(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
+                                .padding(top = totalHeaderHeightDp)
                                 .padding(AppDimen.p16),
                             contentAlignment = Alignment.TopCenter
                         ) {
@@ -289,10 +283,6 @@ private fun ClassesContent(
                             }
                         }
                     } else {
-                        val lazyListState = rememberLazyListState()
-                        val sharedHazeState = LocalSharedHazeState.current
-                        val bottomBarHeight = LocalBottomBarHeight.current
-
                         LaunchedEffect(lazyListState) {
                             snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
                                 .filter { visibleItems ->
@@ -309,16 +299,21 @@ private fun ClassesContent(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .let { modifier ->
+                                    val sharedHazeState = LocalSharedHazeState.current
                                     if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
                                 },
                             contentPadding = PaddingValues(
                                 start = AppDimen.p16,
                                 end = AppDimen.p16,
-                                top = AppDimen.p12,
-                                bottom = AppDimen.p24 + bottomBarHeight
+                                top = listTopPaddingDp,
+                                bottom = AppDimen.p24 + LocalBottomBarHeight.current
                             ),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            item {
+                                Spacer(modifier = Modifier.height(maxScrollDp))
+                            }
+
                             itemsIndexed(state.classes) { index, schoolClass ->
                                 ClassCard(
                                     schoolClass = schoolClass,
@@ -356,7 +351,6 @@ private fun ClassesContent(
                 }
             }
 
-            // Toast overlay
             AnimatedVisibility(
                 visible = toastMessage != null,
                 enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
@@ -386,6 +380,58 @@ private fun ClassesContent(
                             textAlign = TextAlign.Center
                         )
                     }
+                }
+            }
+        }
+    }
+
+    if (showFilterSheet) {
+        AppBottomSheet(
+            onDismissRequest = { showFilterSheet = false }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(AppDimen.p24),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                AppText(
+                    text = "Lọc trạng thái lớp học",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    statuses.forEach { (statusKey, statusLabel) ->
+                        val isSelected = tempSelectedStatus == statusKey
+                        AppChip(
+                            text = statusLabel,
+                            selected = isSelected,
+                            onClick = { tempSelectedStatus = statusKey }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = {
+                        onStatusSelect(tempSelectedStatus)
+                        showFilterSheet = false
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    AppText(
+                        text = "Xác nhận",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
