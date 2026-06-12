@@ -2,9 +2,6 @@ package com.example.educationapp.presentation.screen.main.tab
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -18,12 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -34,8 +27,6 @@ import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
-import com.example.educationapp.core.ui.layout.rememberAppTopBarNestedScrollConnection
-import com.example.educationapp.core.ui.layout.rememberAppTopBarScrollState
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.GreetingHelper
 import com.example.educationapp.domain.enums.AppRole
@@ -128,18 +119,7 @@ class DashboardTab : Tab {
         }
 
         val scrollState = rememberScrollState()
-        val topBarScrollState = rememberAppTopBarScrollState()
-        val topBarNestedScrollConnection = rememberAppTopBarNestedScrollConnection(topBarScrollState)
         val hazeState = LocalSharedHazeState.current ?: remember { HazeState() }
-
-        LaunchedEffect(scrollState, topBarScrollState) {
-            snapshotFlow { scrollState.isScrollInProgress }
-                .collect { isScrollInProgress ->
-                    if (!isScrollInProgress) {
-                        topBarScrollState.settle()
-                    }
-                }
-        }
 
         AppScaffold(
             topBar = {
@@ -180,30 +160,17 @@ class DashboardTab : Tab {
                         }
                     },
                     isTitleCentered = false,
-                    scrollState = scrollState,
-                    topBarScrollState = topBarScrollState,
-                    hazeState = hazeState
+                    scrollState = scrollState
                 )
             },
-            hazeState = hazeState,
             isRefreshing = isRefreshing,
             onRefresh = onRefresh
         ) { paddingValues ->
-            val density = LocalDensity.current
-            val layoutDirection = LocalLayoutDirection.current
-            val contentPadding = PaddingValues(
-                start = paddingValues.calculateStartPadding(layoutDirection),
-                top = with(density) { topBarScrollState.contentTopPaddingPx.toDp() },
-                end = paddingValues.calculateEndPadding(layoutDirection),
-                bottom = paddingValues.calculateBottomPadding()
-            )
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .nestedScroll(topBarNestedScrollConnection)
                     .verticalScroll(scrollState)
-                    .padding(contentPadding),
+                    .padding(paddingValues),
                 verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
             ) {
                 val tabNavigator = LocalTabNavigator.current

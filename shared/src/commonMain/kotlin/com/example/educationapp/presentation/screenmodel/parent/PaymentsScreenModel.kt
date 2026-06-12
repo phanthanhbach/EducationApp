@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 sealed interface PaymentsTabState {
     object Loading : PaymentsTabState
@@ -44,7 +45,21 @@ class PaymentsScreenModel(
     private val _selectedStatus = MutableStateFlow<String?>(null) // null means "ALL"
     val selectedStatus: StateFlow<String?> = _selectedStatus.asStateFlow()
 
+    private var fetchJob: Job? = null
+
     fun loadProfileAndClasses(role: AppRole, studentId: Long? = null) {
+        val currentState = _state.value
+        val isSameUser = if (role == AppRole.STUDENT) {
+            currentRole == role && userId != null
+        } else {
+            currentRole == role && userId == studentId
+        }
+
+        if (isSameUser && currentState is PaymentsTabState.Success) {
+            fetchClasses(page = 0, append = false, silent = true)
+            return
+        }
+
         currentRole = role
         screenModelScope.launch {
             _state.value = PaymentsTabState.Loading
@@ -106,10 +121,14 @@ class PaymentsScreenModel(
         }
     }
 
-    private fun fetchClasses(page: Int, append: Boolean) {
+    private fun fetchClasses(page: Int, append: Boolean, silent: Boolean = false) {
         val id = userId ?: return
-        screenModelScope.launch {
-            if (!append) {
+        if (append && fetchJob?.isActive == true) {
+            return
+        }
+        fetchJob?.cancel()
+        fetchJob = screenModelScope.launch {
+            if (!append && !silent) {
                 _state.value = PaymentsTabState.Loading
             }
 

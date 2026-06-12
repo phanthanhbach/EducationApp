@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 sealed interface AssignmentTabState {
     object Loading : AssignmentTabState
@@ -45,7 +46,17 @@ class AssignmentTabScreenModel(
     private val _selectedStatus = MutableStateFlow<String?>(null) // null means "ALL"
     val selectedStatus: StateFlow<String?> = _selectedStatus.asStateFlow()
 
+    private var fetchJob: Job? = null
+
     fun loadProfileAndClasses(role: AppRole = currentRole ?: AppRole.TEACHER) {
+        val currentState = _state.value
+        val isSameUser = currentRole == role && userId != null
+
+        if (isSameUser && currentState is AssignmentTabState.Success) {
+            fetchClasses(page = 0, append = false, silent = true)
+            return
+        }
+
         currentRole = role
         screenModelScope.launch {
             _state.value = AssignmentTabState.Loading
@@ -96,11 +107,15 @@ class AssignmentTabScreenModel(
         }
     }
 
-    private fun fetchClasses(page: Int, append: Boolean) {
+    private fun fetchClasses(page: Int, append: Boolean, silent: Boolean = false) {
         val id = userId ?: return
         val role = currentRole ?: return
-        screenModelScope.launch {
-            if (!append) {
+        if (append && fetchJob?.isActive == true) {
+            return
+        }
+        fetchJob?.cancel()
+        fetchJob = screenModelScope.launch {
+            if (!append && !silent) {
                 _state.value = AssignmentTabState.Loading
             }
 

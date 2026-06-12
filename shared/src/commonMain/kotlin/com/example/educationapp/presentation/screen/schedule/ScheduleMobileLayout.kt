@@ -164,10 +164,7 @@ fun CommonScheduleMobileLayout(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .weight(1f)
-                            .let { modifier ->
-                                if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
-                            },
+                            .weight(1f),
                         contentPadding = PaddingValues(
                             start = AppDimen.p16,
                             end = AppDimen.p16,

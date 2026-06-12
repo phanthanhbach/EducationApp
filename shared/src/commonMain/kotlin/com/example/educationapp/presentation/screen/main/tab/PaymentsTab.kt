@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,13 +59,11 @@ import com.example.educationapp.presentation.screen.invoice.ClassInvoicesScreen
 import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
-import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
 import com.example.educationapp.presentation.screen.my_classes.ClassCard
 import com.example.educationapp.presentation.screenmodel.parent.ParentChildrenState
 import com.example.educationapp.presentation.screenmodel.parent.PaymentsScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.PaymentsTabState
-import dev.chrisbanes.haze.hazeSource
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_account_balance_wallet_24dp
 import educationapp.shared.generated.resources.ic_sort_24dp
@@ -260,14 +259,18 @@ class PaymentsTab : Tab {
         onRetry: () -> Unit,
         onInvoiceClick: (SchoolClass) -> Unit
     ) {
-        val sharedHazeState = LocalSharedHazeState.current
         val bottomBarHeight = LocalBottomBarHeight.current
 
         LaunchedEffect(lazyListState) {
-            snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
-                .collect { visibleItems ->
-                    val lastVisibleItem = visibleItems.lastOrNull()
-                    if (lastVisibleItem != null && lastVisibleItem.index >= lazyListState.layoutInfo.totalItemsCount - 3) {
+            snapshotFlow {
+                val layoutInfo = lazyListState.layoutInfo
+                val totalItemsNumber = layoutInfo.totalItemsCount
+                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                lastVisibleItemIndex >= totalItemsNumber - 3
+            }
+                .distinctUntilChanged()
+                .collect { shouldLoadMore ->
+                    if (shouldLoadMore) {
                         onLoadNextPage()
                     }
                 }
@@ -398,10 +401,7 @@ class PaymentsTab : Tab {
                     LazyColumn(
                         state = lazyListState,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .let { modifier ->
-                                if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
-                            },
+                            .fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = AppDimen.p16,
                             end = AppDimen.p16,

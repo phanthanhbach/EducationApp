@@ -65,5 +65,5 @@ val screenModelModule = module {
             getInvoiceByIdUseCase = get()
         )
     }
-    factory { StudentClassAssignmentsScreenModel(get()) }
+    factory { StudentClassAssignmentsScreenModel(get(), get()) }
 }

@@ -135,10 +135,15 @@ fun CollapsingHeaderScaffold(
             }
     }
 
+    val sharedHaze = LocalSharedHazeState.current
+ 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .let {
+                if (sharedHaze != null) it.hazeSource(state = sharedHaze) else it
+            }
     ) {
         cover()
 
@@ -163,10 +168,6 @@ fun CollapsingHeaderScaffold(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .let { modifier ->
-                    val sharedHaze = LocalSharedHazeState.current
-                    if (sharedHaze != null) modifier.hazeSource(state = sharedHaze) else modifier
-                }
                 .padding(top = collapsedContentTop),
             verticalArrangement = verticalArrangement,
             contentPadding = finalContentPadding

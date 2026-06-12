@@ -224,4 +224,18 @@
     <string name="greeting_morning_generic">Chào buổi sáng</string>
     <string name="greeting_afternoon_generic">Chào buổi chiều</string>
     <string name="greeting_evening_generic">Chào buổi tối</string>
+
+    <!-- Student Assignment Card Strings -->
+    <string name="assignment_due">Hạn nộp: %1$s</string>
+    <string name="assignment_overdue">Quá hạn</string>
+    <string name="assignment_submitted">Đã nộp</string>
+    <string name="assignment_not_submitted">Chưa nộp</string>
+    <string name="assignment_final_exam_badge">Bài cuối kỳ</string>
+    <string name="assignment_score">Điểm: %1$s</string>
+    <string name="assignment_brief_btn">Đề bài</string>
+    <string name="assignment_submit_btn">Nộp bài</string>
+    <string name="assignment_submitting_btn">Đang nộp</string>
+    <string name="assignment_view_submission_btn">Xem bài nộp</string>
+    <string name="assignment_dialog_submit_title">Nộp bài tập</string>
+    <string name="assignment_dialog_submit_desc">Chọn file cho "%1$s" và kiểm tra lại trước khi nộp.</string>
 </resources>

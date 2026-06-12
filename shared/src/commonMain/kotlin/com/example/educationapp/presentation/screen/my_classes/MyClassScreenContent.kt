@@ -65,9 +65,7 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.enums.ClassStatus
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabState
-import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
-import dev.chrisbanes.haze.hazeSource
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_sort_24dp
 import educationapp.shared.generated.resources.lb_status_all
@@ -84,6 +82,7 @@ import educationapp.shared.generated.resources.profile_retry
 import educationapp.shared.generated.resources.tab_assignment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -284,24 +283,24 @@ private fun ClassesContent(
                         }
                     } else {
                         LaunchedEffect(lazyListState) {
-                            snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
-                                .filter { visibleItems ->
-                                    val lastVisibleItem = visibleItems.lastOrNull()
-                                    lastVisibleItem != null && lastVisibleItem.index >= lazyListState.layoutInfo.totalItemsCount - 3
-                                }
-                                .collect {
-                                    onLoadNextPage()
+                            snapshotFlow {
+                                val layoutInfo = lazyListState.layoutInfo
+                                val totalItemsNumber = layoutInfo.totalItemsCount
+                                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                                lastVisibleItemIndex >= totalItemsNumber - 3
+                            }
+                                .distinctUntilChanged()
+                                .collect { shouldLoadMore ->
+                                    if (shouldLoadMore) {
+                                        onLoadNextPage()
+                                    }
                                 }
                         }
 
                         LazyColumn(
                             state = lazyListState,
                             modifier = Modifier
-                                .fillMaxSize()
-                                .let { modifier ->
-                                    val sharedHazeState = LocalSharedHazeState.current
-                                    if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
-                                },
+                                .fillMaxSize(),
                             contentPadding = PaddingValues(
                                 start = AppDimen.p16,
                                 end = AppDimen.p16,

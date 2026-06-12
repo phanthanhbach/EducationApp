@@ -2,7 +2,9 @@ package com.example.educationapp.domain.repository
 
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.network.PaginationResponse
+import com.example.educationapp.core.file.UploadFile
 import com.example.educationapp.domain.entity.Assignment
+import com.example.educationapp.domain.entity.AssignmentSubmission
 import com.example.educationapp.domain.entity.StudentAssignment
 
 interface AssignmentRepository {
@@ -18,4 +20,11 @@ interface AssignmentRepository {
         page: Int,
         size: Int
     ): ApiResult<PaginationResponse<StudentAssignment>>
+
+    suspend fun submitAssignment(
+        assignmentId: Int,
+        classId: Int,
+        studentId: Int,
+        file: UploadFile
+    ): ApiResult<AssignmentSubmission>
 }
