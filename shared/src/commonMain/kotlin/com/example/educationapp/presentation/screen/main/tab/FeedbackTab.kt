@@ -45,6 +45,9 @@ import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.Feedback
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
+import dev.chrisbanes.haze.hazeSource
 import com.example.educationapp.presentation.screen.parent.component.ClassChipsRow
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
 import com.example.educationapp.presentation.screenmodel.parent.FeedbackClassesState
@@ -86,6 +89,8 @@ class FeedbackTab : Tab {
         val feedbackState by screenModel.feedbackState.collectAsState()
 
         val scrollState = rememberScrollState()
+        val sharedHazeState = LocalSharedHazeState.current
+        val bottomBarHeight = LocalBottomBarHeight.current
 
         LaunchedEffect(selectedChild) {
             selectedChild?.let {
@@ -208,8 +213,16 @@ class FeedbackTab : Tab {
                                                 Column(
                                                     modifier = Modifier
                                                         .fillMaxSize()
+                                                        .let { modifier ->
+                                                            if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
+                                                        }
                                                         .verticalScroll(scrollState)
-                                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                                        .padding(
+                                                            start = 16.dp,
+                                                            top = 12.dp,
+                                                            end = 16.dp,
+                                                            bottom = 12.dp + bottomBarHeight
+                                                        ),
                                                     verticalArrangement = Arrangement.spacedBy(16.dp)
                                                 ) {
                                                     when (val currentFeedbackState = feedbackState) {

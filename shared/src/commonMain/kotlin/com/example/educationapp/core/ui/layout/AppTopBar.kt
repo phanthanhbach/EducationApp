@@ -17,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,11 +29,15 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.Velocity
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
@@ -42,6 +47,112 @@ import dev.chrisbanes.haze.blur.blurEffect
 import dev.chrisbanes.haze.hazeEffect
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_arrow_back_24dp
+import kotlin.math.abs
+
+@Stable
+class AppTopBarScrollState internal constructor() {
+    var heightPx by mutableStateOf(0f)
+        private set
+
+    var offsetPx by mutableStateOf(0f)
+        private set
+
+    val contentTopPaddingPx: Float
+        get() = (heightPx + offsetPx).coerceAtLeast(0f)
+
+    val isCollapsed: Boolean
+        get() = offsetPx <= -heightPx && heightPx > 0f
+
+    val isOffset: Boolean
+        get() = offsetPx < 0f
+
+    fun updateHeight(heightPx: Float) {
+        this.heightPx = heightPx
+        offsetPx = offsetPx.coerceIn(-heightPx, 0f)
+    }
+
+    fun dispatchRawDelta(delta: Float): Float {
+        if (heightPx <= 0f) return 0f
+
+        val previousOffset = offsetPx
+        offsetPx = (offsetPx + delta).coerceIn(-heightPx, 0f)
+        return offsetPx - previousOffset
+    }
+
+    suspend fun settle() {
+        if (heightPx <= 0f || offsetPx == 0f || offsetPx == -heightPx) return
+
+        val targetOffset = if (offsetPx > -heightPx / 2f) 0f else -heightPx
+        val startOffset = offsetPx
+        if (abs(startOffset - targetOffset) < 2f) {
+            offsetPx = targetOffset
+            return
+        }
+
+        Animatable(startOffset).animateTo(
+            targetValue = targetOffset,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        ) {
+            offsetPx = value
+        }
+    }
+}
+
+@Composable
+fun rememberAppTopBarScrollState(): AppTopBarScrollState = remember {
+    AppTopBarScrollState()
+}
+
+@Composable
+fun rememberAppTopBarNestedScrollConnection(
+    scrollState: AppTopBarScrollState
+): NestedScrollConnection {
+    return remember(scrollState) {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                val deltaY = available.y
+                val shouldMoveTopBar = deltaY < 0f || (deltaY > 0f && scrollState.isOffset)
+
+                if (!shouldMoveTopBar) return Offset.Zero
+
+                val consumedY = scrollState.dispatchRawDelta(deltaY)
+                return Offset(x = 0f, y = consumedY)
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                val shouldSettleTopBar = scrollState.isOffset && !scrollState.isCollapsed
+                if (shouldSettleTopBar) {
+                    scrollState.settle()
+                    return available
+                }
+
+                return Velocity.Zero
+            }
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset {
+                if (available.y <= 0f || !scrollState.isOffset) return Offset.Zero
+
+                val consumedY = scrollState.dispatchRawDelta(available.y)
+                return Offset(x = 0f, y = consumedY)
+            }
+
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+                if (scrollState.isOffset && !scrollState.isCollapsed) {
+                    scrollState.settle()
+                }
+
+                return Velocity.Zero
+            }
+        }
+    }
+}
 
 /**
  * A highly reusable, premium Top App Bar layout built on top of ThreeSectionRow.
@@ -60,13 +171,14 @@ fun AppTopBar(
     trailingContent: @Composable (RowScope.() -> Unit)? = null,
     containerColor: Color = MaterialTheme.colorScheme.surface,
     scrollState: ScrollState? = null,
+    topBarScrollState: AppTopBarScrollState? = null,
     hazeState: HazeState? = null
 ) {
     var topBarHeightPx by remember { mutableStateOf(0) }
     var previousScrollOffset by remember { mutableStateOf(0) }
     val translationYAnimatable = remember { Animatable(0f) }
 
-    if (scrollState != null) {
+    if (scrollState != null && topBarScrollState == null) {
         // Track scroll delta for show/hide
         LaunchedEffect(scrollState.value, topBarHeightPx) {
             val currentOffset = scrollState.value
@@ -129,16 +241,18 @@ fun AppTopBar(
         }
     }
 
-    val isScrolled = scrollState?.let { it.value > 0 } ?: false
+    val currentTranslationY = topBarScrollState?.offsetPx ?: translationYAnimatable.value
+    val isScrolled = topBarScrollState?.isOffset == true || scrollState?.let { it.value > 0 } == true
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .graphicsLayer {
-                this.translationY = translationYAnimatable.value
+                this.translationY = currentTranslationY
             }
             .onGloballyPositioned { coordinates ->
                 topBarHeightPx = coordinates.size.height
+                topBarScrollState?.updateHeight(coordinates.size.height.toFloat())
             }
             .clipToBounds()
     ) {

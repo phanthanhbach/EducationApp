@@ -29,6 +29,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.educationapp.core.theme.AppDimen
 import kotlin.math.roundToInt
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
+import dev.chrisbanes.haze.hazeSource
 
 /**
  * A small SliverAppBar-style layout for screens with:
@@ -68,6 +74,17 @@ fun CollapsingHeaderScaffold(
 ) {
     val listState = rememberLazyListState()
     val density = LocalDensity.current
+    val bottomBarHeight = LocalBottomBarHeight.current
+    val layoutDirection = LocalLayoutDirection.current
+
+    val finalContentPadding = remember(contentPadding, bottomBarHeight, layoutDirection) {
+        PaddingValues(
+            start = contentPadding.calculateStartPadding(layoutDirection),
+            top = contentPadding.calculateTopPadding(),
+            end = contentPadding.calculateEndPadding(layoutDirection),
+            bottom = contentPadding.calculateBottomPadding() + bottomBarHeight
+        )
+    }
 
     // LazyListState reports scroll offsets in pixels, while our constants are Dp.
     // Convert once so progress math stays correct across screen densities.
@@ -146,9 +163,13 @@ fun CollapsingHeaderScaffold(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
+                .let { modifier ->
+                    val sharedHaze = LocalSharedHazeState.current
+                    if (sharedHaze != null) modifier.hazeSource(state = sharedHaze) else modifier
+                }
                 .padding(top = collapsedContentTop),
             verticalArrangement = verticalArrangement,
-            contentPadding = contentPadding
+            contentPadding = finalContentPadding
         ) {
             // Invisible header space. This item is the "scroll ruler" used to
             // compute collapseProgress and to give the expanded profile room.
