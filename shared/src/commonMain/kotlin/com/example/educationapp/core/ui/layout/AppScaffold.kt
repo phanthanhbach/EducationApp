@@ -25,10 +25,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
+
+/**
+ * CompositionLocal to expose the local HazeState used for AppScaffold's content blur.
+ */
+val LocalTopBarHazeState = staticCompositionLocalOf<HazeState?> { null }
 
 /**
  * A premium, unified scaffold for the application.
@@ -64,20 +71,18 @@ fun AppScaffold(
         )
     }
 
-    val sharedHazeState = hazeState ?: LocalSharedHazeState.current
+    val localHazeState = remember { HazeState() }
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(containerColor)
     ) {
-        // Core Content Container (with optional Haze and Pull-to-refresh)
         val contentModifier = Modifier
             .fillMaxSize()
-            .let {
-                if (sharedHazeState != null) it.hazeSource(state = sharedHazeState) else it
-            }
+            .hazeSource(state = localHazeState)
 
+        // Core Content Container (with Pull-to-refresh)
         if (onRefresh != null) {
             PullToRefreshBox(
                 isRefreshing = isRefreshing,
@@ -94,7 +99,10 @@ fun AppScaffold(
                     )
                 }
             ) {
-                content(paddingValues)
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    content = { content(paddingValues) }
+                )
             }
         } else {
             Box(
@@ -104,14 +112,16 @@ fun AppScaffold(
         }
 
         // Overlay Top Bar so it draws on top of the content (supporting backdrop blur)
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .onGloballyPositioned { coordinates ->
-                    topBarHeightPx = coordinates.size.height
-                }
-        ) {
-            topBar()
+        CompositionLocalProvider(LocalTopBarHazeState provides localHazeState) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .onGloballyPositioned { coordinates ->
+                        topBarHeightPx = coordinates.size.height
+                    }
+            ) {
+                topBar()
+            }
         }
     }
 }

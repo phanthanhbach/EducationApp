@@ -50,7 +50,7 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient = HttpClient {
         }
     }
     defaultRequest {
-        url("http://10.11.11.212:8085/api/v1/")
+        url("http://cnxvn.ddns.net:9000/api/v1/")
         header(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 }

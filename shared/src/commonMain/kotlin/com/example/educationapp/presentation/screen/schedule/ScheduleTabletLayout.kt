@@ -41,6 +41,8 @@ import educationapp.shared.generated.resources.schedule_header_today_student
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun CommonScheduleTabletLayout(
@@ -57,6 +59,8 @@ fun CommonScheduleTabletLayout(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sharedHazeState = LocalSharedHazeState.current
+ 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val isLandscapePhone = maxHeight < 420.dp
 

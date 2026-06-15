@@ -1,6 +1,8 @@
 package com.example.educationapp.presentation.screen.main
 
 import androidx.compose.foundation.background
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -31,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.main.tab.AssignmentTab
@@ -43,6 +44,7 @@ import com.example.educationapp.presentation.screen.main.tab.ProfileTab
 import com.example.educationapp.presentation.screen.main.tab.ScheduleTab
 import com.example.educationapp.presentation.screenmodel.parent.ParentMainScreenModel
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 
 class MainScreen(private val role: AppRole) : Screen {
 
@@ -161,9 +163,16 @@ class MainScreen(private val role: AppRole) : Screen {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .hazeSource(state = sharedHazeState)
                                         .padding(tabContentPadding)
                                 ) {
-                                    CurrentTab()
+                                    Crossfade(
+                                        targetState = tabNavigator.current,
+                                        animationSpec = tween(durationMillis = 220)
+                                    ) { tab ->
+                                        tab.Content()
+                                    }
                                 }
 
                                 // Scrim when rail is expanded
@@ -192,6 +201,12 @@ class MainScreen(private val role: AppRole) : Screen {
                                     },
                                     isExpanded = isNavigationRailExpanded,
                                     onExpandedChange = { isNavigationRailExpanded = it },
+                                    barColor = if (role == AppRole.PARENT) {
+                                        MaterialTheme.colorScheme.surface
+                                    } else {
+                                        MaterialTheme.colorScheme.surfaceContainer
+                                    },
+                                    hazeState = sharedHazeState,
                                     modifier = Modifier
                                         .align(Alignment.CenterStart)
                                         .zIndex(1f)
@@ -216,9 +231,16 @@ class MainScreen(private val role: AppRole) : Screen {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .hazeSource(state = sharedHazeState)
                                     .padding(contentPadding)
                             ) {
-                                CurrentTab()
+                                Crossfade(
+                                    targetState = tabNavigator.current,
+                                    animationSpec = tween(durationMillis = 220)
+                                ) { tab ->
+                                    tab.Content()
+                                }
                             }
                         }
                     }

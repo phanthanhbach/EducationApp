@@ -31,6 +31,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.blurEffect
+import dev.chrisbanes.haze.hazeEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -72,7 +76,8 @@ fun VerticalNavigationRail(
     unselectedLabelColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     indicatorColor: Color = MaterialTheme.colorScheme.primary,
     collapsedWidth: Dp = 76.dp,
-    expandedWidth: Dp = 212.dp
+    expandedWidth: Dp = 212.dp,
+    hazeState: HazeState? = null
 ) {
     // System insets so the background fills edge-to-edge while content stays safe.
     val layoutDirection = LocalLayoutDirection.current
@@ -143,7 +148,21 @@ fun VerticalNavigationRail(
                 .width(surfaceWidth - startInset - sidePadding * 2)
                 .height(itemHeight)
                 .clip(RoundedCornerShape(18.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.86f))
+                .let {
+                    val pillColor = MaterialTheme.colorScheme.primaryContainer
+                    if (hazeState != null) {
+                        it.hazeEffect(state = hazeState) {
+                            blurEffect {
+                                blurRadius = 16.dp
+                                colorEffects = listOf(
+                                    HazeColorEffect.tint(pillColor.copy(alpha = 0.45f))
+                                )
+                            }
+                        }
+                    } else {
+                        it.background(pillColor.copy(alpha = 0.86f))
+                    }
+                }
         )
 
         // Content column – padded by topInset and startInset so items stay safe
@@ -166,7 +185,8 @@ fun VerticalNavigationRail(
                     isExpanded = isExpanded,
                     buttonSize = menuSize,
                     tint = MaterialTheme.colorScheme.onSurface,
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    hazeState = hazeState
                 ) {
                     onExpandedChange(!isExpanded)
                 }
@@ -203,13 +223,27 @@ private fun MenuToggleButton(
     buttonSize: Dp,
     tint: Color,
     containerColor: Color,
+    hazeState: HazeState? = null,
     onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .size(buttonSize)
             .clip(CircleShape)
-            .background(containerColor)
+            .let {
+                if (hazeState != null) {
+                    it.hazeEffect(state = hazeState) {
+                        blurEffect {
+                            blurRadius = 16.dp
+                            colorEffects = listOf(
+                                HazeColorEffect.tint(containerColor.copy(alpha = 0.45f))
+                            )
+                        }
+                    }
+                } else {
+                    it.background(containerColor)
+                }
+            }
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,

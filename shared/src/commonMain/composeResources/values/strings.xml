@@ -224,4 +224,18 @@
     <string name="greeting_morning_generic">Good morning</string>
     <string name="greeting_afternoon_generic">Good afternoon</string>
     <string name="greeting_evening_generic">Good evening</string>
+
+    <!-- Student Assignment Card Strings -->
+    <string name="assignment_due">Due %1$s</string>
+    <string name="assignment_overdue">Overdue</string>
+    <string name="assignment_submitted">Submitted</string>
+    <string name="assignment_not_submitted">Not submitted</string>
+    <string name="assignment_final_exam_badge">Final exam</string>
+    <string name="assignment_score">Score: %1$s</string>
+    <string name="assignment_brief_btn">Assignment brief</string>
+    <string name="assignment_submit_btn">Submit</string>
+    <string name="assignment_submitting_btn">Submitting</string>
+    <string name="assignment_view_submission_btn">View submission</string>
+    <string name="assignment_dialog_submit_title">Submit Assignment</string>
+    <string name="assignment_dialog_submit_desc">Select file for "%1$s" and double check before submitting.</string>
 </resources>

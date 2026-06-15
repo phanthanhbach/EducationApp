@@ -74,12 +74,9 @@ class MyChildrenTab : Tab {
                             color = MaterialTheme.colorScheme.primary
                         )
                     },
-                    isTitleCentered = false,
-                    scrollState = scrollState,
-                    hazeState = sharedHazeState
+                    scrollState = scrollState
                 )
             },
-            hazeState = sharedHazeState,
             containerColor = MaterialTheme.colorScheme.surface
         ) { paddingValues ->
             Column(
