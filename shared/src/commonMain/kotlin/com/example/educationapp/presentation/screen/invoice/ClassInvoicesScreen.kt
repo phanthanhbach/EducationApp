@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,11 +21,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -34,7 +33,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -73,12 +71,10 @@ import com.example.educationapp.presentation.screenmodel.invoice.ClassInvoicesSc
 import com.example.educationapp.presentation.screenmodel.invoice.ClassInvoicesState
 import com.example.educationapp.presentation.screenmodel.invoice.PaymentQrState
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_arrow_back_24dp
 import educationapp.shared.generated.resources.profile_retry
-import org.jetbrains.compose.resources.painterResource
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
-import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
 class ClassInvoicesScreen(
@@ -91,7 +87,8 @@ class ClassInvoicesScreen(
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val screenModel = koinScreenModel<ClassInvoicesScreenModel> { parametersOf(classId, studentId) }
+        val screenModel =
+            koinScreenModel<ClassInvoicesScreenModel> { parametersOf(classId, studentId) }
         val state by screenModel.state.collectAsState()
         val selectedStatus by screenModel.selectedStatus.collectAsState()
         val paymentQrState by screenModel.paymentQrState.collectAsState()
@@ -138,6 +135,7 @@ class ClassInvoicesScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface)
                             .horizontalScroll(rememberScrollState())
                             .padding(horizontal = AppDimen.p16, vertical = AppDimen.p8),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -202,7 +200,10 @@ class ClassInvoicesScreen(
                                                 alpha = 0.1f
                                             )
                                         ),
-                                        border = BorderStroke(1.dp, AppColor.Error.copy(alpha = 0.3f))
+                                        border = BorderStroke(
+                                            1.dp,
+                                            AppColor.Error.copy(alpha = 0.3f)
+                                        )
                                     ) {
                                         Column(
                                             modifier = Modifier.padding(AppDimen.p16),
@@ -271,9 +272,13 @@ class ClassInvoicesScreen(
                                                 invoice = invoice,
                                                 onPayClick = {
                                                     // Find the first unpaid installment
-                                                    val unpaidInstallment = invoice.installments.firstOrNull {
-                                                        !it.status.equals("PAID", ignoreCase = true)
-                                                    }
+                                                    val unpaidInstallment =
+                                                        invoice.installments.firstOrNull {
+                                                            !it.status.equals(
+                                                                "PAID",
+                                                                ignoreCase = true
+                                                            )
+                                                        }
                                                     if (unpaidInstallment != null) {
                                                         screenModel.requestPaymentQr(
                                                             invoiceId = invoice.id.toInt(),
@@ -332,7 +337,10 @@ class ClassInvoicesScreen(
                             text = toastMessage ?: "",
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.inverseOnSurface,
-                            modifier = Modifier.padding(horizontal = AppDimen.p16, vertical = AppDimen.p12),
+                            modifier = Modifier.padding(
+                                horizontal = AppDimen.p16,
+                                vertical = AppDimen.p12
+                            ),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -494,7 +502,8 @@ class ClassInvoicesScreen(
                 }
             }
 
-            is PaymentQrState.Idle -> { /* No bottom sheet */ }
+            is PaymentQrState.Idle -> { /* No bottom sheet */
+            }
         }
     }
 
@@ -587,7 +596,9 @@ class ClassInvoicesScreen(
                     PaymentInfoRow(
                         label = "Còn lại",
                         value = formatCurrency(paymentQr.remainingAmount),
-                        valueColor = if (paymentQr.remainingAmount > 0) MaterialTheme.colorScheme.error else Color(0xFF4CAF50)
+                        valueColor = if (paymentQr.remainingAmount > 0) MaterialTheme.colorScheme.error else Color(
+                            0xFF4CAF50
+                        )
                     )
                 }
 
@@ -693,8 +704,14 @@ class ClassInvoicesScreen(
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    InvoiceRowItem(label = "Tổng học phí", value = formatCurrency(invoice.finalAmount))
-                    InvoiceRowItem(label = "Đã thanh toán", value = formatCurrency(invoice.paidAmount))
+                    InvoiceRowItem(
+                        label = "Tổng học phí",
+                        value = formatCurrency(invoice.finalAmount)
+                    )
+                    InvoiceRowItem(
+                        label = "Đã thanh toán",
+                        value = formatCurrency(invoice.paidAmount)
+                    )
                     InvoiceRowItem(
                         label = "Còn lại",
                         value = formatCurrency(invoice.remainingAmount),
@@ -702,7 +719,10 @@ class ClassInvoicesScreen(
                         valueFontWeight = if (invoice.remainingAmount > 0) FontWeight.Bold else FontWeight.Normal
                     )
                     if (!invoice.dueDate.isNullOrBlank()) {
-                        InvoiceRowItem(label = "Hạn thanh toán", value = formatDate(invoice.dueDate))
+                        InvoiceRowItem(
+                            label = "Hạn thanh toán",
+                            value = formatDate(invoice.dueDate)
+                        )
                     }
                 }
 
@@ -746,7 +766,11 @@ class ClassInvoicesScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         AppText(
-                                            text = "Đợt ${installment.sequenceNo}: ${formatCurrency(installment.amount)}",
+                                            text = "Đợt ${installment.sequenceNo}: ${
+                                                formatCurrency(
+                                                    installment.amount
+                                                )
+                                            }",
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )

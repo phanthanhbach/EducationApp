@@ -198,7 +198,7 @@ private fun NoClassesTodayCard(
                 text = stringResource(Res.string.dashboard_no_classes_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF192252),
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
 
