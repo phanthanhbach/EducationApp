@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * A highly customizable option row component containing a leading icon (optional background),
- * a text area with title and optional description, and a trailing arrow icon.
+ * a text area with title and optional description, and a trailing arrow icon or custom content.
  */
 @Composable
 fun OptionRow(
@@ -36,13 +36,21 @@ fun OptionRow(
     modifier: Modifier = Modifier,
     description: String? = null,
     iconBgColor: Color? = null,
-    iconTint: Color = MaterialTheme.colorScheme.primary
+    iconTint: Color = MaterialTheme.colorScheme.primary,
+    trailing: (@Composable () -> Unit)? = null
 ) {
-    ThreeSectionRow(
-        modifier = modifier
+    val rowModifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+            .then(
+                if (trailing == null) {
+                    Modifier.clickable { onClick() }
+                } else {
+                    Modifier
+                }
+            )
+            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16)
+    ThreeSectionRow(
+        modifier = rowModifier,
         spacing = AppDimen.p16,
         verticalAlignment = Alignment.CenterVertically,
         first = {
@@ -81,11 +89,15 @@ fun OptionRow(
             }
         },
         third = {
-            AppIcon(
-                drawableRes = Res.drawable.ic_arrow_forward_ios_24dp,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                iconModifier = Modifier.size(16.dp)
-            )
+            if (trailing != null) {
+                trailing()
+            } else {
+                AppIcon(
+                    drawableRes = Res.drawable.ic_arrow_forward_ios_24dp,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                    iconModifier = Modifier.size(16.dp)
+                )
+            }
         }
     )
 }

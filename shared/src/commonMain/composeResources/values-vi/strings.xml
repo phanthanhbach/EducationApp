@@ -41,6 +41,15 @@
 
     <string name="btn_change_password">Đổi mật khẩu</string>
     <string name="section_account">Quản lý tài khoản</string>
+    <string name="section_preferences">Cài đặt chung</string>
+    <string name="option_theme">Giao diện</string>
+    <string name="option_language">Ngôn ngữ</string>
+    <string name="theme_system">Hệ thống</string>
+    <string name="theme_light">Sáng</string>
+    <string name="theme_dark">Tối</string>
+    <string name="language_english">English</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
+    <string name="sheet_title_language">Chọn ngôn ngữ</string>
     <string name="btn_edit_profile">Chỉnh sửa hồ sơ</string>
     <string name="title_settings">Cài đặt</string>
     <string name="title_about">Giới thiệu</string>

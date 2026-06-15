@@ -1,5 +1,8 @@
 package com.example.educationapp.di
 
+import com.example.educationapp.domain.usecase.ObserveAppPreferencesUseCase
+import com.example.educationapp.domain.usecase.SetAppLanguageUseCase
+import com.example.educationapp.domain.usecase.SetAppThemeModeUseCase
 import com.example.educationapp.domain.usecase.GetChildrenUseCase
 import com.example.educationapp.domain.usecase.FilterAssignmentsUseCase
 import com.example.educationapp.domain.usecase.GetClassFeedbacksUseCase
@@ -31,6 +34,9 @@ import com.example.educationapp.domain.usecase.SubmitAssignmentUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
+    single { ObserveAppPreferencesUseCase(get()) }
+    single { SetAppThemeModeUseCase(get()) }
+    single { SetAppLanguageUseCase(get()) }
     single { LoginUseCase(get()) }
     single { GetMyInvoicesUseCase(get()) }
     single { GetPaymentQrUseCase(get()) }

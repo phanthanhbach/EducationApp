@@ -2,11 +2,15 @@ package com.example.educationapp.presentation.screen.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -20,6 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
@@ -29,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.card.ProfileErrorCard
 import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.image.AppImage
+import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.layout.CollapsingHeaderScaffold
 import com.example.educationapp.core.ui.layout.lerpDp
 import com.example.educationapp.core.ui.text.AppText
@@ -72,7 +80,8 @@ fun ProfileScreenContent(
             CollapsingProfileIdentity(
                 collapseProgress = collapseProgress,
                 fullName = profile?.fullName ?: "",
-                subtitle = getProfileSubtitle(profile)
+                profile = profile,
+                imgUrl = profile?.img
             )
         }
     ) {
@@ -117,10 +126,12 @@ fun ProfileScreenContent(
                         item { SectionTitle(stringResource(Res.string.title_about_me)) }
                         item { TeacherAboutMeCard(teacher = successProfile) }
                     }
+
                     is UserProfile.Student -> {
                         item { SectionTitle(stringResource(Res.string.title_about)) }
                         item { StudentAboutCard(student = successProfile) }
                     }
+
                     is UserProfile.Parent -> {
                         item { SectionTitle(stringResource(Res.string.title_about)) }
                         item { ParentAboutCard(parent = successProfile) }
@@ -192,19 +203,27 @@ private fun ProfileHeaderActions(
 private fun CollapsingProfileIdentity(
     collapseProgress: Float,
     fullName: String,
-    subtitle: String
+    profile: UserProfile?,
+    imgUrl: String?
 ) {
     val expandedAvatarSize = 88.dp
     val avatarSize = lerpDp(expandedAvatarSize, 40.dp, collapseProgress)
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val expandedAvatarTop = SheetTopExpanded - (expandedAvatarSize / 2) + AppDimen.p20 - statusBarHeight
+    val expandedAvatarTop =
+        SheetTopExpanded - (expandedAvatarSize / 2) + AppDimen.p20 - statusBarHeight
     val expandedTextTop = SheetTopExpanded + AppDimen.p16 - statusBarHeight
     val avatarTop = lerpDp(expandedAvatarTop, AppDimen.p8, collapseProgress)
     val avatarStart = lerpDp(AppDimen.p20, AppDimen.p16, collapseProgress)
-    val textTop = lerpDp(expandedTextTop, AppDimen.p8, collapseProgress)
+    val textTop = lerpDp(expandedTextTop, 17.dp, collapseProgress)
     val textStart = lerpDp(120.dp, AppDimen.p64, collapseProgress)
-    val nameSize = 20 - (4 * collapseProgress)
+    val nameSize = 20 - (2 * collapseProgress)
     val subtitleAlpha = 1f - collapseProgress
+
+    val mediaSource = if (!imgUrl.isNullOrBlank()) {
+        CoreMediaSource.Url(imgUrl)
+    } else {
+        CoreMediaSource.None
+    }
 
     Box(
         modifier = Modifier
@@ -218,14 +237,28 @@ private fun CollapsingProfileIdentity(
                 .background(
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(avatarSize / 2)
-                ),
+                )
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(avatarSize / 2)
+                )
+                .clip(RoundedCornerShape(avatarSize / 2)),
             contentAlignment = Alignment.Center
         ) {
-            AppIcon(
-                drawableRes = Res.drawable.ic_person_filled_24dp,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                iconModifier = Modifier.size(avatarSize * 0.5f)
-            )
+            if (mediaSource is CoreMediaSource.None) {
+                AppIcon(
+                    drawableRes = Res.drawable.ic_person_filled_24dp,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    iconModifier = Modifier.size(avatarSize * 0.5f)
+                )
+            } else {
+                AppImage(
+                    source = mediaSource,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+            }
         }
 
         Column(
@@ -238,34 +271,92 @@ private fun CollapsingProfileIdentity(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(AppDimen.p4))
-            AppText(
-                text = subtitle,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.graphicsLayer {
-                    alpha = subtitleAlpha
+
+            val profileCode = getProfileCode(profile)
+            val profileStatus = getProfileStatus(profile)
+
+            if (!profileCode.isNullOrBlank() || !profileStatus.isNullOrBlank()) {
+                Row(
+                    modifier = Modifier.graphicsLayer {
+                        alpha = subtitleAlpha
+                    },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (!profileCode.isNullOrBlank()) {
+                        AppText(
+                            text = profileCode,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    if (!profileCode.isNullOrBlank() && !profileStatus.isNullOrBlank()) {
+                        AppText(
+                            text = "•",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                    }
+
+                    if (!profileStatus.isNullOrBlank()) {
+                        StatusBadge(status = profileStatus)
+                    }
                 }
-            )
+            }
         }
+    }
+}
+
+@Composable
+private fun StatusBadge(status: String) {
+    val uppercaseStatus = status.uppercase()
+    val (backgroundColor, textColor, label) = when (uppercaseStatus) {
+        "ACTIVE" -> Triple(
+            Color(0xFF4CAF50).copy(alpha = 0.15f),
+            Color(0xFF2E7D32),
+            "Hoạt động"
+        )
+
+        "INACTIVE" -> Triple(
+            Color(0xFF9E9E9E).copy(alpha = 0.15f),
+            Color(0xFF616161),
+            "Ngưng hoạt động"
+        )
+
+        else -> Triple(
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.onPrimaryContainer,
+            status
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(backgroundColor)
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        AppText(
+            text = label,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = textColor
+        )
     }
 }
 
 // ── Subtitle helper ─────────────────────────────────────────────────────
 
-private fun getProfileSubtitle(profile: UserProfile?): String {
+private fun getProfileCode(profile: UserProfile?): String? {
     return when (profile) {
-        is UserProfile.Teacher -> {
-            val parts = listOfNotNull(profile.teacherCode, profile.status).filter { it.isNotBlank() }
-            parts.joinToString(" • ")
-        }
-        is UserProfile.Student -> {
-            val parts = listOfNotNull(profile.studentCode, profile.status).filter { it.isNotBlank() }
-            parts.joinToString(" • ")
-        }
-        is UserProfile.Parent -> {
-            val parts = listOfNotNull(profile.email, profile.status).filter { it.isNotBlank() }
-            parts.joinToString(" • ")
-        }
-        null -> ""
+        is UserProfile.Teacher -> profile.teacherCode
+        is UserProfile.Student -> profile.studentCode
+        is UserProfile.Parent -> profile.email
+        null -> null
     }
+}
+
+private fun getProfileStatus(profile: UserProfile?): String? {
+    return profile?.status
 }

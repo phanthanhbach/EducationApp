@@ -29,9 +29,29 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
-import educationapp.shared.generated.resources.*
-import org.jetbrains.compose.resources.stringResource
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.calendar_month_1
+import educationapp.shared.generated.resources.calendar_month_10
+import educationapp.shared.generated.resources.calendar_month_11
+import educationapp.shared.generated.resources.calendar_month_12
+import educationapp.shared.generated.resources.calendar_month_2
+import educationapp.shared.generated.resources.calendar_month_3
+import educationapp.shared.generated.resources.calendar_month_4
+import educationapp.shared.generated.resources.calendar_month_5
+import educationapp.shared.generated.resources.calendar_month_6
+import educationapp.shared.generated.resources.calendar_month_7
+import educationapp.shared.generated.resources.calendar_month_8
+import educationapp.shared.generated.resources.calendar_month_9
+import educationapp.shared.generated.resources.dashboard_coming_up_title
+import educationapp.shared.generated.resources.dashboard_date_format
+import educationapp.shared.generated.resources.dashboard_no_classes_desc
+import educationapp.shared.generated.resources.dashboard_no_classes_title
+import educationapp.shared.generated.resources.dashboard_today_classes_title
+import educationapp.shared.generated.resources.dashboard_today_label
+import educationapp.shared.generated.resources.dashboard_view_schedule_btn
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
+import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
@@ -144,8 +164,8 @@ private fun NoClassesTodayCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            val monthRes = remember(today.monthNumber) {
-                when (today.monthNumber) {
+            val monthRes = remember(today.month.number) {
+                when (today.month.number) {
                     1 -> Res.string.calendar_month_1
                     2 -> Res.string.calendar_month_2
                     3 -> Res.string.calendar_month_3
@@ -162,7 +182,10 @@ private fun NoClassesTodayCard(
                 }
             }
             val monthName = stringResource(monthRes)
-            val formattedDate = stringResource(Res.string.dashboard_date_format, monthName, today.dayOfMonth, today.year)
+            val formattedDate = stringResource(
+                Res.string.dashboard_date_format, monthName,
+                today.day, today.year
+            )
             AppText(
                 text = formattedDate,
                 fontSize = 14.sp,
@@ -175,7 +198,7 @@ private fun NoClassesTodayCard(
                 text = stringResource(Res.string.dashboard_no_classes_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF192252),
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
 

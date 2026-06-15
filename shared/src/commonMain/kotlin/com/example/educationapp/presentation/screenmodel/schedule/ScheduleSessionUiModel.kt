@@ -3,9 +3,9 @@ package com.example.educationapp.presentation.screenmodel.schedule
 import com.example.educationapp.domain.enums.SessionStatus
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.Instant
+import kotlinx.datetime.toInstant
+import kotlin.time.Instant
 
 data class ScheduleSessionUiModel(
     val id: String,
@@ -22,8 +22,10 @@ data class ScheduleSessionUiModel(
     val startTimeFormatted: String by lazy {
         try {
             val localDateTime = LocalDateTime.parse(startTimeRaw)
-            "${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
-        } catch (e: Exception) {
+            "${localDateTime.hour.toString().padStart(2, '0')}:${
+                localDateTime.minute.toString().padStart(2, '0')
+            }"
+        } catch (_: Exception) {
             ""
         }
     }
@@ -31,13 +33,18 @@ data class ScheduleSessionUiModel(
     val endTimeFormatted: String by lazy {
         try {
             val localDateTime = LocalDateTime.parse(endTimeRaw)
-            "${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
-        } catch (e: Exception) {
+            "${localDateTime.hour.toString().padStart(2, '0')}:${
+                localDateTime.minute.toString().padStart(2, '0')
+            }"
+        } catch (_: Exception) {
             ""
         }
     }
 
-    fun getStatus(now: Instant, timeZone: TimeZone = TimeZone.currentSystemDefault()): SessionStatus {
+    fun getStatus(
+        now: Instant,
+        timeZone: TimeZone = TimeZone.currentSystemDefault()
+    ): SessionStatus {
         return try {
             val startInstant = LocalDateTime.parse(startTimeRaw).toInstant(timeZone)
             val endInstant = LocalDateTime.parse(endTimeRaw).toInstant(timeZone)
@@ -46,7 +53,7 @@ data class ScheduleSessionUiModel(
                 now in startInstant..endInstant -> SessionStatus.ONGOING
                 else -> SessionStatus.COMPLETED
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             SessionStatus.UPCOMING
         }
     }

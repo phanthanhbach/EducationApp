@@ -23,7 +23,7 @@ import org.koin.dsl.module
 
 val screenModelModule = module {
     factory { LoginScreenModel(get(), get()) }
-    factory { SettingScreenModel(get()) }
+    factory { SettingScreenModel(get(), get(), get(), get()) }
     factory { ProfileScreenModel(get(), get()) }
     factory { ScheduleScreenModel(get()) }
     factory { SessionDetailScreenModel(get(), get(), get(), get()) }
