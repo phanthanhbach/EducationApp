@@ -2,11 +2,13 @@ package com.example.educationapp.presentation.screen.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -20,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
@@ -29,6 +32,8 @@ import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.card.ProfileErrorCard
 import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.image.AppImage
+import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.layout.CollapsingHeaderScaffold
 import com.example.educationapp.core.ui.layout.lerpDp
 import com.example.educationapp.core.ui.text.AppText
@@ -72,7 +77,8 @@ fun ProfileScreenContent(
             CollapsingProfileIdentity(
                 collapseProgress = collapseProgress,
                 fullName = profile?.fullName ?: "",
-                subtitle = getProfileSubtitle(profile)
+                subtitle = getProfileSubtitle(profile),
+                imgUrl = profile?.img
             )
         }
     ) {
@@ -192,7 +198,8 @@ private fun ProfileHeaderActions(
 private fun CollapsingProfileIdentity(
     collapseProgress: Float,
     fullName: String,
-    subtitle: String
+    subtitle: String,
+    imgUrl: String?
 ) {
     val expandedAvatarSize = 88.dp
     val avatarSize = lerpDp(expandedAvatarSize, 40.dp, collapseProgress)
@@ -206,6 +213,12 @@ private fun CollapsingProfileIdentity(
     val nameSize = 20 - (4 * collapseProgress)
     val subtitleAlpha = 1f - collapseProgress
 
+    val mediaSource = if (!imgUrl.isNullOrBlank()) {
+        CoreMediaSource.Url(imgUrl)
+    } else {
+        CoreMediaSource.None
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -218,14 +231,28 @@ private fun CollapsingProfileIdentity(
                 .background(
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(avatarSize / 2)
-                ),
+                )
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(avatarSize / 2)
+                )
+                .clip(RoundedCornerShape(avatarSize / 2)),
             contentAlignment = Alignment.Center
         ) {
-            AppIcon(
-                drawableRes = Res.drawable.ic_person_filled_24dp,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                iconModifier = Modifier.size(avatarSize * 0.5f)
-            )
+            if (mediaSource is CoreMediaSource.None) {
+                AppIcon(
+                    drawableRes = Res.drawable.ic_person_filled_24dp,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    iconModifier = Modifier.size(avatarSize * 0.5f)
+                )
+            } else {
+                AppImage(
+                    source = mediaSource,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+            }
         }
 
         Column(

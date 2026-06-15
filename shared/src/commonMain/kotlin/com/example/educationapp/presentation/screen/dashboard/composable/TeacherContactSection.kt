@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,7 +36,6 @@ import com.example.educationapp.presentation.screenmodel.dashboard.TeacherContac
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_call_24dp
 import educationapp.shared.generated.resources.ic_mail_24dp
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import educationapp.shared.generated.resources.teacher_contact_no_email_app
 import educationapp.shared.generated.resources.teacher_contact_email_copied
@@ -165,7 +163,7 @@ private fun TeacherContactItem(
                                 onClick = {
                                     try {
                                         uriHandler.openUri("mailto:$email")
-                                    } catch (e: Exception) {
+                                    } catch (_: Exception) {
                                         onShowToast(noEmailAppMsg)
                                     }
                                 },
@@ -194,7 +192,7 @@ private fun TeacherContactItem(
                                 onClick = {
                                     try {
                                         uriHandler.openUri("tel:$phone")
-                                    } catch (e: Exception) {
+                                    } catch (_: Exception) {
                                         onShowToast(noPhoneAppMsg)
                                     }
                                 },

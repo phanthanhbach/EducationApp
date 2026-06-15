@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.number
 
 sealed interface ScheduleState {
     object Idle : ScheduleState
@@ -95,8 +96,8 @@ class ScheduleScreenModel(
 
     private fun getMonthRowsCount(dates: List<LocalDate>, selectedDate: LocalDate): Int {
         return when {
-            dates[28].monthNumber != selectedDate.monthNumber -> 4
-            dates[35].monthNumber != selectedDate.monthNumber -> 5
+            dates[28].month.number != selectedDate.month.number -> 4
+            dates[35].month.number != selectedDate.month.number -> 5
             else -> 6
         }
     }
@@ -123,7 +124,7 @@ class ScheduleScreenModel(
                     allLoadedSchedules = result.data.map { item ->
                         val date = try {
                             LocalDateTime.parse(item.startTime).date
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             LocalDate(2026, 6, 1)
                         }
 

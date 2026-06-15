@@ -57,6 +57,8 @@ class ClassInvoicesScreenModel(
 
     private var pollingJob: Job? = null
 
+    private var loadJob: Job? = null
+
     init {
         loadInvoices(page = 0, append = false)
     }
@@ -147,7 +149,13 @@ class ClassInvoicesScreenModel(
     }
 
     private fun loadInvoices(page: Int, append: Boolean) {
-        screenModelScope.launch {
+        if (append && loadJob?.isActive == true) return
+
+        if (!append) {
+            loadJob?.cancel()
+        }
+
+        loadJob = screenModelScope.launch {
             if (!append) {
                 _state.value = ClassInvoicesState.Loading
             }
@@ -172,7 +180,8 @@ class ClassInvoicesScreenModel(
                     val newInvoices = pagination.content
 
                     val currentInvoices = if (append && _state.value is ClassInvoicesState.Success) {
-                        (_state.value as ClassInvoicesState.Success).invoices + newInvoices
+                        val existing = (_state.value as ClassInvoicesState.Success).invoices
+                        (existing + newInvoices).distinctBy { it.id }
                     } else {
                         newInvoices
                     }
