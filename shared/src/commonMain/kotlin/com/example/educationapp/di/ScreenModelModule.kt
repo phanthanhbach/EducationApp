@@ -1,6 +1,7 @@
 package com.example.educationapp.di
 
 import com.example.educationapp.presentation.screen.setting.SettingScreenModel
+import com.example.educationapp.presentation.screen.profile.EditProfileScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.StudentClassAssignmentsScreenModel
@@ -25,6 +26,7 @@ val screenModelModule = module {
     factory { LoginScreenModel(get(), get()) }
     factory { SettingScreenModel(get(), get(), get(), get()) }
     factory { ProfileScreenModel(get(), get()) }
+    factory { EditProfileScreenModel(get(), get(), get()) }
     factory { ScheduleScreenModel(get()) }
     factory { SessionDetailScreenModel(get(), get(), get(), get()) }
     factory { AttendanceScreenModel(get(), get()) }

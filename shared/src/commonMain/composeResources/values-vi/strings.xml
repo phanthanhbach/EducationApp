@@ -51,6 +51,12 @@
     <string name="language_vietnamese">Tiếng Việt</string>
     <string name="sheet_title_language">Chọn ngôn ngữ</string>
     <string name="btn_edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="btn_save_changes">Lưu thay đổi</string>
+    <string name="profile_student_code">Mã học sinh</string>
+    <string name="profile_current_level">Trình độ hiện tại</string>
+    <string name="profile_zalo_placeholder">https://zalo.me/...</string>
+    <string name="profile_change_avatar">Thay đổi ảnh đại diện</string>
+    <string name="profile_full_name">Họ và tên</string>
     <string name="title_settings">Cài đặt</string>
     <string name="title_about">Giới thiệu</string>
     <string name="title_contact">Liên hệ</string>
@@ -74,6 +80,8 @@
     <string name="profile_phone">Số điện thoại</string>
     <string name="profile_code">Mã</string>
     <string name="profile_gender">Giới tính</string>
+    <string name="gender_male">Nam</string>
+    <string name="gender_female">Nữ</string>
     <string name="profile_dob">Ngày sinh</string>
     <string name="profile_address">Địa chỉ</string>
     <string name="profile_level">Cấp độ</string>

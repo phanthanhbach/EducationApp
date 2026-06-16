@@ -31,6 +31,7 @@ import com.example.educationapp.domain.usecase.GetPaymentQrUseCase
 import com.example.educationapp.domain.usecase.GetInvoiceByIdUseCase
 import com.example.educationapp.domain.usecase.GetMyAssignmentsFilteredUseCase
 import com.example.educationapp.domain.usecase.SubmitAssignmentUseCase
+import com.example.educationapp.domain.usecase.UpdateStudentProfileUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -65,4 +66,5 @@ val useCaseModule = module {
     single { GetStudentClassesNoPaginationUseCase(get()) }
     single { SubmitTeacherFeedbackUseCase(get()) }
     single { GetFeedbackNoPaginationUseCase(get()) }
+    single { UpdateStudentProfileUseCase(get()) }
 }
