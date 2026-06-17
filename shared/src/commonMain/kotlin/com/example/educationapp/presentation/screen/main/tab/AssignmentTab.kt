@@ -31,7 +31,7 @@ class AssignmentTab : Tab {
             val title = stringResource(Res.string.tab_assignment)
             val icon = painterResource(Res.drawable.ic_assignment_filled_24dp)
 
-            return remember {
+            return remember(title, icon) {
                 TabOptions(
                     index = 2u,
                     title = title,

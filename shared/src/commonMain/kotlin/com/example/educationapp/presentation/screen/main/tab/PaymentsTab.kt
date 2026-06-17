@@ -88,7 +88,7 @@ class PaymentsTab : Tab {
             val title = stringResource(Res.string.tab_payments)
             val icon = painterResource(Res.drawable.ic_account_balance_wallet_24dp)
 
-            return remember(tabIndex) {
+            return remember(title, icon, tabIndex) {
                 TabOptions(
                     index = tabIndex,
                     title = title,

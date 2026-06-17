@@ -68,7 +68,7 @@ class FeedbackTab : Tab {
             val title = stringResource(Res.string.tab_feedback)
             val icon = painterResource(Res.drawable.ic_chat_24dp)
 
-            return remember {
+            return remember(title, icon) {
                 TabOptions(
                     index = 1u,
                     title = title,

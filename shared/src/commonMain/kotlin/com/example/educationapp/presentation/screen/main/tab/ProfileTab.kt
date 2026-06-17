@@ -33,7 +33,7 @@ class ProfileTab : Tab {
             val title = stringResource(Res.string.tab_profile)
             val icon = painterResource(Res.drawable.ic_person_filled_24dp)
 
-            return remember(tabIndex) {
+            return remember(title, icon, tabIndex) {
                 TabOptions(
                     index = tabIndex,
                     title = title,

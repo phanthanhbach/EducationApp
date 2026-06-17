@@ -57,7 +57,7 @@ class DashboardTab : Tab {
             val title = stringResource(Res.string.tab_dashboard)
             val icon = painterResource(Res.drawable.ic_dashboard_filled_24dp)
 
-            return remember {
+            return remember(title, icon) {
                 TabOptions(
                     index = 0u,
                     title = title,
