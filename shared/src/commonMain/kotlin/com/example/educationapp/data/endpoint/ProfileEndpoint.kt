@@ -5,4 +5,5 @@ object ProfileEndpoint {
     const val STUDENT_ME = "students/me"
     const val PARENT_ME = "parents/me"
     fun updateStudentProfile(studentId: Int): String = "students/$studentId"
+    fun updateTeacherProfile(teacherId: Int): String = "teachers/$teacherId"
 }

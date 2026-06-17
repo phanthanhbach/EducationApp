@@ -20,6 +20,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import com.example.educationapp.data.dto.request.UpdateStudentProfileRequest
+import com.example.educationapp.data.dto.request.UpdateTeacherProfileRequest
 
 class ProfileRepositoryImpl(
     private val httpClient: HttpClient
@@ -91,6 +92,48 @@ class ProfileRepositoryImpl(
         }
     }
 
+    override suspend fun updateTeacherProfile(
+        teacherId: Int,
+        fullName: String,
+        email: String,
+        phoneNumber: String,
+        img: String,
+        teacherCode: String,
+        certificates: List<String>,
+        experience: String
+    ): ApiResult<UserProfile.Teacher> {
+        return safeApiCall {
+            val response = httpClient.put(ProfileEndpoint.updateTeacherProfile(teacherId)) {
+                setBody(
+                    UpdateTeacherProfileRequest(
+                        fullName = fullName,
+                        email = email,
+                        phoneNumber = phoneNumber,
+                        img = img,
+                        teacherCode = teacherCode,
+                        certificates = certificates,
+                        experience = experience
+                    )
+                )
+            }.body<BaseResponse<TeacherDTO>>()
+            val dto = response.data
+            UserProfile.Teacher(
+                teacherId = dto.teacherId,
+                teacherCode = dto.teacherCode,
+                fullName = dto.fullName,
+                email = dto.email,
+                phone = dto.phone,
+                img = dto.img,
+                certificates = dto.certificates ?: emptyList(),
+                hourlyRate = dto.hourlyRate,
+                experience = dto.experience,
+                status = dto.status,
+                createdAt = dto.createdAt,
+                updatedAt = dto.updatedAt
+            )
+        }
+    }
+
     private suspend fun fetchParentProfile(): ApiResult<UserProfile> {
         return safeApiCall {
             val response = httpClient.get(ProfileEndpoint.PARENT_ME)
@@ -117,3 +160,4 @@ class ProfileRepositoryImpl(
         }
     }
 }
+

@@ -26,7 +26,7 @@ val screenModelModule = module {
     factory { LoginScreenModel(get(), get()) }
     factory { SettingScreenModel(get(), get(), get(), get()) }
     factory { ProfileScreenModel(get(), get()) }
-    factory { EditProfileScreenModel(get(), get(), get()) }
+    factory { EditProfileScreenModel(get(), get(), get(), get()) }
     factory { ScheduleScreenModel(get()) }
     factory { SessionDetailScreenModel(get(), get(), get(), get()) }
     factory { AttendanceScreenModel(get(), get()) }

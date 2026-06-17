@@ -88,6 +88,8 @@
     <string name="profile_experience">Kinh nghiệm</string>
     <string name="profile_hourly_rate">Phí theo giờ</string>
     <string name="profile_certificates">Chứng chỉ</string>
+    <string name="profile_teacher_code">Mã giáo viên</string>
+    <string name="profile_add_certificate">Thêm chứng chỉ</string>
     <string name="profile_zalo">Zalo</string>
     <string name="profile_parent">Phụ huynh</string>
     <string name="profile_status">Trạng thái</string>
