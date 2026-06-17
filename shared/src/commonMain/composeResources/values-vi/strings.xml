@@ -255,4 +255,23 @@
     <string name="assignment_view_submission_btn">Xem bài nộp</string>
     <string name="assignment_dialog_submit_title">Nộp bài tập</string>
     <string name="assignment_dialog_submit_desc">Chọn file cho "%1$s" và kiểm tra lại trước khi nộp.</string>
+
+    <!-- Teacher Dashboard & Check-ins -->
+    <string name="dashboard_upcoming_teaching_schedules">Lịch dạy sắp tới</string>
+    <string name="dashboard_teaching_checkin_history">Lịch sử điểm danh giảng dạy</string>
+    <string name="dashboard_total_checkins">Tổng số lần check-in: %1$d</string>
+    <string name="dashboard_teaching_checkin_empty">Chưa có dữ liệu điểm danh nào.</string>
+    <string name="dashboard_session_number_format">Buổi #%1$d</string>
+    <string name="dashboard_checkin_time_format">Check-in: %1$s</string>
+    <string name="dashboard_checkout_time_format">Check-out: %1$s</string>
+    <string name="dashboard_checkout_done">Check-out: Đã checkout</string>
+    <string name="dashboard_checkout_pending">Check-out: Chưa checkout</string>
+    <string name="dashboard_checkin_status_late">Trễ %1$dm</string>
+    <string name="dashboard_checkin_status_on_time">Đúng giờ</string>
+
+    <!-- Teacher Rating Summary Card -->
+    <string name="dashboard_rating_overview">Tổng quan đánh giá</string>
+    <string name="dashboard_rating_overview_desc">Hiệu suất giảng dạy từ học viên</string>
+    <string name="dashboard_rating_count_label">Lượt đánh giá</string>
+    <string name="dashboard_feedback_count_label">Phản hồi/Nhận xét</string>
 </resources>

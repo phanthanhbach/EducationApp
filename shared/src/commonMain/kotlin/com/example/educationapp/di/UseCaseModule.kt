@@ -16,6 +16,7 @@ import com.example.educationapp.domain.usecase.GetAttendancesUseCase
 import com.example.educationapp.domain.usecase.SubmitAttendancesUseCase
 import com.example.educationapp.domain.usecase.TeacherCheckOutUseCase
 import com.example.educationapp.domain.usecase.GetTeacherRatingSummaryUseCase
+import com.example.educationapp.domain.usecase.GetTeacherCheckInsUseCase
 import com.example.educationapp.domain.usecase.FilterClassesUseCase
 import com.example.educationapp.domain.usecase.GetStudentClassesUseCase
 import com.example.educationapp.domain.usecase.GetAttendanceRateUseCase
@@ -55,6 +56,7 @@ val useCaseModule = module {
     single { SubmitAttendancesUseCase(get()) }
     single { TeacherCheckOutUseCase(get()) }
     single { GetTeacherRatingSummaryUseCase(get()) }
+    single { GetTeacherCheckInsUseCase(get()) }
     single { FilterClassesUseCase(get()) }
     single { GetStudentClassesUseCase(get()) }
     single { GetAttendanceRateUseCase(get()) }

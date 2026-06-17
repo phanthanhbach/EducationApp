@@ -1,6 +1,7 @@
 package com.example.educationapp.presentation.screen.dashboard
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,11 +33,17 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.dashboard.composable.RecentCheckInsSection
+import com.example.educationapp.presentation.screen.dashboard.composable.SectionHeader
 import com.example.educationapp.presentation.screen.dashboard.composable.TeacherRatingSummaryCard
 import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
 import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardState
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.dashboard_btn_retry
+import educationapp.shared.generated.resources.dashboard_upcoming_teaching_schedules
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TeacherDashboardContent(
@@ -85,7 +92,7 @@ fun TeacherDashboardContent(
                         onClick = { screenModel.loadDashboardData() },
                         colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
                     ) {
-                        AppText(text = "Thử lại", color = Color.White)
+                        AppText(text = stringResource(Res.string.dashboard_btn_retry), color = Color.White)
                     }
                 }
             }
@@ -96,17 +103,19 @@ fun TeacherDashboardContent(
 
             Column(
                 modifier = modifier,
-                verticalArrangement = Arrangement.spacedBy(AppDimen.p20)
+                verticalArrangement = Arrangement.spacedBy(AppDimen.p4)
             ) {
                 TeacherRatingSummaryCard(ratingSummary = currentState.ratingSummary)
 
                 // Upcoming Classes Section
-                Column(verticalArrangement = Arrangement.spacedBy(AppDimen.p12)) {
-                    AppText(
-                        text = "Lịch dạy 3 ngày tới",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                Column(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(AppDimen.p16),
+                    verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                ) {
+                    SectionHeader(
+                        title = stringResource(Res.string.dashboard_upcoming_teaching_schedules)
                     )
 
                     UpcomingSchedulesSection(
@@ -119,6 +128,12 @@ fun TeacherDashboardContent(
                         onViewScheduleClick = onViewScheduleClick
                     )
                 }
+
+                // Check-ins Section
+                RecentCheckInsSection(
+                    totalCheckIns = currentState.totalCheckIns,
+                    checkIns = currentState.recentCheckIns
+                )
             }
         }
     }

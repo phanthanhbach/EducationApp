@@ -255,4 +255,23 @@
     <string name="assignment_view_submission_btn">View submission</string>
     <string name="assignment_dialog_submit_title">Submit Assignment</string>
     <string name="assignment_dialog_submit_desc">Select file for "%1$s" and double check before submitting.</string>
+
+    <!-- Teacher Dashboard & Check-ins -->
+    <string name="dashboard_upcoming_teaching_schedules">Upcoming Teaching Schedule</string>
+    <string name="dashboard_teaching_checkin_history">Teaching Attendance History</string>
+    <string name="dashboard_total_checkins">Total check-ins: %1$d</string>
+    <string name="dashboard_teaching_checkin_empty">No check-in data found.</string>
+    <string name="dashboard_session_number_format">Session #%1$d</string>
+    <string name="dashboard_checkin_time_format">Check-in: %1$s</string>
+    <string name="dashboard_checkout_time_format">Check-out: %1$s</string>
+    <string name="dashboard_checkout_done">Check-out: Checked out</string>
+    <string name="dashboard_checkout_pending">Check-out: Not checked out</string>
+    <string name="dashboard_checkin_status_late">Late %1$dm</string>
+    <string name="dashboard_checkin_status_on_time">On time</string>
+
+    <!-- Teacher Rating Summary Card -->
+    <string name="dashboard_rating_overview">Rating Overview</string>
+    <string name="dashboard_rating_overview_desc">Teaching performance from students</string>
+    <string name="dashboard_rating_count_label">Ratings</string>
+    <string name="dashboard_feedback_count_label">Feedback/Reviews</string>
 </resources>

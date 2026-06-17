@@ -124,6 +124,31 @@ class ScheduleRepositoryImpl(
         }
     }
 
+    override suspend fun getTeacherCheckIns(
+        teacherId: Long,
+        page: Int,
+        size: Int
+    ): ApiResult<PaginationResponse<TeacherCheckInResult>> {
+        return safeApiCall {
+            val response = httpClient.get(TeacherCheckInEndpoint.TEACHER_CHECK_IN) {
+                parameter("teacherId", teacherId)
+                parameter("page", page)
+                parameter("size", size)
+            }.body<BaseResponse<PaginationResponse<TeacherCheckInResponseDTO>>>()
+
+            val paginatedData = response.data
+            PaginationResponse(
+                content = paginatedData.content.map { it.toDomainEntity() },
+                number = paginatedData.number,
+                size = paginatedData.size,
+                totalElements = paginatedData.totalElements,
+                totalPages = paginatedData.totalPages,
+                last = paginatedData.last,
+                first = paginatedData.first
+            )
+        }
+    }
+
     override suspend fun filterClasses(
         search: String?,
         courseId: Long?,

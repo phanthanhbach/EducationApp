@@ -22,18 +22,18 @@ fun GlassBox(
     contentAlignment: Alignment = Alignment.Center,
     content: @Composable () -> Unit
 ) {
-    PlatformGlassContainer(
-        modifier = modifier,
-        shape = shape,
-        blurRadius = blurRadius,
-        color = containerColor,
-        borderAlpha = 0.3f
-    ) {
-        Box(
-            modifier = Modifier.matchParentSize(),
-            contentAlignment = contentAlignment
+        PlatformGlassContainer(
+            modifier = modifier,
+            shape = shape,
+            blurRadius = blurRadius,
+            color = containerColor,
+            borderAlpha = 0.3f
         ) {
-            content()
+            Box(
+                modifier = Modifier.align(contentAlignment),
+                contentAlignment = contentAlignment
+            ) {
+                content()
+            }
         }
-    }
 }

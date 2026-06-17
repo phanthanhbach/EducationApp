@@ -13,6 +13,11 @@ interface ScheduleRepository {
     suspend fun checkIn(teacherId: Long, classId: Long, sessionNumber: Int): ApiResult<TeacherCheckInResult>
     suspend fun getCheckInStatus(classId: Long, sessionNumber: Int, teacherId: Long): ApiResult<TeacherCheckInResult>
     suspend fun checkOut(checkinId: Long): ApiResult<TeacherCheckInResult>
+    suspend fun getTeacherCheckIns(
+        teacherId: Long,
+        page: Int,
+        size: Int
+    ): ApiResult<PaginationResponse<TeacherCheckInResult>>
     suspend fun getAttendances(classId: Long, sessionNumber: Int): ApiResult<List<AttendanceRecord>>
     suspend fun submitAttendances(
         classId: Long,

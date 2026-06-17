@@ -11,8 +11,11 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+import dev.chrisbanes.haze.HazeState
+
 actual fun Modifier.liquidGlass(
     shape: Shape,
+    hazeState: HazeState?,
     blurRadius: Dp,
     color: Color,
     borderAlpha: Float
@@ -29,4 +32,10 @@ actual fun Modifier.liquidGlass(
         ),
         shape = shape
     )
-    .blur(blurRadius)
+    .let {
+        if (blurRadius > 0.dp) {
+            it.blur(blurRadius)
+        } else {
+            it
+        }
+    }

@@ -42,6 +42,7 @@ import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.dashboard.composable.AssignmentDeadlineSection
 import com.example.educationapp.presentation.screen.dashboard.composable.AttendanceByClassSection
 import com.example.educationapp.presentation.screen.dashboard.composable.CurrentCoursesSection
+import com.example.educationapp.presentation.screen.dashboard.composable.SectionHeader
 import com.example.educationapp.presentation.screen.dashboard.composable.TeacherContactSection
 import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
 import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
@@ -252,20 +253,6 @@ fun StudentDashboardContent(
             }
         }
     }
-}
-
-@Composable
-private fun SectionHeader(
-    title: String,
-    modifier: Modifier = Modifier
-) {
-    AppText(
-        text = title,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier
-    )
 }
 
 @Composable
