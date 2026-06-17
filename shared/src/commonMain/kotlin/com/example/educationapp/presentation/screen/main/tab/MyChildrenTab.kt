@@ -45,7 +45,7 @@ class MyChildrenTab : Tab {
             val title = stringResource(Res.string.tab_my_children)
             val icon = painterResource(Res.drawable.ic_group_24dp)
 
-            return remember {
+            return remember(title, icon) {
                 TabOptions(
                     index = 0u,
                     title = title,

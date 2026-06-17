@@ -28,7 +28,7 @@ class ScheduleTab : Tab {
             val title = stringResource(Res.string.tab_schedule)
             val icon = painterResource(Res.drawable.ic_calendar_month_filled_24dp)
 
-            return remember {
+            return remember(title, icon) {
                 TabOptions(
                     index = 1u,
                     title = title,
