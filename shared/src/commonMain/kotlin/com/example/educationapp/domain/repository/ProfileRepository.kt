@@ -16,4 +16,15 @@ interface ProfileRepository {
         address: String,
         zaloLink: String
     ): ApiResult<UserProfile.Student>
+    suspend fun updateTeacherProfile(
+        teacherId: Int,
+        fullName: String,
+        email: String,
+        phoneNumber: String,
+        img: String,
+        teacherCode: String,
+        certificates: List<String>,
+        experience: String
+    ): ApiResult<UserProfile.Teacher>
 }
+
