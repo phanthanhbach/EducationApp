@@ -6,8 +6,10 @@ import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.domain.entity.TeacherRatingSummary
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.domain.entity.TeacherCheckInResult
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.GetMySchedulesUseCase
+import com.example.educationapp.domain.usecase.GetTeacherCheckInsUseCase
 import com.example.educationapp.domain.usecase.GetTeacherRatingSummaryUseCase
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import kotlinx.coroutines.async
@@ -25,7 +27,9 @@ sealed interface TeacherDashboardState {
     object Loading : TeacherDashboardState
     data class Success(
         val ratingSummary: TeacherRatingSummary,
-        val upcomingSchedules: List<ScheduleSessionUiModel>
+        val upcomingSchedules: List<ScheduleSessionUiModel>,
+        val totalCheckIns: Int,
+        val recentCheckIns: List<TeacherCheckInResult>
     ) : TeacherDashboardState
 
     data class Error(val message: String) : TeacherDashboardState
@@ -34,7 +38,8 @@ sealed interface TeacherDashboardState {
 class TeacherDashboardScreenModel(
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val getTeacherRatingSummaryUseCase: GetTeacherRatingSummaryUseCase,
-    private val getMySchedulesUseCase: GetMySchedulesUseCase
+    private val getMySchedulesUseCase: GetMySchedulesUseCase,
+    private val getTeacherCheckInsUseCase: GetTeacherCheckInsUseCase
 ) : ScreenModel {
 
     private val _state = MutableStateFlow<TeacherDashboardState>(TeacherDashboardState.Loading)
@@ -73,14 +78,16 @@ class TeacherDashboardScreenModel(
                                 "${now.second.toString().padStart(2, '0')}"
                         val toTime = "${dayPlus2}T23:59:59"
 
-                        // Fetch both rating summary and schedule in parallel
+                        // Fetch rating summary, schedule, and check-ins in parallel
                         val ratingDeferred = async { getTeacherRatingSummaryUseCase(teacherId) }
                         val scheduleDeferred = async { getMySchedulesUseCase(fromTime, toTime) }
+                        val checkInDeferred = async { getTeacherCheckInsUseCase(teacherId, page = 0, size = 3) }
 
                         val ratingResult = ratingDeferred.await()
                         val scheduleResult = scheduleDeferred.await()
+                        val checkInResult = checkInDeferred.await()
 
-                        if (ratingResult is ApiResult.Success && scheduleResult is ApiResult.Success) {
+                        if (ratingResult is ApiResult.Success && scheduleResult is ApiResult.Success && checkInResult is ApiResult.Success) {
                             // Map schedules DTO to ScheduleSessionUiModel
                             val uiSchedules = scheduleResult.data.map { item ->
                                 val date = try {
@@ -110,15 +117,19 @@ class TeacherDashboardScreenModel(
                                 )
                             }.sortedBy { it.startTimeRaw } // Sort by startTime chronological
 
+                            val checkInPage = checkInResult.data
                             _state.value = TeacherDashboardState.Success(
                                 ratingSummary = ratingResult.data,
-                                upcomingSchedules = uiSchedules
+                                upcomingSchedules = uiSchedules,
+                                totalCheckIns = checkInPage.totalElements,
+                                recentCheckIns = checkInPage.content
                             )
                         } else {
                             val ratingErrorMsg = (ratingResult as? ApiResult.Error)?.message
                             val scheduleErrorMsg = (scheduleResult as? ApiResult.Error)?.message
+                            val checkInErrorMsg = (checkInResult as? ApiResult.Error)?.message
                             _state.value = TeacherDashboardState.Error(
-                                ratingErrorMsg ?: scheduleErrorMsg ?: "Lỗi tải dữ liệu Dashboard."
+                                ratingErrorMsg ?: scheduleErrorMsg ?: checkInErrorMsg ?: "Lỗi tải dữ liệu Dashboard."
                             )
                         }
                     } else {

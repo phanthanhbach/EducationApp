@@ -1,5 +1,6 @@
 package com.example.educationapp.data.dto.response
 
+import com.example.educationapp.domain.entity.UserProfile
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,3 +20,23 @@ data class StudentDTO(
     val createdAt: String? = null,
     val updatedAt: String? = null
 )
+
+fun StudentDTO.toDomainEntity(): UserProfile.Student {
+    return UserProfile.Student(
+        studentId = studentId,
+        studentCode = studentCode,
+        fullName = fullName,
+        dateOfBirth = dateOfBirth,
+        gender = gender,
+        address = address,
+        img = img,
+        zaloLink = zaloLink,
+        currentLevel = currentLevel,
+        status = status,
+        parentId = parentId,
+        parentName = parentName,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+}
+

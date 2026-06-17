@@ -49,7 +49,7 @@ import org.koin.compose.koinInject
 
 class DashboardTab : Tab {
 
-    private var userName by mutableStateOf<String?>(null)
+
 
     override val options: TabOptions
         @Composable
@@ -71,6 +71,7 @@ class DashboardTab : Tab {
     override fun Content() {
         val role = LocalAppRole.current
         val getMyProfileUseCase = koinInject<GetMyProfileUseCase>()
+        var userName by remember { mutableStateOf<String?>(null) }
 
         LaunchedEffect(role) {
             if (userName == null) {

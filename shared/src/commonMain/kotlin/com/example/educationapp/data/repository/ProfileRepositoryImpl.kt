@@ -17,6 +17,9 @@ import com.example.educationapp.domain.repository.ProfileRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import com.example.educationapp.data.dto.request.UpdateStudentProfileRequest
 
 class ProfileRepositoryImpl(
     private val httpClient: HttpClient
@@ -60,23 +63,31 @@ class ProfileRepositoryImpl(
         return safeApiCall {
             val response = httpClient.get(ProfileEndpoint.STUDENT_ME)
                 .body<BaseResponse<StudentDTO>>()
-            val dto = response.data
-            UserProfile.Student(
-                studentId = dto.studentId,
-                studentCode = dto.studentCode,
-                fullName = dto.fullName,
-                dateOfBirth = dto.dateOfBirth,
-                gender = dto.gender,
-                address = dto.address,
-                img = dto.img,
-                zaloLink = dto.zaloLink,
-                currentLevel = dto.currentLevel,
-                status = dto.status,
-                parentId = dto.parentId,
-                parentName = dto.parentName,
-                createdAt = dto.createdAt,
-                updatedAt = dto.updatedAt
-            )
+            response.data.toDomainEntity()
+        }
+    }
+
+    override suspend fun updateStudentProfile(
+        studentId: Int,
+        fullName: String,
+        dateOfBirth: String,
+        gender: String,
+        address: String,
+        zaloLink: String
+    ): ApiResult<UserProfile.Student> {
+        return safeApiCall {
+            val response = httpClient.put(ProfileEndpoint.updateStudentProfile(studentId)) {
+                setBody(
+                    UpdateStudentProfileRequest(
+                        fullName = fullName,
+                        dateOfBirth = dateOfBirth,
+                        gender = gender,
+                        address = address,
+                        zaloLink = zaloLink
+                    )
+                )
+            }.body<BaseResponse<StudentDTO>>()
+            response.data.toDomainEntity()
         }
     }
 

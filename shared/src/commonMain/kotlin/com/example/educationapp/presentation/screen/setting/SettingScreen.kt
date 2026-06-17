@@ -51,6 +51,7 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppLanguage
 import com.example.educationapp.domain.enums.AppThemeMode
 import com.example.educationapp.presentation.screen.login.LoginScreen
+import com.example.educationapp.presentation.screen.profile.EditProfileScreen
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.btn_cancel
 import educationapp.shared.generated.resources.btn_change_password
@@ -162,7 +163,7 @@ class SettingScreen : Screen {
                             OptionRow(
                                 iconRes = Res.drawable.ic_edit_24dp,
                                 title = stringResource(Res.string.btn_edit_profile),
-                                onClick = { /* TODO: Handle edit profile */ }
+                                onClick = { navigator.push(EditProfileScreen()) }
                             )
 
                             SettingDivider()

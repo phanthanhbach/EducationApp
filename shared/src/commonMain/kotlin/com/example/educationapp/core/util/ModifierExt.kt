@@ -12,11 +12,14 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+import dev.chrisbanes.haze.HazeState
+
 /**
  * Định nghĩa expect cho hiệu ứng kính để có thể tối ưu riêng cho từng nền tảng.
  */
 expect fun Modifier.liquidGlass(
     shape: Shape,
+    hazeState: HazeState? = null,
     blurRadius: Dp = 20.dp,
     color: Color = Color.White.copy(alpha = 0.15f),
     borderAlpha: Float = 0.3f
