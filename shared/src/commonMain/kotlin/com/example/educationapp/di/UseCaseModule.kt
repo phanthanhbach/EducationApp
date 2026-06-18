@@ -34,6 +34,7 @@ import com.example.educationapp.domain.usecase.GetMyAssignmentsFilteredUseCase
 import com.example.educationapp.domain.usecase.SubmitAssignmentUseCase
 import com.example.educationapp.domain.usecase.UpdateStudentProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateTeacherProfileUseCase
+import com.example.educationapp.domain.usecase.UpdateParentProfileUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -71,4 +72,5 @@ val useCaseModule = module {
     single { GetFeedbackNoPaginationUseCase(get()) }
     single { UpdateStudentProfileUseCase(get()) }
     single { UpdateTeacherProfileUseCase(get()) }
+    single { UpdateParentProfileUseCase(get()) }
 }

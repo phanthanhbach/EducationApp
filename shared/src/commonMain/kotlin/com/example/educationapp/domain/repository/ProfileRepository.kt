@@ -26,5 +26,14 @@ interface ProfileRepository {
         certificates: List<String>,
         experience: String
     ): ApiResult<UserProfile.Teacher>
+
+    suspend fun updateParentProfile(
+        parentId: Int,
+        fullName: String,
+        email: String,
+        phoneNumber: String,
+        address: String,
+        img: String
+    ): ApiResult<UserProfile.Parent>
 }
 

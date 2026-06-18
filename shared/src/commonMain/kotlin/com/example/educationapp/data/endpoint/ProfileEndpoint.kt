@@ -6,4 +6,5 @@ object ProfileEndpoint {
     const val PARENT_ME = "parents/me"
     fun updateStudentProfile(studentId: Int): String = "students/$studentId"
     fun updateTeacherProfile(teacherId: Int): String = "teachers/$teacherId"
+    fun updateParentProfile(parentId: Int): String = "parents/$parentId"
 }

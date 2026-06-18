@@ -1,6 +1,7 @@
 package com.example.educationapp.presentation.screen.main.tab.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,9 +10,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,17 +24,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.image.AppImage
+import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
+import com.example.educationapp.presentation.screen.dashboard.composable.SectionHeader
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_person_filled_24dp
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun ChildSelectorBar(
@@ -53,19 +56,15 @@ fun ChildSelectorBar(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp)
+                .padding(vertical = 12.dp, horizontal = AppDimen.p16)
         ) {
-            AppText(
-                text = "Danh sách học sinh",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            SectionHeader(
+                title = "Danh sách học sinh",
             )
 
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 16.dp),
+                contentPadding = PaddingValues(vertical = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(children) { child ->
@@ -115,21 +114,40 @@ private fun ChildChip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        // Child Avatar Placeholder
-        Box(
-            modifier = Modifier
-                .size(avatarSize)
-                .background(
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            AppIcon(
-                drawableRes = Res.drawable.ic_person_filled_24dp,
-                tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                iconModifier = Modifier.size(avatarSize * 0.5f)
-            )
+        if (!child.img.isNullOrBlank()) {
+            Box(
+                modifier = Modifier
+                    .size(avatarSize)
+                    .clip(CircleShape)
+                    .background(
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                AppImage(
+                    source = CoreMediaSource.Url(child.img),
+                    modifier = Modifier.fillMaxSize(),
+                    placeholder = painterResource(Res.drawable.ic_person_filled_24dp),
+                    error = painterResource(Res.drawable.ic_person_filled_24dp)
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(avatarSize)
+                    .background(
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                AppIcon(
+                    drawableRes = Res.drawable.ic_person_filled_24dp,
+                    tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    iconModifier = Modifier.size(avatarSize * 0.5f)
+                )
+            }
         }
 
         Column(
@@ -141,19 +159,26 @@ private fun ChildChip(
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                 color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.width(if (isTablet) 140.dp else 100.dp)
+                overflow = TextOverflow.Clip,
+                modifier = Modifier
+                    .width(if (isTablet) 150.dp else 120.dp)
+                    .basicMarquee()
             )
-            if (isTablet && !child.currentLevel.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(2.dp))
-                AppText(
-                    text = child.currentLevel,
-                    fontSize = 11.sp,
-                    color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+
+            val studentCode = if (!child.studentCode.isNullOrBlank()) {
+                child.studentCode
+            } else {
+                "#${child.studentId}"
             }
+            AppText(
+                text = studentCode,
+                fontSize = 11.sp,
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    alpha = 0.6f
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
