@@ -27,8 +27,6 @@
     <string name="lb_password_placeholder">Enter your password</string>
 
     <string name="login_forgot_password">Forgot password?</string>
-    <string name="login_no_account">Don\'t have an account?</string>
-    <string name="login_create_account">Create one</string>
 
     <!-- Main Screen - Bottom Tabs -->
     <string name="tab_dashboard">Dashboard</string>

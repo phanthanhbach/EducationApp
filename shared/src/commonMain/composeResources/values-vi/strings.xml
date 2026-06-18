@@ -27,8 +27,6 @@
     <string name="lb_password_placeholder">Nhập mật khẩu của bạn</string>
 
     <string name="login_forgot_password">Quên mật khẩu?</string>
-    <string name="login_no_account">Chưa có tài khoản?</string>
-    <string name="login_create_account">Tạo tài khoản</string>
 
     <!-- Main Screen - Bottom Tabs -->
     <string name="tab_dashboard">Trang chủ</string>

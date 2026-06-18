@@ -26,6 +26,10 @@ android {
     namespace = "com.example.educationapp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.educationapp"
         minSdk = libs.versions.android.minSdk.get().toInt()
