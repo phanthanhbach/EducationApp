@@ -105,6 +105,14 @@ class EditProfileScreen : Screen {
                             screenModel = screenModel
                         )
                     }
+
+                    is EditProfileUiState.ParentLoadSuccess -> {
+                        ParentEditForm(
+                            state = state,
+                            saveStatus = saveStatus,
+                            screenModel = screenModel
+                        )
+                    }
                 }
             }
         }

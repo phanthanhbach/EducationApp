@@ -21,6 +21,7 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import com.example.educationapp.data.dto.request.UpdateStudentProfileRequest
 import com.example.educationapp.data.dto.request.UpdateTeacherProfileRequest
+import com.example.educationapp.data.dto.request.UpdateParentProfileRequest
 
 class ProfileRepositoryImpl(
     private val httpClient: HttpClient
@@ -138,6 +139,40 @@ class ProfileRepositoryImpl(
         return safeApiCall {
             val response = httpClient.get(ProfileEndpoint.PARENT_ME)
                 .body<BaseResponse<ParentDTO>>()
+            val dto = response.data
+            UserProfile.Parent(
+                parentId = dto.parentId,
+                fullName = dto.fullName,
+                phoneNumber = dto.phoneNumber,
+                email = dto.email,
+                address = dto.address,
+                active = dto.active,
+                img = dto.img,
+                createdAt = dto.createdAt
+            )
+        }
+    }
+
+    override suspend fun updateParentProfile(
+        parentId: Int,
+        fullName: String,
+        email: String,
+        phoneNumber: String,
+        address: String,
+        img: String
+    ): ApiResult<UserProfile.Parent> {
+        return safeApiCall {
+            val response = httpClient.put(ProfileEndpoint.updateParentProfile(parentId)) {
+                setBody(
+                    UpdateParentProfileRequest(
+                        fullName = fullName,
+                        phoneNumber = phoneNumber,
+                        email = email,
+                        address = address,
+                        img = img
+                    )
+                )
+            }.body<BaseResponse<ParentDTO>>()
             val dto = response.data
             UserProfile.Parent(
                 parentId = dto.parentId,

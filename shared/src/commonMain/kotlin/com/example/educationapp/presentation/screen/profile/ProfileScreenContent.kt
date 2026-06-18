@@ -41,6 +41,8 @@ import com.example.educationapp.core.ui.layout.CollapsingHeaderScaffold
 import com.example.educationapp.core.ui.layout.lerpDp
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
+import com.example.educationapp.domain.enums.StudentStatus
+import com.example.educationapp.domain.enums.TeacherStatus
 import com.example.educationapp.presentation.screenmodel.profile.ProfileState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_person_filled_24dp
@@ -300,7 +302,7 @@ private fun CollapsingProfileIdentity(
                     }
 
                     if (!profileStatus.isNullOrBlank()) {
-                        StatusBadge(status = profileStatus)
+                        StatusBadge(status = profileStatus, profile = profile)
                     }
                 }
             }
@@ -309,26 +311,68 @@ private fun CollapsingProfileIdentity(
 }
 
 @Composable
-private fun StatusBadge(status: String) {
-    val uppercaseStatus = status.uppercase()
-    val (backgroundColor, textColor, label) = when (uppercaseStatus) {
-        "ACTIVE" -> Triple(
-            Color(0xFF4CAF50).copy(alpha = 0.15f),
-            Color(0xFF2E7D32),
-            "Hoạt động"
-        )
-
-        "INACTIVE" -> Triple(
-            Color(0xFF9E9E9E).copy(alpha = 0.15f),
-            Color(0xFF616161),
-            "Ngưng hoạt động"
-        )
-
-        else -> Triple(
-            MaterialTheme.colorScheme.primaryContainer,
-            MaterialTheme.colorScheme.onPrimaryContainer,
-            status
-        )
+private fun StatusBadge(status: String, profile: UserProfile?) {
+    val (backgroundColor, textColor, label) = when (profile) {
+        is UserProfile.Student -> {
+            val studentStatus = StudentStatus.fromString(status)
+            val bgColor = when (studentStatus) {
+                StudentStatus.ACTIVE -> Color(0xFFE8F5E9)
+                StudentStatus.INACTIVE -> Color(0xFFECEFF1)
+                StudentStatus.SUSPENDED -> Color(0xFFFFF3E0)
+                StudentStatus.GRADUATED -> Color(0xFFE3F2FD)
+            }
+            val txtColor = when (studentStatus) {
+                StudentStatus.ACTIVE -> Color(0xFF2E7D32)
+                StudentStatus.INACTIVE -> Color(0xFF546E7A)
+                StudentStatus.SUSPENDED -> Color(0xFFE65100)
+                StudentStatus.GRADUATED -> Color(0xFF1565C0)
+            }
+            val text = when (studentStatus) {
+                StudentStatus.ACTIVE -> "Đang học (Active)"
+                StudentStatus.INACTIVE -> "Nghỉ học (Inactive)"
+                StudentStatus.SUSPENDED -> "Bảo lưu (Suspended)"
+                StudentStatus.GRADUATED -> "Tốt nghiệp (Graduated)"
+            }
+            Triple(bgColor, txtColor, text)
+        }
+        is UserProfile.Teacher -> {
+            val teacherStatus = TeacherStatus.fromString(status)
+            val bgColor = when (teacherStatus) {
+                TeacherStatus.ACTIVE -> Color(0xFFE8F5E9)
+                TeacherStatus.INACTIVE -> Color(0xFFECEFF1)
+                TeacherStatus.ON_LEAVE -> Color(0xFFFFF3E0)
+            }
+            val txtColor = when (teacherStatus) {
+                TeacherStatus.ACTIVE -> Color(0xFF2E7D32)
+                TeacherStatus.INACTIVE -> Color(0xFF546E7A)
+                TeacherStatus.ON_LEAVE -> Color(0xFFE65100)
+            }
+            val text = when (teacherStatus) {
+                TeacherStatus.ACTIVE -> "Hoạt động (Active)"
+                TeacherStatus.INACTIVE -> "Ngưng hoạt động (Inactive)"
+                TeacherStatus.ON_LEAVE -> "Nghỉ phép (On Leave)"
+            }
+            Triple(bgColor, txtColor, text)
+        }
+        else -> {
+            val uppercaseStatus = status.uppercase()
+            val bgColor = when (uppercaseStatus) {
+                "ACTIVE" -> Color(0xFFE8F5E9)
+                "INACTIVE" -> Color(0xFFECEFF1)
+                else -> MaterialTheme.colorScheme.primaryContainer
+            }
+            val txtColor = when (uppercaseStatus) {
+                "ACTIVE" -> Color(0xFF2E7D32)
+                "INACTIVE" -> Color(0xFF546E7A)
+                else -> MaterialTheme.colorScheme.onPrimaryContainer
+            }
+            val text = when (uppercaseStatus) {
+                "ACTIVE" -> "Hoạt động"
+                "INACTIVE" -> "Ngưng hoạt động"
+                else -> status
+            }
+            Triple(bgColor, txtColor, text)
+        }
     }
 
     Box(

@@ -27,8 +27,8 @@ import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
+import com.example.educationapp.core.ui.layout.TopBarGreeting
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.core.util.GreetingHelper
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.presentation.screen.dashboard.StudentDashboardContent
@@ -126,39 +126,7 @@ class DashboardTab : Tab {
             topBar = {
                 AppTopBar(
                     titleContent = {
-                        val greetingRes =
-                            remember { GreetingHelper.getGreetingStringRes(hasName = false) }
-                        val greetingText = stringResource(greetingRes)
-
-                        val currentUserName = userName
-                        if (currentUserName != null) {
-                            val isTablet =
-                                true // Will be drawn inside scaffold content which handles tablet checks. But for layout title content we can either use dynamic size or simple Column since it's responsive.
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(AppDimen.p2),
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                AppText(
-                                    text = "$greetingText,",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                AppText(
-                                    text = currentUserName,
-                                    fontSize = 28.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        } else {
-                            AppText(
-                                text = greetingText,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        TopBarGreeting(userName = userName)
                     },
                     isTitleCentered = false,
                     scrollState = scrollState

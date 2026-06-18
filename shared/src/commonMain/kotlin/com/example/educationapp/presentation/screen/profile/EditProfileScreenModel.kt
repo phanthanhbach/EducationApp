@@ -9,6 +9,7 @@ import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateStudentProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateTeacherProfileUseCase
+import com.example.educationapp.domain.usecase.UpdateParentProfileUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,6 +37,14 @@ sealed interface EditProfileUiState {
         val experience: String
     ) : EditProfileUiState
 
+    data class ParentLoadSuccess(
+        val parent: UserProfile.Parent,
+        val fullName: String,
+        val phone: String,
+        val email: String,
+        val address: String
+    ) : EditProfileUiState
+
     data class Error(val message: String) : EditProfileUiState
 }
 
@@ -50,7 +59,8 @@ class EditProfileScreenModel(
     private val tokenManager: TokenManager,
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val updateStudentProfileUseCase: UpdateStudentProfileUseCase,
-    private val updateTeacherProfileUseCase: UpdateTeacherProfileUseCase
+    private val updateTeacherProfileUseCase: UpdateTeacherProfileUseCase,
+    private val updateParentProfileUseCase: UpdateParentProfileUseCase
 ) : ScreenModel {
 
     private val _uiState = MutableStateFlow<EditProfileUiState>(EditProfileUiState.Idle)
@@ -104,6 +114,15 @@ class EditProfileScreenModel(
                                 experience = profile.experience ?: ""
                             )
                         }
+                        role == AppRole.PARENT && profile is UserProfile.Parent -> {
+                            _uiState.value = EditProfileUiState.ParentLoadSuccess(
+                                parent = profile,
+                                fullName = profile.fullName,
+                                phone = profile.phoneNumber ?: "",
+                                email = profile.email ?: "",
+                                address = profile.address ?: ""
+                            )
+                        }
                         else -> {
                             _uiState.value = EditProfileUiState.Error("This role does not support profile editing.")
                         }
@@ -127,6 +146,9 @@ class EditProfileScreenModel(
             is EditProfileUiState.TeacherLoadSuccess -> {
                 _uiState.value = state.copy(fullName = name)
             }
+            is EditProfileUiState.ParentLoadSuccess -> {
+                _uiState.value = state.copy(fullName = name)
+            }
             else -> {}
         }
     }
@@ -147,8 +169,14 @@ class EditProfileScreenModel(
 
     fun onAddressChanged(address: String) {
         val state = _uiState.value
-        if (state is EditProfileUiState.StudentLoadSuccess) {
-            _uiState.value = state.copy(address = address)
+        when (state) {
+            is EditProfileUiState.StudentLoadSuccess -> {
+                _uiState.value = state.copy(address = address)
+            }
+            is EditProfileUiState.ParentLoadSuccess -> {
+                _uiState.value = state.copy(address = address)
+            }
+            else -> {}
         }
     }
 
@@ -163,15 +191,27 @@ class EditProfileScreenModel(
 
     fun onEmailChanged(email: String) {
         val state = _uiState.value
-        if (state is EditProfileUiState.TeacherLoadSuccess) {
-            _uiState.value = state.copy(email = email)
+        when (state) {
+            is EditProfileUiState.TeacherLoadSuccess -> {
+                _uiState.value = state.copy(email = email)
+            }
+            is EditProfileUiState.ParentLoadSuccess -> {
+                _uiState.value = state.copy(email = email)
+            }
+            else -> {}
         }
     }
 
     fun onPhoneChanged(phone: String) {
         val state = _uiState.value
-        if (state is EditProfileUiState.TeacherLoadSuccess) {
-            _uiState.value = state.copy(phone = phone)
+        when (state) {
+            is EditProfileUiState.TeacherLoadSuccess -> {
+                _uiState.value = state.copy(phone = phone)
+            }
+            is EditProfileUiState.ParentLoadSuccess -> {
+                _uiState.value = state.copy(phone = phone)
+            }
+            else -> {}
         }
     }
 
@@ -226,6 +266,7 @@ class EditProfileScreenModel(
             when (state) {
                 is EditProfileUiState.StudentLoadSuccess -> saveStudentProfile(state)
                 is EditProfileUiState.TeacherLoadSuccess -> saveTeacherProfile(state)
+                is EditProfileUiState.ParentLoadSuccess -> saveParentProfile(state)
                 else -> {
                     _saveStatus.value = SaveStatus.Error("Cannot save: invalid state.")
                 }
@@ -295,6 +336,33 @@ class EditProfileScreenModel(
                     phone = result.data.phone ?: "",
                     certificates = updatedCertificates,
                     experience = result.data.experience ?: ""
+                )
+            }
+            is ApiResult.Error -> {
+                _saveStatus.value = SaveStatus.Error(result.message ?: "Failed to save profile.")
+            }
+        }
+    }
+
+    private suspend fun saveParentProfile(state: EditProfileUiState.ParentLoadSuccess) {
+        val result = updateParentProfileUseCase(
+            parentId = state.parent.parentId,
+            fullName = state.fullName,
+            email = state.email,
+            phoneNumber = state.phone,
+            address = state.address,
+            img = state.parent.img ?: ""
+        )
+
+        when (result) {
+            is ApiResult.Success -> {
+                _saveStatus.value = SaveStatus.Saved
+                _uiState.value = state.copy(
+                    parent = result.data,
+                    fullName = result.data.fullName,
+                    email = result.data.email ?: "",
+                    phone = result.data.phoneNumber ?: "",
+                    address = result.data.address ?: ""
                 )
             }
             is ApiResult.Error -> {

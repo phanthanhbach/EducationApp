@@ -27,11 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.image.AppImage
 import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.row.OptionRow
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
+import com.example.educationapp.domain.enums.StudentStatus
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
 import educationapp.shared.generated.resources.ic_event_24dp
@@ -55,7 +58,7 @@ fun ChildDetailCard(
         ),
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = AppDimen.p16)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -71,71 +74,52 @@ fun ChildDetailCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Avatar using AppImage
-                    val imageSource = if (!child.img.isNullOrBlank()) {
-                        CoreMediaSource.Url(child.img)
+                    // Avatar using AppImage with AppIcon fallback
+                    if (!child.img.isNullOrBlank()) {
+                        Box(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AppImage(
+                                source = CoreMediaSource.Url(child.img),
+                                modifier = Modifier.fillMaxSize(),
+                                placeholder = painterResource(Res.drawable.ic_person_filled_24dp),
+                                error = painterResource(Res.drawable.ic_person_filled_24dp)
+                            )
+                        }
                     } else {
-                        CoreMediaSource.ComposeResource(Res.drawable.ic_person_filled_24dp)
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(72.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AppImage(
-                            source = imageSource,
-                            modifier = Modifier.fillMaxSize(),
-                            placeholder = painterResource(Res.drawable.ic_person_filled_24dp),
-                            error = painterResource(Res.drawable.ic_person_filled_24dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AppIcon(
+                                drawableRes = Res.drawable.ic_person_filled_24dp,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                iconModifier = Modifier.size(36.dp)
+                            )
+                        }
                     }
 
                     Column(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            AppText(
-                                text = child.fullName,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-
-                            // Badge status
-                            val isCompleted = child.status?.lowercase() == "completed"
-                            val isCancelled =
-                                child.status?.lowercase() == "cancelled" || child.status?.lowercase() == "dropped"
-                            val statusBgColor = when {
-                                isCompleted -> Color(0xFFE8F5E9)
-                                isCancelled -> Color(0xFFFFEBEE)
-                                else -> Color(0xFFE3F2FD)
-                            }
-                            val statusTextColor = when {
-                                isCompleted -> Color(0xFF2E7D32)
-                                isCancelled -> Color(0xFFC62828)
-                                else -> Color(0xFF1565C0)
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(statusBgColor)
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                            ) {
-                                AppText(
-                                    text = child.status ?: "Active",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = statusTextColor
-                                )
-                            }
-                        }
+                        AppText(
+                            text = child.fullName,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
                         val studentCodeText = if (!child.studentCode.isNullOrBlank()) {
                             "Mã học sinh: ${child.studentCode}"
@@ -148,15 +132,54 @@ fun ChildDetailCard(
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.SemiBold
                         )
+                    }
+                }
 
-                        if (!child.currentLevel.isNullOrBlank()) {
+                // Status and Level DetailRows above the divider
+                val studentStatus = StudentStatus.fromString(child.status)
+                val statusBgColor = when (studentStatus) {
+                    StudentStatus.ACTIVE -> Color(0xFFE8F5E9)
+                    StudentStatus.INACTIVE -> Color(0xFFECEFF1)
+                    StudentStatus.SUSPENDED -> Color(0xFFFFF3E0)
+                    StudentStatus.GRADUATED -> Color(0xFFE3F2FD)
+                }
+                val statusTextColor = when (studentStatus) {
+                    StudentStatus.ACTIVE -> Color(0xFF2E7D32)
+                    StudentStatus.INACTIVE -> Color(0xFF546E7A)
+                    StudentStatus.SUSPENDED -> Color(0xFFE65100)
+                    StudentStatus.GRADUATED -> Color(0xFF1565C0)
+                }
+                val statusText = when (studentStatus) {
+                    StudentStatus.ACTIVE -> "Đang học (Active)"
+                    StudentStatus.INACTIVE -> "Nghỉ học (Inactive)"
+                    StudentStatus.SUSPENDED -> "Bảo lưu (Suspended)"
+                    StudentStatus.GRADUATED -> "Tốt nghiệp (Graduated)"
+                }
+
+                DetailRow(
+                    label = "Trạng thái",
+                    valueContent = {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(statusBgColor)
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
                             AppText(
-                                text = "Trình độ: ${child.currentLevel}",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                text = statusText,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = statusTextColor
                             )
                         }
                     }
+                )
+
+                if (!child.currentLevel.isNullOrBlank()) {
+                    DetailRow(
+                        label = "Trình độ hiện tại",
+                        value = child.currentLevel
+                    )
                 }
 
                 // Divider
@@ -230,13 +253,13 @@ fun ChildDetailCard(
 @Composable
 private fun DetailRow(
     label: String,
-    value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    valueContent: @Composable () -> Unit
 ) {
     Row(
         modifier = modifier.fillMaxWidth().padding(vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.CenterVertically
     ) {
         AppText(
             text = label,
@@ -245,12 +268,30 @@ private fun DetailRow(
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)
         )
+        Box(
+            modifier = Modifier.weight(2f),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            valueContent()
+        }
+    }
+}
+
+@Composable
+private fun DetailRow(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    DetailRow(
+        label = label,
+        modifier = modifier
+    ) {
         AppText(
             text = value,
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.weight(2f),
             textAlign = TextAlign.End
         )
     }
