@@ -18,7 +18,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import co.touchlab.kermit.Logger as KermitLogger
 
-fun createHttpClient(tokenManager: TokenManager): HttpClient = HttpClient {
+fun createHttpClient(tokenManager: TokenManager, baseUrl: String): HttpClient = HttpClient {
     expectSuccess = true
     install(ContentNegotiation) {
         json(Json {
@@ -50,7 +50,7 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient = HttpClient {
         }
     }
     defaultRequest {
-        url("http://cnxvn.ddns.net:9000/api/v1/")
+        url(baseUrl)
         header(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 }

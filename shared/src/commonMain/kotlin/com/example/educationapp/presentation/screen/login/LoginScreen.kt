@@ -52,10 +52,8 @@ import educationapp.shared.generated.resources.lb_login_title
 import educationapp.shared.generated.resources.lb_password
 import educationapp.shared.generated.resources.lb_password_placeholder
 import educationapp.shared.generated.resources.login_button
-import educationapp.shared.generated.resources.login_create_account
 import educationapp.shared.generated.resources.login_description
 import educationapp.shared.generated.resources.login_forgot_password
-import educationapp.shared.generated.resources.login_no_account
 import educationapp.shared.generated.resources.login_tagline
 import org.jetbrains.compose.resources.stringResource
 
@@ -244,30 +242,12 @@ class LoginScreen : Screen {
 
             Spacer(modifier = Modifier.height(AppDimen.p4))
 
-            Column {
-                AppButton(
-                    text = stringResource(Res.string.login_button),
-                    onClick = onLoginClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    isLoading = state is LoginState.Loading
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    AppText(
-                        text = stringResource(Res.string.login_no_account),
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                        fontSize = 14.sp
-                    )
-                    Spacer(modifier = Modifier.width(AppDimen.p4))
-                    AppTextButton(
-                        text = stringResource(Res.string.login_create_account),
-                        onClick = { /* Handle navigation to register */ }
-                    )
-                }
-            }
+            AppButton(
+                text = stringResource(Res.string.login_button),
+                onClick = onLoginClick,
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = state is LoginState.Loading
+            )
         }
     }
 }

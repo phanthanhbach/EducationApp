@@ -4,5 +4,5 @@ import com.example.educationapp.core.network.createHttpClient
 import org.koin.dsl.module
 
 val networkModule = module {
-    single { createHttpClient(get()) }
+    single { createHttpClient(get(), get()) }
 }

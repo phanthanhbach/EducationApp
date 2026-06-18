@@ -8,7 +8,12 @@ import org.koin.android.ext.koin.androidLogger
 class EducationApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        initKoin {
+        val baseUrl = if (BuildConfig.DEBUG) {
+            "http://10.11.11.212:8085/api/v1/"
+        } else {
+            "http://cnxvn.ddns.net:9000/api/v1/"
+        }
+        initKoin(baseUrl = baseUrl) {
             androidLogger()
             androidContext(this@EducationApp)
         }
