@@ -7,6 +7,9 @@ import com.example.educationapp.core.network.safeApiCall
 import com.example.educationapp.data.dto.request.LoginRequest
 import com.example.educationapp.data.dto.request.ChangePasswordRequest
 import com.example.educationapp.data.dto.response.LoginDTO
+import com.example.educationapp.data.dto.request.ForgotPasswordRequest
+import com.example.educationapp.data.dto.request.ResetPasswordRequest
+import com.example.educationapp.data.dto.response.ForgotPasswordResponseDTO
 import com.example.educationapp.data.endpoint.AuthEndpoint
 import com.example.educationapp.domain.entity.UserInfo
 import com.example.educationapp.domain.enums.AppRole
@@ -55,7 +58,7 @@ class AuthRepositoryImpl(
             // Clear Ktor Bearer Token cache
             clearKtorAuthCache()
 
-            Unit
+            return@safeApiCall Unit
         }
     }
 
@@ -78,7 +81,35 @@ class AuthRepositoryImpl(
                     )
                 )
             }
-            Unit
+            return@safeApiCall Unit
+        }
+    }
+
+    override suspend fun forgotPassword(username: String): ApiResult<String> {
+        return safeApiCall {
+            val response = httpClient.post(AuthEndpoint.FORGOT_PASSWORD) {
+                setBody(ForgotPasswordRequest(username = username))
+            }.body<BaseResponse<ForgotPasswordResponseDTO>>()
+            response.data.expiresAt
+        }
+    }
+
+    override suspend fun resetPassword(
+        token: String,
+        newPassword: String,
+        confirmPassword: String
+    ): ApiResult<Unit> {
+        return safeApiCall {
+            httpClient.post(AuthEndpoint.RESET_PASSWORD) {
+                setBody(
+                    ResetPasswordRequest(
+                        token = token,
+                        newPassword = newPassword,
+                        confirmPassword = confirmPassword
+                    )
+                )
+            }
+            return@safeApiCall Unit
         }
     }
 }

@@ -11,6 +11,8 @@ import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashbo
 import com.example.educationapp.presentation.screenmodel.feedback.ClassFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.invoice.ClassInvoicesScreenModel
 import com.example.educationapp.presentation.screenmodel.login.LoginScreenModel
+import com.example.educationapp.presentation.screenmodel.login.ForgotPasswordScreenModel
+import com.example.educationapp.presentation.screenmodel.login.ResetPasswordScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ChildAttendanceRateScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ChildScheduleScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.FeedbackScreenModel
@@ -25,6 +27,8 @@ import org.koin.dsl.module
 
 val screenModelModule = module {
     factory { LoginScreenModel(get(), get()) }
+    factory { ForgotPasswordScreenModel(get()) }
+    factory { ResetPasswordScreenModel(get()) }
     factory { SettingScreenModel(get(), get(), get(), get()) }
     factory { ChangePasswordScreenModel(get()) }
     factory { ProfileScreenModel(get(), get()) }

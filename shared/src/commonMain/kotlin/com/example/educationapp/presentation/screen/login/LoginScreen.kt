@@ -139,6 +139,7 @@ class LoginScreen : Screen {
                             onPasswordChange = { password = it },
                             state = state,
                             onLoginClick = { screenModel.login(username, password) },
+                            onForgotPasswordClick = { navigator.push(ForgotPasswordScreen()) },
                             modifier = Modifier
                                 .widthIn(max = 400.dp)
                                 .fillMaxWidth()
@@ -160,6 +161,7 @@ class LoginScreen : Screen {
                         onPasswordChange = { password = it },
                         state = state,
                         onLoginClick = { screenModel.login(username, password) },
+                        onForgotPasswordClick = { navigator.push(ForgotPasswordScreen()) },
                         modifier = Modifier
                             .widthIn(max = 400.dp)
                             .fillMaxWidth()
@@ -177,6 +179,7 @@ class LoginScreen : Screen {
         onPasswordChange: (String) -> Unit,
         state: LoginState,
         onLoginClick: () -> Unit,
+        onForgotPasswordClick: () -> Unit,
         modifier: Modifier = Modifier
     ) {
         Column(
@@ -225,7 +228,7 @@ class LoginScreen : Screen {
 
                 AppTextButton(
                     text = stringResource(Res.string.login_forgot_password),
-                    onClick = { /* Handle forgot password */ },
+                    onClick = onForgotPasswordClick,
                     modifier = Modifier.align(Alignment.End)
                 )
             }

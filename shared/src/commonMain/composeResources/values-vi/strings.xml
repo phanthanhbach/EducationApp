@@ -280,4 +280,18 @@
     <string name="dashboard_rating_overview_desc">Hiệu suất giảng dạy từ học viên</string>
     <string name="dashboard_rating_count_label">Lượt đánh giá</string>
     <string name="dashboard_feedback_count_label">Phản hồi/Nhận xét</string>
+
+    <!-- Forgot & Reset Password -->
+    <string name="forgot_password_title">Quên Mật Khẩu</string>
+    <string name="forgot_password_desc">Nhập tên đăng nhập (email) của bạn để nhận mã khôi phục mật khẩu.</string>
+    <string name="btn_send_reset_link">Gửi mã khôi phục</string>
+    <string name="reset_password_title">Đặt Lại Mật Khẩu</string>
+    <string name="reset_password_desc">Vui lòng nhập mã khôi phục được gửi đến email của bạn và mật khẩu mới.</string>
+    <string name="lbl_reset_token">Mã khôi phục</string>
+    <string name="lbl_reset_token_placeholder">Nhập mã khôi phục</string>
+    <string name="error_password_invalid">Mật khẩu phải dài ít nhất 8 ký tự, bao gồm ít nhất một chữ hoa, một chữ thường, một chữ số và một ký tự đặc biệt.</string>
+    <string name="error_passwords_do_not_match">Mật khẩu xác nhận không khớp</string>
+    <string name="msg_reset_link_sent">Mã khôi phục mật khẩu đã được gửi đến email của bạn</string>
+    <string name="msg_reset_success">Đặt lại mật khẩu thành công</string>
+    <string name="btn_submit">Xác nhận</string>
 </resources>

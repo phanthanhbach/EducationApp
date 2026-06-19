@@ -280,4 +280,18 @@
     <string name="dashboard_rating_overview_desc">Teaching performance from students</string>
     <string name="dashboard_rating_count_label">Ratings</string>
     <string name="dashboard_feedback_count_label">Feedback/Reviews</string>
+
+    <!-- Forgot & Reset Password -->
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="forgot_password_desc">Enter your username (email) and we'll send you a password reset token.</string>
+    <string name="btn_send_reset_link">Send Reset Token</string>
+    <string name="reset_password_title">Reset Password</string>
+    <string name="reset_password_desc">Please enter the reset token sent to your email and your new password.</string>
+    <string name="lbl_reset_token">Reset Token</string>
+    <string name="lbl_reset_token_placeholder">Enter reset token</string>
+    <string name="error_password_invalid">Password must be at least 8 characters long, containing at least one uppercase letter, one lowercase letter, one digit, and one special character.</string>
+    <string name="error_passwords_do_not_match">Passwords do not match</string>
+    <string name="msg_reset_link_sent">Reset token has been sent to your email</string>
+    <string name="msg_reset_success">Password has been reset successfully</string>
+    <string name="btn_submit">Submit</string>
 </resources>
