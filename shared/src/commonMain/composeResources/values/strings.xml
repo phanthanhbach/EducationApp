@@ -109,6 +109,7 @@
     <string name="lb_status_completed">Completed</string>
     <string name="lb_status_cancelled">Cancelled</string>
     <string name="lb_status_active">Active</string>
+    <string name="course_status_inactive">Inactive</string>
     <string name="lb_status_dropped">Dropped</string>
 
     <!-- My Class Screen Strings -->
@@ -218,6 +219,7 @@
     <string name="dashboard_courses_title">Current Courses</string>
     <string name="dashboard_courses_empty">No current courses.</string>
     <string name="dashboard_btn_retry">Retry</string>
+    <string name="dashboard_btn_view_all">View all</string>
 
     <!-- Teacher Contact actions -->
     <string name="teacher_contact_no_email_app">No email app found</string>

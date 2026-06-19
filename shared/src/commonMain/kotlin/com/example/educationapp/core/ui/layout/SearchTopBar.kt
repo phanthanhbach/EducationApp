@@ -73,6 +73,8 @@ fun SearchTopBarLayout(
     filterIcon: DrawableResource? = null,
     isFilterActive: Boolean = false,
     onFilterClick: (() -> Unit)? = null,
+    onBackClick: (() -> Unit)? = null,
+    isTitleCentered: Boolean = onBackClick != null,
     extraContent: @Composable (() -> Unit)? = null,
     content: @Composable (maxScrollDp: Dp, totalHeaderHeightDp: Dp, listTopPaddingDp: Dp) -> Unit
 ) {
@@ -162,15 +164,19 @@ fun SearchTopBarLayout(
                     }
             ) {
                 AppTopBar(
-                    titleContent = {
-                        AppText(
-                            text = title,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    isTitleCentered = false
+                    title = if (isTitleCentered) title else null,
+                    titleContent = if (!isTitleCentered) {
+                        {
+                            AppText(
+                                text = title,
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    } else null,
+                    isTitleCentered = isTitleCentered,
+                    onBackClick = onBackClick
                 )
 
                 if (extraContent != null) {

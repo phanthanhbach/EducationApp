@@ -94,24 +94,19 @@ private fun CourseCard(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AppText(
-                    text = stringResource(Res.string.dashboard_course_code, course.code),
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                AppText(
-                    text = stringResource(Res.string.dashboard_course_total_sessions, course.totalSessions),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Spacer(modifier = Modifier.height(AppDimen.p12))
+            AppText(
+                text = stringResource(Res.string.dashboard_course_code, course.code),
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(AppDimen.p4))
+            AppText(
+                text = stringResource(Res.string.dashboard_course_total_sessions, course.totalSessions),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
