@@ -1,6 +1,7 @@
 package com.example.educationapp.di
 
 import com.example.educationapp.presentation.screen.setting.SettingScreenModel
+import com.example.educationapp.presentation.screen.setting.ChangePasswordScreenModel
 import com.example.educationapp.presentation.screen.profile.EditProfileScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
@@ -25,6 +26,7 @@ import org.koin.dsl.module
 val screenModelModule = module {
     factory { LoginScreenModel(get(), get()) }
     factory { SettingScreenModel(get(), get(), get(), get()) }
+    factory { ChangePasswordScreenModel(get()) }
     factory { ProfileScreenModel(get(), get()) }
     factory { EditProfileScreenModel(get(), get(), get(), get(), get()) }
     factory { ScheduleScreenModel(get()) }

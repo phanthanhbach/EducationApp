@@ -6,4 +6,5 @@ import com.example.educationapp.domain.entity.UserInfo
 interface AuthRepository {
     suspend fun login(username: String, password: String): ApiResult<UserInfo>
     suspend fun logout(): ApiResult<Unit>
+    suspend fun changePassword(currentPassword: String, newPassword: String, confirmPassword: String): ApiResult<Unit>
 }

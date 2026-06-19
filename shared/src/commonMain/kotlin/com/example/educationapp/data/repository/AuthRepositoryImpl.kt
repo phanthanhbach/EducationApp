@@ -5,6 +5,7 @@ import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.network.BaseResponse
 import com.example.educationapp.core.network.safeApiCall
 import com.example.educationapp.data.dto.request.LoginRequest
+import com.example.educationapp.data.dto.request.ChangePasswordRequest
 import com.example.educationapp.data.dto.response.LoginDTO
 import com.example.educationapp.data.endpoint.AuthEndpoint
 import com.example.educationapp.domain.entity.UserInfo
@@ -60,6 +61,25 @@ class AuthRepositoryImpl(
 
     private fun clearKtorAuthCache() {
         httpClient.authProvider<BearerAuthProvider>()?.clearToken()
+    }
+
+    override suspend fun changePassword(
+        currentPassword: String,
+        newPassword: String,
+        confirmPassword: String
+    ): ApiResult<Unit> {
+        return safeApiCall {
+            httpClient.post(AuthEndpoint.CHANGE_PASSWORD) {
+                setBody(
+                    ChangePasswordRequest(
+                        currentPassword = currentPassword,
+                        newPassword = newPassword,
+                        confirmPassword = confirmPassword
+                    )
+                )
+            }
+            Unit
+        }
     }
 }
 
