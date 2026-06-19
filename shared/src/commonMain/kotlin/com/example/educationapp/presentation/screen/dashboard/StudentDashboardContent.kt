@@ -36,6 +36,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
@@ -46,6 +47,7 @@ import com.example.educationapp.presentation.screen.dashboard.composable.Section
 import com.example.educationapp.presentation.screen.dashboard.composable.TeacherContactSection
 import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
 import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
+import com.example.educationapp.presentation.screen.course.MyCoursesScreen
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardState
 import educationapp.shared.generated.resources.Res
@@ -53,6 +55,7 @@ import educationapp.shared.generated.resources.dashboard_assignments_empty
 import educationapp.shared.generated.resources.dashboard_attendance_empty
 import educationapp.shared.generated.resources.dashboard_attendance_title
 import educationapp.shared.generated.resources.dashboard_btn_retry
+import educationapp.shared.generated.resources.dashboard_btn_view_all
 import educationapp.shared.generated.resources.dashboard_courses_empty
 import educationapp.shared.generated.resources.dashboard_courses_title
 import educationapp.shared.generated.resources.dashboard_teacher_contact_empty
@@ -210,7 +213,7 @@ fun StudentDashboardContent(
                     // 5. Current Courses
                     Column(
                         modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                            .padding(AppDimen.p16),
                         verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                     ) {
                         SectionHeader(title = stringResource(Res.string.dashboard_courses_title))
@@ -219,6 +222,19 @@ fun StudentDashboardContent(
                             EmptySectionCard(message = stringResource(Res.string.dashboard_courses_empty))
                         } else {
                             CurrentCoursesSection(courses = currentState.currentCourses)
+                            AppTextButton(
+                                text = stringResource(Res.string.dashboard_btn_view_all),
+                                onClick = { parentNavigator?.push(MyCoursesScreen()) },
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                trailingIcon = {
+                                    AppText(
+                                        text = "→",
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            )
                         }
                     }
                 }

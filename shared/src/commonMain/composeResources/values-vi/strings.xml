@@ -109,6 +109,7 @@
     <string name="lb_status_completed">Đã hoàn thành</string>
     <string name="lb_status_cancelled">Đã hủy</string>
     <string name="lb_status_active">Đang học</string>
+    <string name="course_status_inactive">Ngừng hoạt động</string>
     <string name="lb_status_dropped">Đã thôi học</string>
 
     <!-- My Class Screen Strings -->
@@ -218,6 +219,7 @@
     <string name="dashboard_courses_title">Khóa học hiện tại</string>
     <string name="dashboard_courses_empty">Không có khóa học nào hiện tại.</string>
     <string name="dashboard_btn_retry">Thử lại</string>
+    <string name="dashboard_btn_view_all">Xem tất cả</string>
 
     <!-- Teacher Contact actions -->
     <string name="teacher_contact_no_email_app">Không tìm thấy app email</string>
