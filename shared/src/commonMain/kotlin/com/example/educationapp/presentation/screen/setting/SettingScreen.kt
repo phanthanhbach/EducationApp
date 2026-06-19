@@ -171,7 +171,7 @@ class SettingScreen : Screen {
                             OptionRow(
                                 iconRes = Res.drawable.ic_lock_24dp,
                                 title = stringResource(Res.string.btn_change_password),
-                                onClick = { /* TODO: Handle change password */ }
+                                onClick = { navigator.push(ChangePasswordScreen()) }
                             )
                         }
                     }

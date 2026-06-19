@@ -38,6 +38,12 @@
     <string name="tab_payments">Thanh toán</string>
 
     <string name="btn_change_password">Đổi mật khẩu</string>
+    <string name="lbl_current_password">Mật khẩu hiện tại</string>
+    <string name="lbl_current_password_placeholder">Nhập mật khẩu hiện tại</string>
+    <string name="lbl_new_password">Mật khẩu mới</string>
+    <string name="lbl_new_password_placeholder">Nhập mật khẩu mới</string>
+    <string name="lbl_confirm_password">Xác nhận mật khẩu mới</string>
+    <string name="lbl_confirm_password_placeholder">Nhập lại mật khẩu mới</string>
     <string name="section_account">Quản lý tài khoản</string>
     <string name="section_preferences">Cài đặt chung</string>
     <string name="option_theme">Giao diện</string>

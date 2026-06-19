@@ -38,6 +38,12 @@
     <string name="tab_payments">Payments</string>
 
     <string name="btn_change_password">Change Password</string>
+    <string name="lbl_current_password">Current Password</string>
+    <string name="lbl_current_password_placeholder">Enter current password</string>
+    <string name="lbl_new_password">New Password</string>
+    <string name="lbl_new_password_placeholder">Enter new password</string>
+    <string name="lbl_confirm_password">Confirm New Password</string>
+    <string name="lbl_confirm_password_placeholder">Confirm new password</string>
     <string name="section_account">Account Management</string>
     <string name="section_preferences">Preferences</string>
     <string name="option_theme">Appearance</string>
