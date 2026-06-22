@@ -76,7 +76,6 @@ fun OptionRow(
                 AppText(
                     text = title,
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 if (description != null) {

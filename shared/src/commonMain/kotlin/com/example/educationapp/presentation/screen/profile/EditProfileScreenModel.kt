@@ -9,9 +9,9 @@ import com.example.educationapp.core.util.decodeByteArrayToImageBitmap
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
+import com.example.educationapp.domain.usecase.UpdateParentProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateStudentProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateTeacherProfileUseCase
-import com.example.educationapp.domain.usecase.UpdateParentProfileUseCase
 import com.example.educationapp.domain.usecase.UploadAvatarUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -93,12 +93,12 @@ class EditProfileScreenModel(
             when (val result = getMyProfileUseCase(role)) {
                 is ApiResult.Success -> {
                     val profile = result.data
-                    when {
-                        role == AppRole.STUDENT && profile is UserProfile.Student -> {
+                    when (role) {
+                        AppRole.STUDENT if profile is UserProfile.Student -> {
                             val dob = profile.dateOfBirth?.let {
                                 try {
                                     LocalDate.parse(it)
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     null
                                 }
                             }
@@ -111,7 +111,8 @@ class EditProfileScreenModel(
                                 zaloLink = profile.zaloLink ?: ""
                             )
                         }
-                        role == AppRole.TEACHER && profile is UserProfile.Teacher -> {
+
+                        AppRole.TEACHER if profile is UserProfile.Teacher -> {
                             val initialCertificates = if (profile.certificates.isNotEmpty()) {
                                 profile.certificates.toList()
                             } else {
@@ -126,7 +127,8 @@ class EditProfileScreenModel(
                                 experience = profile.experience ?: ""
                             )
                         }
-                        role == AppRole.PARENT && profile is UserProfile.Parent -> {
+
+                        AppRole.PARENT if profile is UserProfile.Parent -> {
                             _uiState.value = EditProfileUiState.ParentLoadSuccess(
                                 parent = profile,
                                 fullName = profile.fullName,
@@ -135,13 +137,17 @@ class EditProfileScreenModel(
                                 address = profile.address ?: ""
                             )
                         }
+
                         else -> {
-                            _uiState.value = EditProfileUiState.Error("This role does not support profile editing.")
+                            _uiState.value =
+                                EditProfileUiState.Error("This role does not support profile editing.")
                         }
                     }
                 }
+
                 is ApiResult.Error -> {
-                    _uiState.value = EditProfileUiState.Error(result.message ?: "Failed to load profile.")
+                    _uiState.value =
+                        EditProfileUiState.Error(result.message ?: "Failed to load profile.")
                 }
             }
         }
@@ -157,17 +163,19 @@ class EditProfileScreenModel(
         pendingAvatarBytes = bytes
         val preview = decodeByteArrayToImageBitmap(bytes)
 
-        val state = _uiState.value
-        when (state) {
+        when (val state = _uiState.value) {
             is EditProfileUiState.StudentLoadSuccess -> {
                 _uiState.value = state.copy(avatarPreview = preview)
             }
+
             is EditProfileUiState.TeacherLoadSuccess -> {
                 _uiState.value = state.copy(avatarPreview = preview)
             }
+
             is EditProfileUiState.ParentLoadSuccess -> {
                 _uiState.value = state.copy(avatarPreview = preview)
             }
+
             else -> {}
         }
     }
@@ -175,17 +183,19 @@ class EditProfileScreenModel(
     // ── Student field handlers ───────────────────────────────────────────
 
     fun onFullNameChanged(name: String) {
-        val state = _uiState.value
-        when (state) {
+        when (val state = _uiState.value) {
             is EditProfileUiState.StudentLoadSuccess -> {
                 _uiState.value = state.copy(fullName = name)
             }
+
             is EditProfileUiState.TeacherLoadSuccess -> {
                 _uiState.value = state.copy(fullName = name)
             }
+
             is EditProfileUiState.ParentLoadSuccess -> {
                 _uiState.value = state.copy(fullName = name)
             }
+
             else -> {}
         }
     }
@@ -205,14 +215,15 @@ class EditProfileScreenModel(
     }
 
     fun onAddressChanged(address: String) {
-        val state = _uiState.value
-        when (state) {
+        when (val state = _uiState.value) {
             is EditProfileUiState.StudentLoadSuccess -> {
                 _uiState.value = state.copy(address = address)
             }
+
             is EditProfileUiState.ParentLoadSuccess -> {
                 _uiState.value = state.copy(address = address)
             }
+
             else -> {}
         }
     }
@@ -227,27 +238,29 @@ class EditProfileScreenModel(
     // ── Teacher field handlers ──────────────────────────────────────────
 
     fun onEmailChanged(email: String) {
-        val state = _uiState.value
-        when (state) {
+        when (val state = _uiState.value) {
             is EditProfileUiState.TeacherLoadSuccess -> {
                 _uiState.value = state.copy(email = email)
             }
+
             is EditProfileUiState.ParentLoadSuccess -> {
                 _uiState.value = state.copy(email = email)
             }
+
             else -> {}
         }
     }
 
     fun onPhoneChanged(phone: String) {
-        val state = _uiState.value
-        when (state) {
+        when (val state = _uiState.value) {
             is EditProfileUiState.TeacherLoadSuccess -> {
                 _uiState.value = state.copy(phone = phone)
             }
+
             is EditProfileUiState.ParentLoadSuccess -> {
                 _uiState.value = state.copy(phone = phone)
             }
+
             else -> {}
         }
     }
@@ -307,6 +320,7 @@ class EditProfileScreenModel(
                         pendingAvatarBytes = null
                         uploadResult.data
                     }
+
                     is ApiResult.Error -> {
                         _saveStatus.value = SaveStatus.Error(
                             uploadResult.message ?: "Không thể tải ảnh lên. Vui lòng thử lại."
@@ -360,6 +374,7 @@ class EditProfileScreenModel(
                     avatarPreview = null
                 )
             }
+
             is ApiResult.Error -> {
                 _saveStatus.value = SaveStatus.Error(result.message ?: "Failed to save profile.")
             }
@@ -406,6 +421,7 @@ class EditProfileScreenModel(
                     avatarPreview = null
                 )
             }
+
             is ApiResult.Error -> {
                 _saveStatus.value = SaveStatus.Error(result.message ?: "Failed to save profile.")
             }
@@ -439,6 +455,7 @@ class EditProfileScreenModel(
                     avatarPreview = null
                 )
             }
+
             is ApiResult.Error -> {
                 _saveStatus.value = SaveStatus.Error(result.message ?: "Failed to save profile.")
             }

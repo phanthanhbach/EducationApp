@@ -52,6 +52,7 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.chip.AppChip
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.sheet.AppBottomSheet
+import com.example.educationapp.core.ui.sheet.ClassStatusFilterBottomSheet
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.enums.AppRole
@@ -108,7 +109,6 @@ class PaymentsTab : Tab {
         val selectedStatus by screenModel.selectedStatus.collectAsState()
 
         var showFilterSheet by remember { mutableStateOf(false) }
-        var tempSelectedStatus by remember(selectedStatus) { mutableStateOf(selectedStatus) }
 
         val statuses = listOf(
             null to stringResource(Res.string.lb_status_all),
@@ -155,7 +155,6 @@ class PaymentsTab : Tab {
             isFilterActive = selectedStatus != null,
             placeholder = stringResource(Res.string.my_classes_search_placeholder),
             onFilterClick = {
-                tempSelectedStatus = selectedStatus
                 showFilterSheet = true
             },
             extraContent = {
@@ -192,57 +191,13 @@ class PaymentsTab : Tab {
             )
         }
 
-        // Common: Filter bottom sheet
         if (showFilterSheet) {
-            AppBottomSheet(
+            ClassStatusFilterBottomSheet(
+                selectedStatus = selectedStatus,
+                statuses = statuses,
+                onStatusSelect = { screenModel.filterByStatus(it) },
                 onDismissRequest = { showFilterSheet = false }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(AppDimen.p24),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    AppText(
-                        text = "Lọc trạng thái lớp học",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        statuses.forEach { (statusKey, statusLabel) ->
-                            val isSelected = tempSelectedStatus == statusKey
-                            AppChip(
-                                text = statusLabel,
-                                selected = isSelected,
-                                onClick = { tempSelectedStatus = statusKey }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Button(
-                        onClick = {
-                            screenModel.filterByStatus(tempSelectedStatus)
-                            showFilterSheet = false
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        AppText(
-                            text = "Xác nhận",
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
-            }
+            )
         }
     }
 

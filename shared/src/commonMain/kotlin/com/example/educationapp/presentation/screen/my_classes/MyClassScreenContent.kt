@@ -61,6 +61,7 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.chip.AppChip
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.sheet.AppBottomSheet
+import com.example.educationapp.core.ui.sheet.ClassStatusFilterBottomSheet
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.enums.ClassStatus
@@ -140,7 +141,6 @@ private fun ClassesContent(
     val focusManager = LocalFocusManager.current
     var toastMessage by remember { mutableStateOf<String?>(null) }
     var showFilterSheet by remember { mutableStateOf(false) }
-    var tempSelectedStatus by remember(selectedStatus) { mutableStateOf(selectedStatus) }
 
     LaunchedEffect(toastMessage) {
         if (toastMessage != null) {
@@ -175,7 +175,6 @@ private fun ClassesContent(
         filterIcon = Res.drawable.ic_sort_24dp,
         isFilterActive = selectedStatus != null,
         onFilterClick = {
-            tempSelectedStatus = selectedStatus
             showFilterSheet = true
         },
         modifier = modifier
@@ -385,55 +384,12 @@ private fun ClassesContent(
     }
 
     if (showFilterSheet) {
-        AppBottomSheet(
+        ClassStatusFilterBottomSheet(
+            selectedStatus = selectedStatus,
+            statuses = statuses,
+            onStatusSelect = onStatusSelect,
             onDismissRequest = { showFilterSheet = false }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(AppDimen.p24),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                AppText(
-                    text = "Lọc trạng thái lớp học",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    statuses.forEach { (statusKey, statusLabel) ->
-                        val isSelected = tempSelectedStatus == statusKey
-                        AppChip(
-                            text = statusLabel,
-                            selected = isSelected,
-                            onClick = { tempSelectedStatus = statusKey }
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = {
-                        onStatusSelect(tempSelectedStatus)
-                        showFilterSheet = false
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    AppText(
-                        text = "Xác nhận",
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
-        }
+        )
     }
 }
 
