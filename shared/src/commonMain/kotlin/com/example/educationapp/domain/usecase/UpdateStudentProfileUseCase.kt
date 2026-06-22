@@ -13,7 +13,8 @@ class UpdateStudentProfileUseCase(
         dateOfBirth: String,
         gender: String,
         address: String,
-        zaloLink: String
+        zaloLink: String,
+        img: String
     ): ApiResult<UserProfile.Student> {
         return repository.updateStudentProfile(
             studentId = studentId,
@@ -21,7 +22,8 @@ class UpdateStudentProfileUseCase(
             dateOfBirth = dateOfBirth,
             gender = gender,
             address = address,
-            zaloLink = zaloLink
+            zaloLink = zaloLink,
+            img = img
         )
     }
 }

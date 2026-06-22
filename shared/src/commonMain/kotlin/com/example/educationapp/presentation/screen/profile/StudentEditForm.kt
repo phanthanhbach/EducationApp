@@ -8,11 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.educationapp.core.file.rememberImagePickerCropper
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
@@ -37,6 +36,11 @@ fun StudentEditForm(
     saveStatus: SaveStatus,
     screenModel: EditProfileScreenModel
 ) {
+    val imagePicker = rememberImagePickerCropper(
+        onImageCropped = { bytes -> screenModel.onAvatarCropped(bytes) },
+        onError = { /* Silently ignore or log */ }
+    )
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
@@ -49,7 +53,11 @@ fun StudentEditForm(
     ) {
         // Avatar Section
         item {
-            AvatarSection(imgUrl = state.student.img)
+            AvatarSection(
+                imgUrl = state.student.img,
+                avatarPreview = state.avatarPreview,
+                onEditClick = { imagePicker.launch() }
+            )
         }
 
         // Form Fields

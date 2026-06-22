@@ -38,6 +38,7 @@ import com.example.educationapp.domain.usecase.UpdateParentProfileUseCase
 import com.example.educationapp.domain.usecase.ChangePasswordUseCase
 import com.example.educationapp.domain.usecase.ForgotPasswordUseCase
 import com.example.educationapp.domain.usecase.ResetPasswordUseCase
+import com.example.educationapp.domain.usecase.UploadAvatarUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -79,4 +80,5 @@ val useCaseModule = module {
     single { ChangePasswordUseCase(get()) }
     single { ForgotPasswordUseCase(get()) }
     single { ResetPasswordUseCase(get()) }
+    single { UploadAvatarUseCase(get()) }
 }
