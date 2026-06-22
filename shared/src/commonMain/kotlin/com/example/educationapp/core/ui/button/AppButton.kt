@@ -48,7 +48,7 @@ fun AppButton(
         disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
         disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
     ),
-    style: TextStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+    style: TextStyle = MaterialTheme.typography.titleMedium
 ) {
     Button(
         onClick = onClick,
