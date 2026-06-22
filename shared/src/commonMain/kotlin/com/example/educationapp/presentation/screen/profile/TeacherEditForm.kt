@@ -21,6 +21,7 @@ import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
+import com.example.educationapp.core.file.rememberImagePickerCropper
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_add_24dp
 import educationapp.shared.generated.resources.ic_close_24dp
@@ -40,6 +41,11 @@ fun TeacherEditForm(
     saveStatus: SaveStatus,
     screenModel: EditProfileScreenModel
 ) {
+    val imagePicker = rememberImagePickerCropper(
+        onImageCropped = { bytes -> screenModel.onAvatarCropped(bytes) },
+        onError = { /* Silently ignore or log */ }
+    )
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
@@ -52,7 +58,11 @@ fun TeacherEditForm(
     ) {
         // Avatar Section
         item {
-            AvatarSection(imgUrl = state.teacher.img)
+            AvatarSection(
+                imgUrl = state.teacher.img,
+                avatarPreview = state.avatarPreview,
+                onEditClick = { imagePicker.launch() }
+            )
         }
 
         // Form Fields

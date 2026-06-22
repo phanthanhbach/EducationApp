@@ -24,6 +24,7 @@ multiplatformSettings = "1.3.0"
 androidSecurityCrypto = "1.1.0"
 kotlinx-datetime = "0.8.0"
 haze = "2.0.0-alpha03"
+ucrop = "2.2.11"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -91,6 +92,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 # Haze (Backdrop Blur)
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 haze-blur = { module = "dev.chrisbanes.haze:haze-blur", version.ref = "haze" }
+ucrop = { module = "com.github.yalantis:ucrop", version.ref = "ucrop" }
 
 
 [plugins]

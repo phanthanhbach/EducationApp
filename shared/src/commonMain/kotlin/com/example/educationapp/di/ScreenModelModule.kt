@@ -33,7 +33,7 @@ val screenModelModule = module {
     factory { SettingScreenModel(get(), get(), get(), get()) }
     factory { ChangePasswordScreenModel(get()) }
     factory { ProfileScreenModel(get(), get()) }
-    factory { EditProfileScreenModel(get(), get(), get(), get(), get()) }
+    factory { EditProfileScreenModel(get(), get(), get(), get(), get(), get()) }
     factory { ScheduleScreenModel(get()) }
     factory { SessionDetailScreenModel(get(), get(), get(), get()) }
     factory { AttendanceScreenModel(get(), get()) }

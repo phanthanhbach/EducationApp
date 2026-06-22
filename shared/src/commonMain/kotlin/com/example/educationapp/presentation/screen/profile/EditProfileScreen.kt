@@ -1,7 +1,9 @@
 package com.example.educationapp.presentation.screen.profile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -122,7 +125,11 @@ class EditProfileScreen : Screen {
 // ── Avatar Section (shared between forms, package-private) ───────────────────────
 
 @Composable
-fun AvatarSection(imgUrl: String?) {
+fun AvatarSection(
+    imgUrl: String?,
+    avatarPreview: ImageBitmap? = null,
+    onEditClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
@@ -135,13 +142,9 @@ fun AvatarSection(imgUrl: String?) {
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        val mediaSource = if (!imgUrl.isNullOrBlank()) {
-            CoreMediaSource.Url(imgUrl)
-        } else {
-            CoreMediaSource.None
-        }
-
-        Box(modifier = Modifier.size(90.dp)) {
+        Box(
+            modifier = Modifier.size(90.dp)
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -154,9 +157,16 @@ fun AvatarSection(imgUrl: String?) {
                         color = MaterialTheme.colorScheme.background,
                         shape = RoundedCornerShape(45.dp)
                     )
-                    .clip(RoundedCornerShape(45.dp)),
+                    .clip(RoundedCornerShape(45.dp))
+                    .clickable { onEditClick() },
                 contentAlignment = Alignment.Center
             ) {
+                val mediaSource = when {
+                    avatarPreview != null -> CoreMediaSource.Bitmap(avatarPreview)
+                    !imgUrl.isNullOrBlank() -> CoreMediaSource.Url(imgUrl)
+                    else -> CoreMediaSource.None
+                }
+
                 if (mediaSource is CoreMediaSource.None) {
                     AppIcon(
                         drawableRes = Res.drawable.ic_person_filled_24dp,

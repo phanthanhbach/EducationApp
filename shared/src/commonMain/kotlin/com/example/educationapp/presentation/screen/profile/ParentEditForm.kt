@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
+import com.example.educationapp.core.file.rememberImagePickerCropper
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.profile_address
 import educationapp.shared.generated.resources.profile_email
@@ -28,6 +29,11 @@ fun ParentEditForm(
     saveStatus: SaveStatus,
     screenModel: EditProfileScreenModel
 ) {
+    val imagePicker = rememberImagePickerCropper(
+        onImageCropped = { bytes -> screenModel.onAvatarCropped(bytes) },
+        onError = { /* Silently ignore or log */ }
+    )
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
@@ -40,7 +46,11 @@ fun ParentEditForm(
     ) {
         // Avatar Section
         item {
-            AvatarSection(imgUrl = state.parent.img)
+            AvatarSection(
+                imgUrl = state.parent.img,
+                avatarPreview = state.avatarPreview,
+                onEditClick = { imagePicker.launch() }
+            )
         }
 
         // Form Fields

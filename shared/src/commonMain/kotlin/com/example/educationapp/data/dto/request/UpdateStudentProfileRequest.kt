@@ -8,5 +8,6 @@ data class UpdateStudentProfileRequest(
     val dateOfBirth: String,
     val gender: String,
     val address: String,
-    val zaloLink: String
+    val zaloLink: String,
+    val img: String? = null
 )

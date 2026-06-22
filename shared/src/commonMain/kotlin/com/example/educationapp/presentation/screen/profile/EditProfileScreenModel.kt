@@ -1,15 +1,18 @@
 package com.example.educationapp.presentation.screen.profile
 
+import androidx.compose.ui.graphics.ImageBitmap
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.data.TokenManager
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.decodeByteArrayToImageBitmap
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateStudentProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateTeacherProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateParentProfileUseCase
+import com.example.educationapp.domain.usecase.UploadAvatarUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +28,8 @@ sealed interface EditProfileUiState {
         val dateOfBirth: LocalDate?,
         val gender: String,
         val address: String,
-        val zaloLink: String
+        val zaloLink: String,
+        val avatarPreview: ImageBitmap? = null
     ) : EditProfileUiState
 
     data class TeacherLoadSuccess(
@@ -34,7 +38,8 @@ sealed interface EditProfileUiState {
         val email: String,
         val phone: String,
         val certificates: List<String>,
-        val experience: String
+        val experience: String,
+        val avatarPreview: ImageBitmap? = null
     ) : EditProfileUiState
 
     data class ParentLoadSuccess(
@@ -42,7 +47,8 @@ sealed interface EditProfileUiState {
         val fullName: String,
         val phone: String,
         val email: String,
-        val address: String
+        val address: String,
+        val avatarPreview: ImageBitmap? = null
     ) : EditProfileUiState
 
     data class Error(val message: String) : EditProfileUiState
@@ -60,7 +66,8 @@ class EditProfileScreenModel(
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val updateStudentProfileUseCase: UpdateStudentProfileUseCase,
     private val updateTeacherProfileUseCase: UpdateTeacherProfileUseCase,
-    private val updateParentProfileUseCase: UpdateParentProfileUseCase
+    private val updateParentProfileUseCase: UpdateParentProfileUseCase,
+    private val uploadAvatarUseCase: UploadAvatarUseCase
 ) : ScreenModel {
 
     private val _uiState = MutableStateFlow<EditProfileUiState>(EditProfileUiState.Idle)
@@ -68,6 +75,11 @@ class EditProfileScreenModel(
 
     private val _saveStatus = MutableStateFlow<SaveStatus>(SaveStatus.Idle)
     val saveStatus: StateFlow<SaveStatus> = _saveStatus.asStateFlow()
+
+    /**
+     * Cropped avatar bytes pending upload. Only uploaded when user confirms save.
+     */
+    private var pendingAvatarBytes: ByteArray? = null
 
     init {
         loadProfile()
@@ -132,6 +144,31 @@ class EditProfileScreenModel(
                     _uiState.value = EditProfileUiState.Error(result.message ?: "Failed to load profile.")
                 }
             }
+        }
+    }
+
+    // ── Avatar handler ──────────────────────────────────────────────────
+
+    /**
+     * Called when user has picked and cropped an image.
+     * Stores bytes locally for later upload and updates the preview bitmap.
+     */
+    fun onAvatarCropped(bytes: ByteArray) {
+        pendingAvatarBytes = bytes
+        val preview = decodeByteArrayToImageBitmap(bytes)
+
+        val state = _uiState.value
+        when (state) {
+            is EditProfileUiState.StudentLoadSuccess -> {
+                _uiState.value = state.copy(avatarPreview = preview)
+            }
+            is EditProfileUiState.TeacherLoadSuccess -> {
+                _uiState.value = state.copy(avatarPreview = preview)
+            }
+            is EditProfileUiState.ParentLoadSuccess -> {
+                _uiState.value = state.copy(avatarPreview = preview)
+            }
+            else -> {}
         }
     }
 
@@ -263,10 +300,29 @@ class EditProfileScreenModel(
         screenModelScope.launch {
             _saveStatus.value = SaveStatus.Saving
 
+            // Step 1: Upload avatar to Cloudinary if pending
+            val avatarUrl = if (pendingAvatarBytes != null) {
+                when (val uploadResult = uploadAvatarUseCase(pendingAvatarBytes!!)) {
+                    is ApiResult.Success -> {
+                        pendingAvatarBytes = null
+                        uploadResult.data
+                    }
+                    is ApiResult.Error -> {
+                        _saveStatus.value = SaveStatus.Error(
+                            uploadResult.message ?: "Không thể tải ảnh lên. Vui lòng thử lại."
+                        )
+                        return@launch
+                    }
+                }
+            } else {
+                null // No new avatar → use existing
+            }
+
+            // Step 2: Update profile with new avatar URL (or existing)
             when (state) {
-                is EditProfileUiState.StudentLoadSuccess -> saveStudentProfile(state)
-                is EditProfileUiState.TeacherLoadSuccess -> saveTeacherProfile(state)
-                is EditProfileUiState.ParentLoadSuccess -> saveParentProfile(state)
+                is EditProfileUiState.StudentLoadSuccess -> saveStudentProfile(state, avatarUrl)
+                is EditProfileUiState.TeacherLoadSuccess -> saveTeacherProfile(state, avatarUrl)
+                is EditProfileUiState.ParentLoadSuccess -> saveParentProfile(state, avatarUrl)
                 else -> {
                     _saveStatus.value = SaveStatus.Error("Cannot save: invalid state.")
                 }
@@ -274,8 +330,12 @@ class EditProfileScreenModel(
         }
     }
 
-    private suspend fun saveStudentProfile(state: EditProfileUiState.StudentLoadSuccess) {
+    private suspend fun saveStudentProfile(
+        state: EditProfileUiState.StudentLoadSuccess,
+        newAvatarUrl: String?
+    ) {
         val dobStr = state.dateOfBirth?.toString() ?: ""
+        val imgUrl = newAvatarUrl ?: state.student.img ?: ""
 
         val result = updateStudentProfileUseCase(
             studentId = state.student.studentId,
@@ -283,7 +343,8 @@ class EditProfileScreenModel(
             dateOfBirth = dobStr,
             gender = state.gender,
             address = state.address,
-            zaloLink = state.zaloLink
+            zaloLink = state.zaloLink,
+            img = imgUrl
         )
 
         when (result) {
@@ -295,7 +356,8 @@ class EditProfileScreenModel(
                     dateOfBirth = result.data.dateOfBirth?.let { LocalDate.parse(it) },
                     gender = result.data.gender ?: "MALE",
                     address = result.data.address ?: "",
-                    zaloLink = result.data.zaloLink ?: ""
+                    zaloLink = result.data.zaloLink ?: "",
+                    avatarPreview = null
                 )
             }
             is ApiResult.Error -> {
@@ -304,18 +366,23 @@ class EditProfileScreenModel(
         }
     }
 
-    private suspend fun saveTeacherProfile(state: EditProfileUiState.TeacherLoadSuccess) {
+    private suspend fun saveTeacherProfile(
+        state: EditProfileUiState.TeacherLoadSuccess,
+        newAvatarUrl: String?
+    ) {
         // Filter out blank/empty certificates before sending
         val cleanCertificates = state.certificates
             .map { it.trim() }
             .filter { it.isNotBlank() }
+
+        val imgUrl = newAvatarUrl ?: state.teacher.img ?: ""
 
         val result = updateTeacherProfileUseCase(
             teacherId = state.teacher.teacherId,
             fullName = state.fullName,
             email = state.email,
             phoneNumber = state.phone,
-            img = state.teacher.img ?: "",
+            img = imgUrl,
             teacherCode = state.teacher.teacherCode ?: "",
             certificates = cleanCertificates,
             experience = state.experience
@@ -335,7 +402,8 @@ class EditProfileScreenModel(
                     email = result.data.email ?: "",
                     phone = result.data.phone ?: "",
                     certificates = updatedCertificates,
-                    experience = result.data.experience ?: ""
+                    experience = result.data.experience ?: "",
+                    avatarPreview = null
                 )
             }
             is ApiResult.Error -> {
@@ -344,14 +412,19 @@ class EditProfileScreenModel(
         }
     }
 
-    private suspend fun saveParentProfile(state: EditProfileUiState.ParentLoadSuccess) {
+    private suspend fun saveParentProfile(
+        state: EditProfileUiState.ParentLoadSuccess,
+        newAvatarUrl: String?
+    ) {
+        val imgUrl = newAvatarUrl ?: state.parent.img ?: ""
+
         val result = updateParentProfileUseCase(
             parentId = state.parent.parentId,
             fullName = state.fullName,
             email = state.email,
             phoneNumber = state.phone,
             address = state.address,
-            img = state.parent.img ?: ""
+            img = imgUrl
         )
 
         when (result) {
@@ -362,7 +435,8 @@ class EditProfileScreenModel(
                     fullName = result.data.fullName,
                     email = result.data.email ?: "",
                     phone = result.data.phoneNumber ?: "",
-                    address = result.data.address ?: ""
+                    address = result.data.address ?: "",
+                    avatarPreview = null
                 )
             }
             is ApiResult.Error -> {
