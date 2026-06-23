@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -273,21 +274,17 @@ class MyCoursesScreen : Screen {
 
         if (showFilterSheet) {
             AppBottomSheet(
-                onDismissRequest = { showFilterSheet = false }
+                onDismissRequest = { showFilterSheet = false },
+                title = "Lọc trạng thái khóa học"
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(AppDimen.p24),
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = AppDimen.p24)
+                        .padding(bottom = AppDimen.p24, top = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    AppText(
-                        text = "Lọc trạng thái khóa học",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

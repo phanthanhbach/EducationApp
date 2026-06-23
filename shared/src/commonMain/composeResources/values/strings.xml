@@ -296,4 +296,10 @@
     <string name="msg_reset_link_sent">Reset token has been sent to your email</string>
     <string name="msg_reset_success">Password has been reset successfully</string>
     <string name="btn_submit">Submit</string>
+
+    <!-- Student Statuses -->
+    <string name="student_status_active">Active</string>
+    <string name="student_status_inactive">Inactive</string>
+    <string name="student_status_suspended">Suspended</string>
+    <string name="student_status_graduated">Graduated</string>
 </resources>

@@ -132,6 +132,8 @@ fun ProfileScreenContent(
                     is UserProfile.Student -> {
                         item { SectionTitle(stringResource(Res.string.title_about)) }
                         item { StudentAboutCard(student = successProfile) }
+                        item { SectionTitle(stringResource(Res.string.title_contact)) }
+                        item { StudentContactSection(student = successProfile) }
                     }
 
                     is UserProfile.Parent -> {
@@ -286,19 +288,19 @@ private fun CollapsingProfileIdentity(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (!profileCode.isNullOrBlank()) {
-                        AppText(
-                            text = profileCode,
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    if (!profileCode.isNullOrBlank() && !profileStatus.isNullOrBlank()) {
-                        AppText(
-                            text = "•",
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(Color(0xFFE8EAF6))
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            AppText(
+                                text = profileCode,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF3F51B5)
+                            )
+                        }
                     }
 
                     if (!profileStatus.isNullOrBlank()) {
@@ -316,54 +318,49 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
         is UserProfile.Student -> {
             val studentStatus = StudentStatus.fromString(status)
             val bgColor = when (studentStatus) {
-                StudentStatus.ACTIVE -> Color(0xFFE8F5E9)
-                StudentStatus.INACTIVE -> Color(0xFFECEFF1)
-                StudentStatus.SUSPENDED -> Color(0xFFFFF3E0)
-                StudentStatus.GRADUATED -> Color(0xFFE3F2FD)
+                StudentStatus.ACTIVE -> Color(0xFFE6F4EA)
+                StudentStatus.INACTIVE -> Color(0xFFFCE8E6)
+                StudentStatus.SUSPENDED -> Color(0xFFFEF7E0)
+                StudentStatus.GRADUATED -> Color(0xFFE8F0FE)
             }
             val txtColor = when (studentStatus) {
-                StudentStatus.ACTIVE -> Color(0xFF2E7D32)
-                StudentStatus.INACTIVE -> Color(0xFF546E7A)
-                StudentStatus.SUSPENDED -> Color(0xFFE65100)
-                StudentStatus.GRADUATED -> Color(0xFF1565C0)
+                StudentStatus.ACTIVE -> Color(0xFF137333)
+                StudentStatus.INACTIVE -> Color(0xFFC5221F)
+                StudentStatus.SUSPENDED -> Color(0xFFB06000)
+                StudentStatus.GRADUATED -> Color(0xFF1A73E8)
             }
-            val text = when (studentStatus) {
-                StudentStatus.ACTIVE -> "Đang học (Active)"
-                StudentStatus.INACTIVE -> "Nghỉ học (Inactive)"
-                StudentStatus.SUSPENDED -> "Bảo lưu (Suspended)"
-                StudentStatus.GRADUATED -> "Tốt nghiệp (Graduated)"
-            }
+            val text = stringResource(studentStatus.labelRes)
             Triple(bgColor, txtColor, text)
         }
         is UserProfile.Teacher -> {
             val teacherStatus = TeacherStatus.fromString(status)
             val bgColor = when (teacherStatus) {
-                TeacherStatus.ACTIVE -> Color(0xFFE8F5E9)
-                TeacherStatus.INACTIVE -> Color(0xFFECEFF1)
-                TeacherStatus.ON_LEAVE -> Color(0xFFFFF3E0)
+                TeacherStatus.ACTIVE -> Color(0xFFE6F4EA)
+                TeacherStatus.INACTIVE -> Color(0xFFFCE8E6)
+                TeacherStatus.ON_LEAVE -> Color(0xFFFEF7E0)
             }
             val txtColor = when (teacherStatus) {
-                TeacherStatus.ACTIVE -> Color(0xFF2E7D32)
-                TeacherStatus.INACTIVE -> Color(0xFF546E7A)
-                TeacherStatus.ON_LEAVE -> Color(0xFFE65100)
+                TeacherStatus.ACTIVE -> Color(0xFF137333)
+                TeacherStatus.INACTIVE -> Color(0xFFC5221F)
+                TeacherStatus.ON_LEAVE -> Color(0xFFB06000)
             }
             val text = when (teacherStatus) {
-                TeacherStatus.ACTIVE -> "Hoạt động (Active)"
-                TeacherStatus.INACTIVE -> "Ngưng hoạt động (Inactive)"
-                TeacherStatus.ON_LEAVE -> "Nghỉ phép (On Leave)"
+                TeacherStatus.ACTIVE -> "Hoạt động"
+                TeacherStatus.INACTIVE -> "Ngưng hoạt động"
+                TeacherStatus.ON_LEAVE -> "Nghỉ phép"
             }
             Triple(bgColor, txtColor, text)
         }
         else -> {
             val uppercaseStatus = status.uppercase()
             val bgColor = when (uppercaseStatus) {
-                "ACTIVE" -> Color(0xFFE8F5E9)
-                "INACTIVE" -> Color(0xFFECEFF1)
+                "ACTIVE" -> Color(0xFFE6F4EA)
+                "INACTIVE" -> Color(0xFFFCE8E6)
                 else -> MaterialTheme.colorScheme.primaryContainer
             }
             val txtColor = when (uppercaseStatus) {
-                "ACTIVE" -> Color(0xFF2E7D32)
-                "INACTIVE" -> Color(0xFF546E7A)
+                "ACTIVE" -> Color(0xFF137333)
+                "INACTIVE" -> Color(0xFFC5221F)
                 else -> MaterialTheme.colorScheme.onPrimaryContainer
             }
             val text = when (uppercaseStatus) {
@@ -377,7 +374,7 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
 
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(50.dp))
             .background(backgroundColor)
             .padding(horizontal = 8.dp, vertical = 2.dp)
     ) {
