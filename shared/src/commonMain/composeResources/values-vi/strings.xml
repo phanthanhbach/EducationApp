@@ -296,4 +296,10 @@
     <string name="msg_reset_link_sent">Mã khôi phục mật khẩu đã được gửi đến email của bạn</string>
     <string name="msg_reset_success">Đặt lại mật khẩu thành công</string>
     <string name="btn_submit">Xác nhận</string>
+
+    <!-- Student Statuses -->
+    <string name="student_status_active">Đang học</string>
+    <string name="student_status_inactive">Nghỉ học</string>
+    <string name="student_status_suspended">Bảo lưu</string>
+    <string name="student_status_graduated">Tốt nghiệp</string>
 </resources>
