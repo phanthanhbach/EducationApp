@@ -35,7 +35,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.example.educationapp.domain.enums.AppRole
-import com.example.educationapp.presentation.screen.main.tab.AssignmentTab
+import com.example.educationapp.presentation.screen.main.tab.ClassesTab
 import com.example.educationapp.presentation.screen.main.tab.DashboardTab
 import com.example.educationapp.presentation.screen.main.tab.FeedbackTab
 import com.example.educationapp.presentation.screen.main.tab.MyChildrenTab
@@ -62,13 +62,13 @@ class MainScreen(private val role: AppRole) : Screen {
                 AppRole.TEACHER -> listOf(
                     DashboardTab(),
                     ScheduleTab(),
-                    AssignmentTab(),
+                    ClassesTab(),
                     ProfileTab()
                 )
                 else -> listOf( // STUDENT or other roles if any
                     DashboardTab(),
                     ScheduleTab(),
-                    AssignmentTab(),
+                    ClassesTab(),
                     PaymentsTab(),
                     ProfileTab()
                 )
@@ -147,7 +147,7 @@ class MainScreen(private val role: AppRole) : Screen {
                             val bottomInset = systemInsets.calculateBottomPadding()
                             val startInset = systemInsets.calculateStartPadding(layoutDirection)
                             val isBleedingTab =
-                                tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
+                                tabNavigator.current is ProfileTab || tabNavigator.current is ClassesTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
 
                             val tabContentPadding = PaddingValues(
                                 start = 76.dp + startInset, // space for the collapsed rail + left safe area
@@ -216,7 +216,7 @@ class MainScreen(private val role: AppRole) : Screen {
                         } else {
                             // Mobile layout
                             val isBleedingTab =
-                                tabNavigator.current is ProfileTab || tabNavigator.current is AssignmentTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
+                                tabNavigator.current is ProfileTab || tabNavigator.current is ClassesTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
                             val contentPadding = if (isBleedingTab) {
                                 PaddingValues(
                                     start = innerPadding.calculateStartPadding(layoutDirection),

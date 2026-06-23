@@ -32,6 +32,7 @@
     <string name="tab_dashboard">Trang chủ</string>
     <string name="tab_schedule">Lịch học</string>
     <string name="tab_assignment">Bài tập</string>
+    <string name="tab_classes">Lớp học</string>
     <string name="tab_profile">Hồ sơ</string>
     <string name="tab_my_children">Các con</string>
     <string name="tab_feedback">Nhận xét</string>
@@ -302,4 +303,16 @@
     <string name="student_status_inactive">Nghỉ học</string>
     <string name="student_status_suspended">Bảo lưu</string>
     <string name="student_status_graduated">Tốt nghiệp</string>
+
+    <!-- Student Feedback Screen Strings -->
+    <string name="student_feedback_title">Nhận xét</string>
+    <string name="student_feedback_title_format">Đánh giá lớp %1$s</string>
+    <string name="student_feedback_empty">Bạn chưa nhận xét cho lớp học này.</string>
+    <string name="student_feedback_rating_label">Đánh giá của bạn</string>
+    <string name="student_feedback_comment_label">Nhận xét của bạn</string>
+    <string name="student_feedback_comment_placeholder">Viết nhận xét của bạn tại đây...</string>
+    <string name="student_feedback_submit">Gửi nhận xét</string>
+    <string name="student_feedback_submitted">Nhận xét của bạn</string>
+    <string name="student_feedback_teacher_section">Nhận xét của giáo viên</string>
+    <string name="student_feedback_submitted_at">Đã gửi: %1$s</string>
 </resources>

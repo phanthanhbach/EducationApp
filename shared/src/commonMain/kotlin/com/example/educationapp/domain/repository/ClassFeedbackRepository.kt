@@ -23,4 +23,10 @@ interface ClassFeedbackRepository {
         studentId: Long,
         feedbackType: String
     ): ApiResult<Feedback?>
+
+    suspend fun submitStudentFeedback(
+        classId: Long,
+        rating: Int,
+        comment: String
+    ): ApiResult<Feedback>
 }

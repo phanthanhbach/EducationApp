@@ -5,6 +5,7 @@ import com.example.educationapp.core.network.BaseResponse
 import com.example.educationapp.core.network.PaginationResponse
 import com.example.educationapp.core.network.safeApiCall
 import com.example.educationapp.data.dto.request.TeacherFeedbackRequest
+import com.example.educationapp.data.dto.request.StudentFeedbackRequest
 import com.example.educationapp.data.dto.response.StudentClassDTO
 import com.example.educationapp.data.dto.response.TeacherFeedbackDTO
 import com.example.educationapp.data.dto.response.toStudentClassFeedback
@@ -25,6 +26,22 @@ import io.ktor.client.request.setBody
 class ClassFeedbackRepositoryImpl(
     private val httpClient: HttpClient
 ) : ClassFeedbackRepository {
+
+    override suspend fun submitStudentFeedback(
+        classId: Long,
+        rating: Int,
+        comment: String
+    ): ApiResult<Feedback> {
+        return safeApiCall {
+            val response = httpClient.post(
+                FeedbackEndpoint.studentClassFeedback(classId)
+            ) {
+                setBody(StudentFeedbackRequest(rating = rating, comment = comment))
+            }.body<BaseResponse<FeedbackDTO>>()
+
+            response.data.toDomainEntity()
+        }
+    }
 
     override suspend fun getClassFeedbacks(
         classId: Long,

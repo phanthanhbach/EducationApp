@@ -32,6 +32,7 @@
     <string name="tab_dashboard">Dashboard</string>
     <string name="tab_schedule">Schedule</string>
     <string name="tab_assignment">Assignment</string>
+    <string name="tab_classes">My Classes</string>
     <string name="tab_profile">Profile</string>
     <string name="tab_my_children">My Children</string>
     <string name="tab_feedback">Feedback</string>
@@ -302,4 +303,16 @@
     <string name="student_status_inactive">Inactive</string>
     <string name="student_status_suspended">Suspended</string>
     <string name="student_status_graduated">Graduated</string>
+
+    <!-- Student Feedback Screen Strings -->
+    <string name="student_feedback_title">Feedback</string>
+    <string name="student_feedback_title_format">Feedback %1$s</string>
+    <string name="student_feedback_empty">You haven't given feedback for this class yet.</string>
+    <string name="student_feedback_rating_label">Your rating</string>
+    <string name="student_feedback_comment_label">Your comment</string>
+    <string name="student_feedback_comment_placeholder">Write your feedback here...</string>
+    <string name="student_feedback_submit">Submit Feedback</string>
+    <string name="student_feedback_submitted">Your feedback</string>
+    <string name="student_feedback_teacher_section">Teacher's feedback</string>
+    <string name="student_feedback_submitted_at">Submitted: %1$s</string>
 </resources>

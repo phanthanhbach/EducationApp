@@ -80,7 +80,7 @@ import educationapp.shared.generated.resources.my_classes_parent_assignment_titl
 import educationapp.shared.generated.resources.my_classes_student_assignment_title
 import educationapp.shared.generated.resources.my_classes_search_placeholder
 import educationapp.shared.generated.resources.profile_retry
-import educationapp.shared.generated.resources.tab_assignment
+import educationapp.shared.generated.resources.tab_classes
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -167,7 +167,7 @@ private fun ClassesContent(
     val lazyListState = rememberLazyListState()
 
     SearchTopBarLayout(
-        title = stringResource(Res.string.tab_assignment),
+        title = stringResource(Res.string.tab_classes),
         searchQuery = searchQuery,
         onSearch = onSearch,
         lazyListState = lazyListState,
@@ -318,12 +318,8 @@ private fun ClassesContent(
                                     onAssignmentsClick = {
                                         onAssignmentsClick(schoolClass.id, schoolClass.name)
                                     },
-                                    onFeedbacksClick = if (role == AppRole.TEACHER) {
-                                        {
-                                            onFeedbacksClick(schoolClass.id, schoolClass.name)
-                                        }
-                                    } else {
-                                        null
+                                    onFeedbacksClick = {
+                                        onFeedbacksClick(schoolClass.id, schoolClass.name)
                                     }
                                 )
                             }
@@ -416,7 +412,7 @@ private fun OtherRolesClassesContent(
             verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
         ) {
             AppText(
-                text = stringResource(Res.string.tab_assignment),
+                text = stringResource(Res.string.tab_classes),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
