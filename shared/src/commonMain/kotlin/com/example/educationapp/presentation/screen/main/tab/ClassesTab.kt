@@ -13,22 +13,23 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.feedback.ClassFeedbackScreen
+import com.example.educationapp.presentation.screen.feedback.StudentFeedbackScreen
 import com.example.educationapp.presentation.screen.assignment.ClassAssignmentsScreen
 import com.example.educationapp.presentation.screen.assignment.StudentClassAssignmentsScreen
 import com.example.educationapp.presentation.screen.my_classes.MyClassScreenContent
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_assignment_filled_24dp
-import educationapp.shared.generated.resources.tab_assignment
+import educationapp.shared.generated.resources.tab_classes
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class AssignmentTab : Tab {
+class ClassesTab : Tab {
 
     override val options: TabOptions
         @Composable
         get() {
-            val title = stringResource(Res.string.tab_assignment)
+            val title = stringResource(Res.string.tab_classes)
             val icon = painterResource(Res.drawable.ic_assignment_filled_24dp)
 
             return remember(title, icon) {
@@ -68,7 +69,12 @@ class AssignmentTab : Tab {
                 }
             },
             onFeedbacksClick = { classId, className ->
-                navigator.parent?.push(ClassFeedbackScreen(classId, className))
+                if (role == AppRole.STUDENT) {
+                    val studentId = screenModel.currentUserId ?: 0L
+                    navigator.parent?.push(StudentFeedbackScreen(classId, className, studentId))
+                } else {
+                    navigator.parent?.push(ClassFeedbackScreen(classId, className))
+                }
             },
             onLoadNextPage = { screenModel.loadNextPage() },
             onRetry = { screenModel.loadProfileAndClasses() }

@@ -23,8 +23,10 @@ import com.example.educationapp.core.network.PaginationResponse
 import com.example.educationapp.data.dto.response.SchoolClassDTO
 import com.example.educationapp.data.dto.response.StudentClassDTO
 import com.example.educationapp.data.dto.response.toSchoolClass
+import com.example.educationapp.data.dto.response.toStudentClassFeedback
 import com.example.educationapp.data.endpoint.ClassEndpoint
 import com.example.educationapp.domain.entity.SchoolClass
+import com.example.educationapp.domain.entity.StudentClassFeedback
 import com.example.educationapp.domain.repository.ScheduleRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -36,6 +38,25 @@ import io.ktor.client.request.setBody
 class ScheduleRepositoryImpl(
     private val httpClient: HttpClient
 ) : ScheduleRepository {
+
+    override suspend fun getStudentFeedbackByClass(
+        studentId: Long,
+        classId: Long
+    ): ApiResult<StudentClassFeedback?> {
+        val result = safePaginatedApiCall<StudentClassDTO, StudentClassFeedback>(
+            fetchPage = { page ->
+                httpClient.get(ClassEndpoint.studentClasses(studentId)) {
+                    parameter("page", page)
+                    parameter("size", 20)
+                }.body()
+            },
+            mapDto = { dto -> dto.toStudentClassFeedback() }
+        )
+        return when (result) {
+            is ApiResult.Success -> ApiResult.Success(result.data.firstOrNull { it.classId == classId })
+            is ApiResult.Error -> result
+        }
+    }
 
     override suspend fun getMySchedules(fromTime: String, toTime: String): ApiResult<List<ScheduleItem>> {
         return safePaginatedApiCall<ScheduleItemDTO, ScheduleItem>(

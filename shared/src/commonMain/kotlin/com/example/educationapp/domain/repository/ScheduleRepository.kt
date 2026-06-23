@@ -6,9 +6,15 @@ import com.example.educationapp.domain.entity.ScheduleItem
 import com.example.educationapp.domain.entity.TeacherCheckInResult
 import com.example.educationapp.domain.entity.AttendanceRecord
 import com.example.educationapp.domain.entity.SchoolClass
+import com.example.educationapp.domain.entity.StudentClassFeedback
 import com.example.educationapp.domain.enums.AttendanceStatus
 
 interface ScheduleRepository {
+    suspend fun getStudentFeedbackByClass(
+        studentId: Long,
+        classId: Long
+    ): ApiResult<StudentClassFeedback?>
+
     suspend fun getMySchedules(fromTime: String, toTime: String): ApiResult<List<ScheduleItem>>
     suspend fun checkIn(teacherId: Long, classId: Long, sessionNumber: Int): ApiResult<TeacherCheckInResult>
     suspend fun getCheckInStatus(classId: Long, sessionNumber: Int, teacherId: Long): ApiResult<TeacherCheckInResult>

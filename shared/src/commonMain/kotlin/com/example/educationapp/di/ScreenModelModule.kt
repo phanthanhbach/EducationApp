@@ -10,6 +10,7 @@ import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashbo
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.course.MyCoursesScreenModel
 import com.example.educationapp.presentation.screenmodel.feedback.ClassFeedbackScreenModel
+import com.example.educationapp.presentation.screenmodel.feedback.StudentFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.invoice.ClassInvoicesScreenModel
 import com.example.educationapp.presentation.screenmodel.login.LoginScreenModel
 import com.example.educationapp.presentation.screenmodel.login.ForgotPasswordScreenModel
@@ -76,4 +77,5 @@ val screenModelModule = module {
         )
     }
     factory { StudentClassAssignmentsScreenModel(get(), get()) }
+    factory { StudentFeedbackScreenModel(get(), get()) }
 }

@@ -39,6 +39,7 @@ class AssignmentTabScreenModel(
 
     private var currentRole: AppRole? = null
     private var userId: Long? = null
+    val currentUserId: Long? get() = userId
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
