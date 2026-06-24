@@ -32,7 +32,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import com.example.educationapp.core.ui.shimmer.skeleton.StudentListSkeleton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -127,12 +127,12 @@ class AttendanceScreen(
             ) {
                 when (val currentState = state) {
                     is AttendanceState.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = AppColor.Primary)
-                        }
+                        StudentListSkeleton(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            itemCount = 6
+                        )
                     }
 
                     is AttendanceState.Error -> {

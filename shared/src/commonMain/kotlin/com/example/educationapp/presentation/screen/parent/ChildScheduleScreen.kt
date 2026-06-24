@@ -16,7 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.Row
+import com.example.educationapp.core.ui.shimmer.ShimmerBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -88,17 +89,21 @@ class ChildScheduleScreen(
                 // Class Selector (Horizontal Chips)
                 when (val state = classesState) {
                     is ChildClassesState.Loading -> {
-                        Box(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(56.dp),
-                            contentAlignment = Alignment.Center
+                                .height(56.dp)
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            CircularProgressIndicator(
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp
-                            )
+                            repeat(3) {
+                                ShimmerBox(
+                                    width = 80.dp,
+                                    height = 32.dp,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                            }
                         }
                     }
 

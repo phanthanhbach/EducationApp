@@ -25,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -235,14 +236,13 @@ class PaymentsTab : Tab {
         if (isParent && childrenState != null && childrenState !is ParentChildrenState.Success) {
             when (childrenState) {
                 is ParentChildrenState.Loading -> {
-                    Box(
+                    ListCardSkeleton(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = totalHeaderHeightDp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = AppColor.Primary)
-                    }
+                            .padding(top = totalHeaderHeightDp)
+                            .padding(16.dp),
+                        itemCount = 4
+                    )
                     return
                 }
 
@@ -267,14 +267,13 @@ class PaymentsTab : Tab {
 
         when (state) {
             is PaymentsTabState.Loading -> {
-                Box(
+                ListCardSkeleton(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = totalHeaderHeightDp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = AppColor.Primary)
-                }
+                        .padding(top = totalHeaderHeightDp)
+                        .padding(16.dp),
+                    itemCount = 4
+                )
             }
 
             is PaymentsTabState.Error -> {

@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
+import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -120,12 +120,12 @@ class MyChildrenTab : Tab {
             ) {
                 when (val state = childrenState) {
                     is ParentChildrenState.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().height(200.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = AppColor.Primary)
-                        }
+                        ListCardSkeleton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            itemCount = 4
+                        )
                     }
 
                     is ParentChildrenState.Error -> {

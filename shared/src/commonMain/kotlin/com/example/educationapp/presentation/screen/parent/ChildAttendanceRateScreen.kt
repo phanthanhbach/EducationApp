@@ -21,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -83,12 +84,13 @@ class ChildAttendanceRateScreen(
             ) {
                 when (val currentState = state) {
                     is ChildAttendanceRateState.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                        }
+                        InfoRowSkeleton(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            rowCount = 5,
+                            showIcons = true
+                        )
                     }
 
                     is ChildAttendanceRateState.Error -> {
