@@ -34,7 +34,9 @@ class ParentRepositoryImpl(
                     parentId = dto.parentId,
                     parentName = dto.parentName,
                     createdAt = dto.createdAt,
-                    updatedAt = dto.updatedAt
+                    updatedAt = dto.updatedAt,
+                    email = dto.email,
+                    phoneNumber = dto.phoneNumber
                 )
             }
         }
