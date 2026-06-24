@@ -27,7 +27,8 @@ jobs:
           cache-overwrite-existing: true
 
       - name: Run Shared Module Tests
-        run: ./gradlew :shared:androidHostTest
+        run: ./gradlew :shared:testAndroidHostTest
 
       - name: Build Android Debug App
         run: ./gradlew :androidApp:assembleDebug
+
