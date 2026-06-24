@@ -38,7 +38,9 @@ sealed class UserProfile(
         val parentId: Int?,
         val parentName: String?,
         val createdAt: String?,
-        val updatedAt: String?
+        val updatedAt: String?,
+        val email: String? = null,
+        val phoneNumber: String? = null
     ) : UserProfile(fullName, img, status)
 
     data class Parent(

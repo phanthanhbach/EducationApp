@@ -17,12 +17,18 @@ import educationapp.shared.generated.resources.ic_female_24dp
 import educationapp.shared.generated.resources.ic_location_on_24dp
 import educationapp.shared.generated.resources.ic_male_24dp
 import educationapp.shared.generated.resources.ic_supervisor_account_24dp
+import educationapp.shared.generated.resources.ic_mail_24dp
+import educationapp.shared.generated.resources.ic_call_24dp
+import educationapp.shared.generated.resources.ic_book_24dp
 import educationapp.shared.generated.resources.profile_address
 import educationapp.shared.generated.resources.profile_dob
 import educationapp.shared.generated.resources.profile_gender
 import educationapp.shared.generated.resources.profile_not_available
 import educationapp.shared.generated.resources.profile_parent
 import educationapp.shared.generated.resources.profile_zalo
+import educationapp.shared.generated.resources.profile_email
+import educationapp.shared.generated.resources.profile_phone
+import educationapp.shared.generated.resources.profile_level
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -50,6 +56,11 @@ fun StudentAboutCard(
             else -> student.gender ?: na
         }
 
+        ProfileIconInfoRow(
+            iconRes = Res.drawable.ic_book_24dp,
+            label = stringResource(Res.string.profile_level),
+            value = student.currentLevel ?: na
+        )
         ProfileIconInfoRow(
             iconRes = Res.drawable.ic_cake_24dp,
             label = stringResource(Res.string.profile_dob),
@@ -86,6 +97,16 @@ fun StudentContactSection(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppDimen.p4)
     ) {
+        ProfileIconInfoRow(
+            iconRes = Res.drawable.ic_mail_24dp,
+            label = stringResource(Res.string.profile_email),
+            value = student.email ?: na
+        )
+        ProfileIconInfoRow(
+            iconRes = Res.drawable.ic_call_24dp,
+            label = stringResource(Res.string.profile_phone),
+            value = student.phoneNumber ?: na
+        )
         ProfileIconInfoRow(
             iconRes = Res.drawable.ic_alternate_email_24dp,
             label = stringResource(Res.string.profile_zalo),

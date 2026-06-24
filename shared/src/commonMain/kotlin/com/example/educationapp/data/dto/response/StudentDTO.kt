@@ -18,7 +18,9 @@ data class StudentDTO(
     val parentId: Int? = null,
     val parentName: String? = null,
     val createdAt: String? = null,
-    val updatedAt: String? = null
+    val updatedAt: String? = null,
+    val email: String? = null,
+    val phoneNumber: String? = null
 )
 
 fun StudentDTO.toDomainEntity(): UserProfile.Student {
@@ -36,7 +38,9 @@ fun StudentDTO.toDomainEntity(): UserProfile.Student {
         parentId = parentId,
         parentName = parentName,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
+        email = email,
+        phoneNumber = phoneNumber
     )
 }
 
