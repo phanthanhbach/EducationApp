@@ -63,7 +63,6 @@
     <string name="profile_change_avatar">Thay đổi ảnh đại diện</string>
     <string name="profile_full_name">Họ và tên</string>
     <string name="title_settings">Cài đặt</string>
-    <string name="title_about">Giới thiệu</string>
     <string name="title_contact">Liên hệ</string>
     <string name="title_about_me">Về tôi</string>
     <string name="about_student_desc">Học sinh chăm chỉ và đam mê hiện đang học tại trung tâm giáo dục. Luôn ham học hỏi những kỹ năng mới và hợp tác với bạn bè để đạt thành tích xuất sắc trong học tập.</string>
@@ -98,6 +97,7 @@
     <string name="profile_zalo">Zalo</string>
     <string name="profile_parent">Phụ huynh</string>
     <string name="profile_status">Trạng thái</string>
+    <string name="profile_join_date">Ngày tham gia</string>
     <string name="profile_loading_error">Không thể tải hồ sơ</string>
     <string name="profile_retry">Thử lại</string>
     <string name="profile_not_available">Không có</string>

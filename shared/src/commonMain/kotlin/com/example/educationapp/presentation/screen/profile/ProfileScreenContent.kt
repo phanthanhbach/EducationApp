@@ -19,12 +19,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +42,7 @@ import com.example.educationapp.core.ui.image.AppImage
 import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.layout.CollapsingHeaderScaffold
 import com.example.educationapp.core.ui.layout.lerpDp
+import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.StudentStatus
@@ -52,7 +52,7 @@ import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_person_filled_24dp
 import educationapp.shared.generated.resources.ic_settings_24dp
 import educationapp.shared.generated.resources.profile_cover
-import educationapp.shared.generated.resources.title_about
+import educationapp.shared.generated.resources.profile_parent
 import educationapp.shared.generated.resources.title_about_me
 import educationapp.shared.generated.resources.title_contact
 import org.jetbrains.compose.resources.painterResource
@@ -98,7 +98,7 @@ fun ProfileScreenContent(
             when (profileState) {
                 is ProfileState.Loading, is ProfileState.Idle -> {
                     item {
-                        SectionTitle(stringResource(Res.string.title_about))
+                        SectionTitle(stringResource(Res.string.title_about_me))
                     }
                     item {
                         InfoRowSkeleton(
@@ -113,7 +113,7 @@ fun ProfileScreenContent(
 
                 is ProfileState.Error -> {
                     item {
-                        SectionTitle(stringResource(Res.string.title_about))
+                        SectionTitle(stringResource(Res.string.title_about_me))
                     }
                     item {
                         ProfileErrorCard(
@@ -126,22 +126,24 @@ fun ProfileScreenContent(
                 is ProfileState.Success -> {
                     when (val successProfile = profileState.profile) {
                         is UserProfile.Teacher -> {
-                            item { SectionTitle(stringResource(Res.string.title_contact)) }
-                            item { TeacherContactCard(teacher = successProfile) }
                             item { SectionTitle(stringResource(Res.string.title_about_me)) }
-                            item { TeacherAboutMeCard(teacher = successProfile) }
+                            item { TeacherAboutSection(teacher = successProfile) }
+                            item { SectionTitle(stringResource(Res.string.title_contact)) }
+                            item { TeacherContactSection(teacher = successProfile) }
                         }
 
                         is UserProfile.Student -> {
-                            item { SectionTitle(stringResource(Res.string.title_about)) }
+                            item { SectionTitle(stringResource(Res.string.title_about_me)) }
                             item { StudentAboutCard(student = successProfile) }
                             item { SectionTitle(stringResource(Res.string.title_contact)) }
                             item { StudentContactSection(student = successProfile) }
                         }
 
                         is UserProfile.Parent -> {
-                            item { SectionTitle(stringResource(Res.string.title_about)) }
-                            item { ParentAboutCard(parent = successProfile) }
+                            item { SectionTitle(stringResource(Res.string.title_about_me)) }
+                            item { ParentAboutSection(parent = successProfile) }
+                            item { SectionTitle(stringResource(Res.string.title_contact)) }
+                            item { ParentContactSection(parent = successProfile) }
                         }
                     }
                 }
@@ -360,6 +362,7 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
             val text = stringResource(studentStatus.labelRes)
             Triple(bgColor, txtColor, text)
         }
+
         is UserProfile.Teacher -> {
             val teacherStatus = TeacherStatus.fromString(status)
             val bgColor = when (teacherStatus) {
@@ -379,6 +382,7 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
             }
             Triple(bgColor, txtColor, text)
         }
+
         else -> {
             val uppercaseStatus = status.uppercase()
             val bgColor = when (uppercaseStatus) {
@@ -417,11 +421,12 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
 
 // ── Subtitle helper ─────────────────────────────────────────────────────
 
+@Composable
 private fun getProfileCode(profile: UserProfile?): String? {
     return when (profile) {
         is UserProfile.Teacher -> profile.teacherCode
         is UserProfile.Student -> profile.studentCode
-        is UserProfile.Parent -> profile.email
+        is UserProfile.Parent -> stringResource(Res.string.profile_parent)
         null -> null
     }
 }
