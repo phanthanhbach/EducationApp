@@ -32,6 +32,9 @@ class StudentClassAssignmentsScreenModel(
     private val _state = MutableStateFlow<StudentClassAssignmentsState>(StudentClassAssignmentsState.Loading)
     val state: StateFlow<StudentClassAssignmentsState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private val _submittedFilter = MutableStateFlow(false)
     val submittedFilter: StateFlow<Boolean> = _submittedFilter.asStateFlow()
 
@@ -44,24 +47,40 @@ class StudentClassAssignmentsScreenModel(
     fun init(classId: Int) {
         if (this.classId == classId) return
         this.classId = classId
-        loadAssignments(submitted = _submittedFilter.value, append = false)
+        screenModelScope.launch {
+            loadAssignments(submitted = _submittedFilter.value, append = false)
+        }
     }
 
     fun setSubmittedFilter(submitted: Boolean) {
         if (_submittedFilter.value == submitted) return
         _submittedFilter.value = submitted
-        loadAssignments(submitted = submitted, append = false)
+        screenModelScope.launch {
+            loadAssignments(submitted = submitted, append = false)
+        }
     }
 
     fun retry() {
-        loadAssignments(submitted = _submittedFilter.value, append = false)
+        screenModelScope.launch {
+            loadAssignments(submitted = _submittedFilter.value, append = false)
+        }
+    }
+
+    fun refreshData() {
+        _isRefreshing.value = true
+        screenModelScope.launch {
+            loadAssignments(submitted = _submittedFilter.value, append = false, silent = true)
+            _isRefreshing.value = false
+        }
     }
 
     fun loadNextPage() {
         val currentState = _state.value
         if (currentState is StudentClassAssignmentsState.Success && currentState.hasNextPage && !isLoadingNextPage) {
             val nextPage = currentState.currentPage + 1
-            loadAssignments(submitted = _submittedFilter.value, append = true, page = nextPage)
+            screenModelScope.launch {
+                loadAssignments(submitted = _submittedFilter.value, append = true, page = nextPage)
+            }
         }
     }
 
@@ -96,41 +115,39 @@ class StudentClassAssignmentsScreenModel(
         }
     }
 
-    private fun loadAssignments(submitted: Boolean, append: Boolean, page: Int = 0) {
+    private suspend fun loadAssignments(submitted: Boolean, append: Boolean, page: Int = 0, silent: Boolean = false) {
         val currentClassId = classId ?: return
-        screenModelScope.launch {
-            if (append) {
-                isLoadingNextPage = true
-            } else {
-                _state.value = StudentClassAssignmentsState.Loading
-            }
+        if (append) {
+            isLoadingNextPage = true
+        } else if (!silent) {
+            _state.value = StudentClassAssignmentsState.Loading
+        }
 
-            when (val result = getMyAssignmentsFilteredUseCase(currentClassId, submitted, page)) {
-                is ApiResult.Error -> {
-                    if (!append) {
-                        _state.value = StudentClassAssignmentsState.Error(
-                            result.message ?: "Không thể tải danh sách bài tập."
-                        )
-                    }
-                }
-                is ApiResult.Success -> {
-                    val pagination = result.data
-                    val currentList = if (append && _state.value is StudentClassAssignmentsState.Success) {
-                        (_state.value as StudentClassAssignmentsState.Success).assignments + pagination.content
-                    } else {
-                        pagination.content
-                    }
-
-                    _state.value = StudentClassAssignmentsState.Success(
-                        assignments = currentList,
-                        currentPage = pagination.number,
-                        totalPages = pagination.totalPages,
-                        totalElements = pagination.totalElements,
-                        hasNextPage = !pagination.last && pagination.content.isNotEmpty()
+        when (val result = getMyAssignmentsFilteredUseCase(currentClassId, submitted, page)) {
+            is ApiResult.Error -> {
+                if (!append) {
+                    _state.value = StudentClassAssignmentsState.Error(
+                        result.message ?: "Không thể tải danh sách bài tập."
                     )
                 }
             }
-            isLoadingNextPage = false
+            is ApiResult.Success -> {
+                val pagination = result.data
+                val currentList = if (append && _state.value is StudentClassAssignmentsState.Success) {
+                    (_state.value as StudentClassAssignmentsState.Success).assignments + pagination.content
+                } else {
+                    pagination.content
+                }
+
+                _state.value = StudentClassAssignmentsState.Success(
+                    assignments = currentList,
+                    currentPage = pagination.number,
+                    totalPages = pagination.totalPages,
+                    totalElements = pagination.totalElements,
+                    hasNextPage = !pagination.last && pagination.content.isNotEmpty()
+                )
+            }
         }
+        isLoadingNextPage = false
     }
 }

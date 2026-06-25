@@ -20,6 +20,10 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -58,86 +62,115 @@ private val CoverHeight = 220.dp
 private val SheetTopExpanded = 164.dp
 private val ExpandedContentSpacer = 156.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreenContent(
     profileState: ProfileState,
     onSettingsClick: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    isRefreshing: Boolean = false,
+    onRefresh: (() -> Unit)? = null
 ) {
     val profile = (profileState as? ProfileState.Success)?.profile
 
-    CollapsingHeaderScaffold(
-        sheetTopExpanded = SheetTopExpanded,
-        expandedContentSpacer = ExpandedContentSpacer,
-        cover = {
-            ProfileCover()
-        },
-        headerActions = { collapseProgress ->
-            ProfileHeaderActions(
-                collapseProgress = collapseProgress,
-                onSettingsClick = onSettingsClick
-            )
-        },
-        collapsingContent = { collapseProgress ->
-            CollapsingProfileIdentity(
-                collapseProgress = collapseProgress,
-                fullName = profile?.fullName ?: "",
-                profile = profile,
-                imgUrl = profile?.img
-            )
+    val scaffoldContent = @Composable {
+        CollapsingHeaderScaffold(
+            sheetTopExpanded = SheetTopExpanded,
+            expandedContentSpacer = ExpandedContentSpacer,
+            cover = {
+                ProfileCover()
+            },
+            headerActions = { collapseProgress ->
+                ProfileHeaderActions(
+                    collapseProgress = collapseProgress,
+                    onSettingsClick = onSettingsClick
+                )
+            },
+            collapsingContent = { collapseProgress ->
+                CollapsingProfileIdentity(
+                    collapseProgress = collapseProgress,
+                    fullName = profile?.fullName ?: "",
+                    profile = profile,
+                    imgUrl = profile?.img
+                )
+            }
+        ) {
+            when (profileState) {
+                is ProfileState.Loading, is ProfileState.Idle -> {
+                    item {
+                        SectionTitle(stringResource(Res.string.title_about))
+                    }
+                    item {
+                        InfoRowSkeleton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            rowCount = 4,
+                            showIcons = true
+                        )
+                    }
+                }
+
+                is ProfileState.Error -> {
+                    item {
+                        SectionTitle(stringResource(Res.string.title_about))
+                    }
+                    item {
+                        ProfileErrorCard(
+                            message = profileState.message,
+                            onRetry = onRetry
+                        )
+                    }
+                }
+
+                is ProfileState.Success -> {
+                    when (val successProfile = profileState.profile) {
+                        is UserProfile.Teacher -> {
+                            item { SectionTitle(stringResource(Res.string.title_contact)) }
+                            item { TeacherContactCard(teacher = successProfile) }
+                            item { SectionTitle(stringResource(Res.string.title_about_me)) }
+                            item { TeacherAboutMeCard(teacher = successProfile) }
+                        }
+
+                        is UserProfile.Student -> {
+                            item { SectionTitle(stringResource(Res.string.title_about)) }
+                            item { StudentAboutCard(student = successProfile) }
+                            item { SectionTitle(stringResource(Res.string.title_contact)) }
+                            item { StudentContactSection(student = successProfile) }
+                        }
+
+                        is UserProfile.Parent -> {
+                            item { SectionTitle(stringResource(Res.string.title_about)) }
+                            item { ParentAboutCard(parent = successProfile) }
+                        }
+                    }
+                }
+            }
         }
-    ) {
-        when (profileState) {
-            is ProfileState.Loading, is ProfileState.Idle -> {
-                item {
-                    SectionTitle(stringResource(Res.string.title_about))
-                }
-                item {
-                    InfoRowSkeleton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        rowCount = 4,
-                        showIcons = true
-                    )
-                }
+    }
+
+    if (onRefresh != null) {
+        val pullToRefreshState = rememberPullToRefreshState()
+        val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            state = pullToRefreshState,
+            modifier = Modifier.fillMaxSize(),
+            indicator = {
+                PullToRefreshDefaults.Indicator(
+                    state = pullToRefreshState,
+                    isRefreshing = isRefreshing,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = statusBarHeight)
+                )
             }
-
-            is ProfileState.Error -> {
-                item {
-                    SectionTitle(stringResource(Res.string.title_about))
-                }
-                item {
-                    ProfileErrorCard(
-                        message = profileState.message,
-                        onRetry = onRetry
-                    )
-                }
-            }
-
-            is ProfileState.Success -> {
-                when (val successProfile = profileState.profile) {
-                    is UserProfile.Teacher -> {
-                        item { SectionTitle(stringResource(Res.string.title_contact)) }
-                        item { TeacherContactCard(teacher = successProfile) }
-                        item { SectionTitle(stringResource(Res.string.title_about_me)) }
-                        item { TeacherAboutMeCard(teacher = successProfile) }
-                    }
-
-                    is UserProfile.Student -> {
-                        item { SectionTitle(stringResource(Res.string.title_about)) }
-                        item { StudentAboutCard(student = successProfile) }
-                        item { SectionTitle(stringResource(Res.string.title_contact)) }
-                        item { StudentContactSection(student = successProfile) }
-                    }
-
-                    is UserProfile.Parent -> {
-                        item { SectionTitle(stringResource(Res.string.title_about)) }
-                        item { ParentAboutCard(parent = successProfile) }
-                    }
-                }
-            }
+        ) {
+            scaffoldContent()
         }
+    } else {
+        scaffoldContent()
     }
 }
 

@@ -147,6 +147,8 @@ class PaymentsTab : Tab {
 
         val lazyListState = rememberLazyListState()
 
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
+
         SearchTopBarLayout(
             title = stringResource(Res.string.tab_payments),
             searchQuery = searchQuery,
@@ -158,6 +160,8 @@ class PaymentsTab : Tab {
             onFilterClick = {
                 showFilterSheet = true
             },
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.refreshData() },
             extraContent = {
                 if (isParent && childrenState != null && childrenState is ParentChildrenState.Success) {
                     ChildSelectorBar(

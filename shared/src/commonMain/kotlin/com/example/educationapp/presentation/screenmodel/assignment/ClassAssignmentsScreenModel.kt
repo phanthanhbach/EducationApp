@@ -29,61 +29,78 @@ class ClassAssignmentsScreenModel(
     private val _state = MutableStateFlow<ClassAssignmentsState>(ClassAssignmentsState.Loading)
     val state: StateFlow<ClassAssignmentsState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private var classId: Int? = null
     private var isLoadingNextPage = false
 
     fun loadAssignments(classId: Int) {
         this.classId = classId
-        fetchAssignments(page = 0, append = false)
+        screenModelScope.launch {
+            fetchAssignments(page = 0, append = false)
+        }
     }
 
     fun retry() {
-        classId?.let { fetchAssignments(page = 0, append = false) }
+        classId?.let {
+            screenModelScope.launch {
+                fetchAssignments(page = 0, append = false)
+            }
+        }
     }
 
     fun loadNextPage() {
         val currentState = _state.value
         if (currentState is ClassAssignmentsState.Success && currentState.hasNextPage && !isLoadingNextPage) {
-            fetchAssignments(page = currentState.currentPage + 1, append = true)
+            screenModelScope.launch {
+                fetchAssignments(page = currentState.currentPage + 1, append = true)
+            }
         }
     }
 
-    private fun fetchAssignments(page: Int, append: Boolean) {
-        val currentClassId = classId ?: return
+    fun refreshData() {
+        _isRefreshing.value = true
         screenModelScope.launch {
-            if (append) {
-                isLoadingNextPage = true
-            } else {
-                _state.value = ClassAssignmentsState.Loading
-            }
+            fetchAssignments(page = 0, append = false, silent = true)
+            _isRefreshing.value = false
+        }
+    }
 
-            when (val result = filterAssignmentsUseCase(currentClassId, page, 20)) {
-                is ApiResult.Error -> {
-                    if (!append) {
-                        _state.value = ClassAssignmentsState.Error(
-                            result.message ?: "Lỗi tải danh sách bài tập."
-                        )
-                    }
-                }
-                is ApiResult.Success -> {
-                    val pagination = result.data
-                    val currentAssignments = if (append && _state.value is ClassAssignmentsState.Success) {
-                        (_state.value as ClassAssignmentsState.Success).assignments + pagination.content
-                    } else {
-                        pagination.content
-                    }
+    private suspend fun fetchAssignments(page: Int, append: Boolean, silent: Boolean = false) {
+        val currentClassId = classId ?: return
+        if (append) {
+            isLoadingNextPage = true
+        } else if (!silent) {
+            _state.value = ClassAssignmentsState.Loading
+        }
 
-                    _state.value = ClassAssignmentsState.Success(
-                        assignments = currentAssignments,
-                        currentPage = pagination.number,
-                        totalPages = pagination.totalPages,
-                        totalElements = pagination.totalElements,
-                        hasNextPage = !pagination.last && pagination.content.isNotEmpty()
+        when (val result = filterAssignmentsUseCase(currentClassId, page, 20)) {
+            is ApiResult.Error -> {
+                if (!append) {
+                    _state.value = ClassAssignmentsState.Error(
+                        result.message ?: "Lỗi tải danh sách bài tập."
                     )
                 }
             }
+            is ApiResult.Success -> {
+                val pagination = result.data
+                val currentAssignments = if (append && _state.value is ClassAssignmentsState.Success) {
+                    (_state.value as ClassAssignmentsState.Success).assignments + pagination.content
+                } else {
+                    pagination.content
+                }
 
-            isLoadingNextPage = false
+                _state.value = ClassAssignmentsState.Success(
+                    assignments = currentAssignments,
+                    currentPage = pagination.number,
+                    totalPages = pagination.totalPages,
+                    totalElements = pagination.totalElements,
+                    hasNextPage = !pagination.last && pagination.content.isNotEmpty()
+                )
+            }
         }
+
+        isLoadingNextPage = false
     }
 }

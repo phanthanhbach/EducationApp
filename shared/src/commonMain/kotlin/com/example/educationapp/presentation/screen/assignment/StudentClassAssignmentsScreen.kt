@@ -52,6 +52,7 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.chip.AppChip
 import com.example.educationapp.core.ui.layout.AppScaffold
+import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.LocalTopBarHazeState
 import com.example.educationapp.core.ui.text.AppText
@@ -84,6 +85,7 @@ class StudentClassAssignmentsScreen(
         val state by screenModel.state.collectAsState()
         val submittedFilter by screenModel.submittedFilter.collectAsState()
         val submittingAssignmentIds by screenModel.submittingAssignmentIds.collectAsState()
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
 
         var toastMessage by remember { mutableStateOf<String?>(null) }
         var uploadAssignment by remember { mutableStateOf<StudentAssignment?>(null) }
@@ -114,7 +116,9 @@ class StudentClassAssignmentsScreen(
                     )
                 }
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.refreshData() }
         ) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -150,12 +154,12 @@ class StudentClassAssignmentsScreen(
                     ) {
                         when (val currentState = state) {
                             is StudentClassAssignmentsState.Loading -> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(color = AppColor.Primary)
-                                }
+                                AssignmentCardSkeleton(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp),
+                                    itemCount = 3
+                                )
                             }
 
                             is StudentClassAssignmentsState.Error -> {
