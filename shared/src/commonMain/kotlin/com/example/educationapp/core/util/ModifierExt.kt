@@ -1,11 +1,21 @@
 package com.example.educationapp.core.util
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
@@ -60,5 +70,46 @@ fun Modifier.clickableNoRipple(
             role = role,
             onClick = onClick
         )
+    )
+}
+
+fun Modifier.shimmerEffect(
+    durationMillis: Int = 1200
+): Modifier = composed {
+    val transition = rememberInfiniteTransition(label = "shimmer")
+    val translateAnimation = transition.animateFloat(
+        initialValue = -1f,
+        targetValue = 2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = durationMillis,
+                easing = LinearEasing
+            ),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmerTranslate"
+    )
+
+    val shimmerColors = listOf(
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f),
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+    )
+
+    this.then(
+        Modifier.drawBehind {
+            val width = size.width
+            val height = size.height
+            if (width > 0 && height > 0) {
+                val xOffset = translateAnimation.value * width
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = shimmerColors,
+                        start = Offset(x = xOffset, y = 0f),
+                        end = Offset(x = xOffset + width, y = height)
+                    )
+                )
+            }
+        }
     )
 }

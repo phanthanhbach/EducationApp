@@ -19,8 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -93,18 +93,13 @@ fun ProfileScreenContent(
                     SectionTitle(stringResource(Res.string.title_about))
                 }
                 item {
-                    Box(
+                    InfoRowSkeleton(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(32.dp),
-                            strokeWidth = 3.dp
-                        )
-                    }
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        rowCount = 4,
+                        showIcons = true
+                    )
                 }
             }
 

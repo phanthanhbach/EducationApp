@@ -22,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -117,12 +118,12 @@ private fun ClassFeedbackContent(
         ) {
             when (state) {
                 is ClassFeedbackState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = AppColor.Primary)
-                    }
+                    ListCardSkeleton(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        itemCount = 4
+                    )
                 }
 
                 is ClassFeedbackState.Error -> {

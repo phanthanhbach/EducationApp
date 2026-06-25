@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,10 +80,12 @@ class EditProfileScreen : Screen {
             ) {
                 when (val state = uiState) {
                     is EditProfileUiState.Loading, is EditProfileUiState.Idle -> {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(32.dp),
-                            strokeWidth = 3.dp
+                        InfoRowSkeleton(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            rowCount = 6,
+                            showIcons = false
                         )
                     }
 

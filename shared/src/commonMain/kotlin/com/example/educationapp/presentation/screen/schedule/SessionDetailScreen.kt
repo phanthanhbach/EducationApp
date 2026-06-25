@@ -30,6 +30,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -442,32 +443,13 @@ class SessionDetailScreen(
 
     @Composable
     private fun LoadingStateView() {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(AppDimen.p24),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                CircularProgressIndicator(
-                    color = AppColor.Primary,
-                    modifier = Modifier.size(36.dp),
-                    strokeWidth = 3.dp
-                )
-                Spacer(modifier = Modifier.height(AppDimen.p12))
-                AppText(
-                    text = "Đang tải trạng thái check-in...",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
+        InfoRowSkeleton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppDimen.p16),
+            rowCount = 3,
+            showIcons = true
+        )
     }
 
     @Composable

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,10 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -28,18 +24,15 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.TopBarGreeting
-import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.presentation.screen.dashboard.StudentDashboardContent
 import com.example.educationapp.presentation.screen.dashboard.TeacherDashboardContent
 import com.example.educationapp.presentation.screen.main.LocalAppRole
-import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardState
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardState
-import dev.chrisbanes.haze.HazeState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_dashboard_filled_24dp
 import educationapp.shared.generated.resources.tab_dashboard
@@ -48,8 +41,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 class DashboardTab : Tab {
-
-
 
     override val options: TabOptions
         @Composable
@@ -120,7 +111,6 @@ class DashboardTab : Tab {
         }
 
         val scrollState = rememberScrollState()
-        val hazeState = LocalSharedHazeState.current ?: remember { HazeState() }
 
         AppScaffold(
             topBar = {

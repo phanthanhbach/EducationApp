@@ -17,7 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
+import com.example.educationapp.core.ui.shimmer.skeleton.ScheduleSessionSkeleton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -145,18 +145,14 @@ fun CommonScheduleTabletLayout(
 
                 when (schedulesState) {
                     is ScheduleState.Loading -> {
-                        Box(
+                        ScheduleSessionSkeleton(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .weight(1f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(36.dp),
-                                strokeWidth = 3.dp
-                            )
-                        }
+                                .weight(1f)
+                                .padding(16.dp),
+                            sessionCount = 3,
+                            showDateHeader = true
+                        )
                     }
 
                     is ScheduleState.Error -> {

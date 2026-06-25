@@ -16,8 +16,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import com.example.educationapp.core.ui.shimmer.skeleton.DashboardSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -93,14 +93,11 @@ fun StudentDashboardContent(
     Box(modifier = modifier.fillMaxWidth()) {
         when (val currentState = state) {
             is StudentDashboardState.Loading -> {
-                Box(
+                DashboardSkeleton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = AppColor.Primary)
-                }
+                        .padding(AppDimen.p16)
+                )
             }
 
             is StudentDashboardState.Error -> {
