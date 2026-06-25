@@ -170,7 +170,7 @@ fun AppTextButton(
         modifier = modifier,
         enabled = enabled,
         colors = colors,
-        contentPadding = PaddingValues(horizontal = AppDimen.p8)
+        contentPadding = PaddingValues(horizontal = AppDimen.p16)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

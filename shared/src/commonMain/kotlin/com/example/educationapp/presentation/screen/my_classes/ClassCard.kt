@@ -11,14 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,25 +28,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.button.AppButton
+import com.example.educationapp.core.ui.button.AppOutlinedButton
+import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.enums.ClassStatus
 import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.ic_assignment_filled_24dp
 import educationapp.shared.generated.resources.ic_book_24dp
 import educationapp.shared.generated.resources.ic_event_24dp
 import educationapp.shared.generated.resources.ic_location_on_24dp
-import educationapp.shared.generated.resources.ic_assignment_filled_24dp
 import educationapp.shared.generated.resources.my_classes_branch
 import educationapp.shared.generated.resources.my_classes_btn_assignment
 import educationapp.shared.generated.resources.my_classes_btn_feedback
 import educationapp.shared.generated.resources.my_classes_btn_invoice
 import educationapp.shared.generated.resources.my_classes_course
+import educationapp.shared.generated.resources.my_classes_enrolled
+import educationapp.shared.generated.resources.my_classes_result
 import educationapp.shared.generated.resources.my_classes_student_count
 import educationapp.shared.generated.resources.my_classes_students_count
 import educationapp.shared.generated.resources.my_classes_time
-import educationapp.shared.generated.resources.my_classes_enrolled
-import educationapp.shared.generated.resources.my_classes_result
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -127,11 +126,10 @@ fun ClassCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_book_24dp),
-                        contentDescription = null,
+                    AppIcon(
+                        drawableRes = Res.drawable.ic_book_24dp,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        modifier = Modifier.size(16.dp)
+                        iconModifier = Modifier.size(16.dp)
                     )
                     AppText(
                         text = stringResource(Res.string.my_classes_course, schoolClass.courseName),
@@ -140,19 +138,21 @@ fun ClassCard(
                     )
                 }
 
-                if (!schoolClass.branchName.isNullOrBlank()) {
+                if (schoolClass.branchName.isNotBlank()) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_location_on_24dp),
-                            contentDescription = null,
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_location_on_24dp,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                            modifier = Modifier.size(16.dp)
+                            iconModifier = Modifier.size(16.dp)
                         )
                         AppText(
-                            text = stringResource(Res.string.my_classes_branch, schoolClass.branchName),
+                            text = stringResource(
+                                Res.string.my_classes_branch,
+                                schoolClass.branchName
+                            ),
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -164,11 +164,10 @@ fun ClassCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_event_24dp),
-                            contentDescription = null,
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_event_24dp,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                            modifier = Modifier.size(16.dp)
+                            iconModifier = Modifier.size(16.dp)
                         )
                         AppText(
                             text = stringResource(
@@ -184,11 +183,10 @@ fun ClassCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_event_24dp),
-                            contentDescription = null,
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_event_24dp,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                            modifier = Modifier.size(16.dp)
+                            iconModifier = Modifier.size(16.dp)
                         )
                         AppText(
                             text = stringResource(
@@ -207,14 +205,16 @@ fun ClassCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_assignment_filled_24dp),
-                            contentDescription = null,
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_assignment_filled_24dp,
                             tint = AppColor.Primary,
-                            modifier = Modifier.size(16.dp)
+                            iconModifier = Modifier.size(16.dp)
                         )
                         AppText(
-                            text = stringResource(Res.string.my_classes_result, schoolClass.finalResult),
+                            text = stringResource(
+                                Res.string.my_classes_result,
+                                schoolClass.finalResult
+                            ),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = AppColor.Primary
@@ -224,7 +224,8 @@ fun ClassCard(
             }
 
             if (schoolClass.maxStudents > 0) {
-                val ratio = schoolClass.currentStudents.toFloat() / schoolClass.maxStudents.toFloat()
+                val ratio =
+                    schoolClass.currentStudents.toFloat() / schoolClass.maxStudents.toFloat()
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Row(
@@ -250,7 +251,7 @@ fun ClassCard(
                         )
                     }
                     LinearProgressIndicator(
-                        progress = ratio,
+                        progress = { ratio },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(6.dp)
@@ -269,29 +270,29 @@ fun ClassCard(
             }
 
             if (onInvoiceClick != null) {
-                Button(
+                AppButton(
+                    text = stringResource(Res.string.my_classes_btn_invoice),
                     onClick = onInvoiceClick,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = Color.White
+                    ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
                     )
-                ) {
-                    AppText(
-                        text = stringResource(Res.string.my_classes_btn_invoice),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                )
             } else if (onFeedbacksClick != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    OutlinedButton(
+                    AppOutlinedButton(
+                        text = stringResource(Res.string.my_classes_btn_feedback),
                         onClick = onFeedbacksClick,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).height(40.dp),
                         shape = RoundedCornerShape(8.dp),
                         border = BorderStroke(
                             1.dp,
@@ -299,51 +300,47 @@ fun ClassCard(
                         ),
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp
                         )
-                    ) {
-                        AppText(
-                            text = stringResource(Res.string.my_classes_btn_feedback),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
+                    )
 
-                    Button(
+                    AppButton(
+                        text = stringResource(Res.string.my_classes_btn_assignment),
                         onClick = onAssignmentsClick ?: {},
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).height(40.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = Color.White
+                        ),
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp
                         )
-                    ) {
-                        AppText(
-                            text = stringResource(Res.string.my_classes_btn_assignment),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
+                    )
                 }
             } else {
-                Button(
+                AppButton(
+                    text = stringResource(Res.string.my_classes_btn_assignment),
                     onClick = onAssignmentsClick ?: {},
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = Color.White
+                    ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
                     )
-                ) {
-                    AppText(
-                        text = stringResource(Res.string.my_classes_btn_assignment),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                )
             }
         }
-        }
     }
+}
 
 private fun formatDate(dateStr: String?): String {
     if (dateStr.isNullOrBlank()) return "--/--/----"
@@ -362,7 +359,7 @@ private fun formatDate(dateStr: String?): String {
         } else {
             dateStr
         }
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         dateStr
     }
 }

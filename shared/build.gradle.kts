@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeCacheApi::class)
+
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -16,6 +18,19 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "Shared"
             isStatic = true
+        }
+        iosTarget.binaries.configureEach {
+            disableNativeCache(
+                version = org.jetbrains.kotlin.gradle.plugin.mpp.DisableCacheInKotlinVersion.`2_4_0`,
+                reason = "Resolve Xcode 16 and Skiko linking bugs"
+            )
+        }
+        iosTarget.compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    freeCompilerArgs.add("-Xoverride-konan-properties=minVersion.ios=16.0")
+                }
+            }
         }
     }
     
