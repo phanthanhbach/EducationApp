@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.util.shimmerEffect
 
 @Composable
@@ -19,7 +19,7 @@ fun ShimmerBox(
     modifier: Modifier = Modifier,
     width: Dp? = null,
     height: Dp? = null,
-    shape: Shape = RoundedCornerShape(8.dp)
+    shape: Shape = RoundedCornerShape(AppDimen.p8)
 ) {
     Box(
         modifier = modifier
@@ -34,8 +34,8 @@ fun ShimmerBox(
 fun ShimmerLine(
     modifier: Modifier = Modifier,
     width: Dp? = null,
-    height: Dp = 16.dp,
-    shape: Shape = RoundedCornerShape(4.dp)
+    height: Dp = AppDimen.p16,
+    shape: Shape = RoundedCornerShape(AppDimen.p4)
 ) {
     Box(
         modifier = modifier

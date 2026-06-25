@@ -26,24 +26,34 @@ class ProfileScreenModel(
     private val _state = MutableStateFlow<ProfileState>(ProfileState.Idle)
     val state: StateFlow<ProfileState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     init {
         loadProfile()
     }
 
-    fun loadProfile() {
+    fun loadProfile(silent: Boolean = false) {
         screenModelScope.launch {
-            _state.value = ProfileState.Loading
+            if (silent) {
+                _isRefreshing.value = true
+            } else {
+                _state.value = ProfileState.Loading
+            }
             val role = tokenManager.getUserRole()
             when (val result = getMyProfileUseCase(role)) {
                 is ApiResult.Success -> {
                     _state.value = ProfileState.Success(result.data)
                 }
                 is ApiResult.Error -> {
-                    _state.value = ProfileState.Error(
-                        result.message ?: "Failed to load profile"
-                    )
+                    if (!silent || _state.value !is ProfileState.Success) {
+                        _state.value = ProfileState.Error(
+                            result.message ?: "Failed to load profile"
+                        )
+                    }
                 }
             }
+            _isRefreshing.value = false
         }
     }
 }

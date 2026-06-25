@@ -19,6 +19,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -58,6 +61,8 @@ import kotlin.math.roundToInt
  * @param filterIcon Optional resource for filter action. If null, filter icon is hidden.
  * @param isFilterActive True if filter is currently active (styles icon differently).
  * @param onFilterClick Callback triggered when filter icon is clicked.
+ * @param isRefreshing True if the data is refreshing.
+ * @param onRefresh Callback to trigger refreshing.
  * @param extraContent Slot for collapsible headers below the AppTopBar (e.g., ChildSelectorBar).
  * @param content Slot to host list body. Receives `maxScrollDp`, `totalHeaderHeightDp`, and `listTopPaddingDp`.
  */
@@ -75,6 +80,8 @@ fun SearchTopBarLayout(
     onFilterClick: (() -> Unit)? = null,
     onBackClick: (() -> Unit)? = null,
     isTitleCentered: Boolean = onBackClick != null,
+    isRefreshing: Boolean = false,
+    onRefresh: (() -> Unit)? = null,
     extraContent: @Composable (() -> Unit)? = null,
     content: @Composable (maxScrollDp: Dp, totalHeaderHeightDp: Dp, listTopPaddingDp: Dp) -> Unit
 ) {
@@ -136,7 +143,28 @@ fun SearchTopBarLayout(
         modifier = modifier.fillMaxSize()
     ) {
         // 1. List / State Content
-        content(maxScrollDp, totalHeaderHeightDp, listTopPaddingDp)
+        if (onRefresh != null) {
+            val pullToRefreshState = rememberPullToRefreshState()
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+                state = pullToRefreshState,
+                modifier = Modifier.fillMaxSize(),
+                indicator = {
+                    PullToRefreshDefaults.Indicator(
+                        state = pullToRefreshState,
+                        isRefreshing = isRefreshing,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = listTopPaddingDp)
+                    )
+                }
+            ) {
+                content(maxScrollDp, totalHeaderHeightDp, listTopPaddingDp)
+            }
+        } else {
+            content(maxScrollDp, totalHeaderHeightDp, listTopPaddingDp)
+        }
 
         // 2. Fixed Status Bar Background Mask with higher zIndex (4f) to hide top bar sliding underneath
         Box(

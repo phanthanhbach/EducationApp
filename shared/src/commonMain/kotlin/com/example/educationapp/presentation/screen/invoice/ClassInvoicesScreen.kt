@@ -34,8 +34,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
-import androidx.compose.material3.Scaffold
+import com.example.educationapp.core.ui.shimmer.skeleton.InvoiceCardSkeleton
+import com.example.educationapp.core.ui.layout.AppScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -93,6 +93,7 @@ class ClassInvoicesScreen(
         val state by screenModel.state.collectAsState()
         val selectedStatus by screenModel.selectedStatus.collectAsState()
         val paymentQrState by screenModel.paymentQrState.collectAsState()
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
 
         var toastMessage by remember { mutableStateOf<String?>(null) }
 
@@ -103,7 +104,7 @@ class ClassInvoicesScreen(
             }
         }
 
-        Scaffold(
+        AppScaffold(
             topBar = {
                 AppTopBar(
                     onBackClick = { navigator.pop() },
@@ -123,7 +124,9 @@ class ClassInvoicesScreen(
                         }
                     }
                 )
-            }
+            },
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.refreshData() }
         ) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -178,11 +181,11 @@ class ClassInvoicesScreen(
                     ) {
                         when (val invoiceState = state) {
                             is ClassInvoicesState.Loading -> {
-                                ListCardSkeleton(
+                                InvoiceCardSkeleton(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .padding(16.dp),
-                                    itemCount = 4
+                                    itemCount = 3
                                 )
                             }
 

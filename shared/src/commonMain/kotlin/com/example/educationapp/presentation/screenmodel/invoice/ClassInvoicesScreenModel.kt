@@ -46,6 +46,9 @@ class ClassInvoicesScreenModel(
     private val _state = MutableStateFlow<ClassInvoicesState>(ClassInvoicesState.Loading)
     val state: StateFlow<ClassInvoicesState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private val _selectedStatus = MutableStateFlow<String?>(null) // PENDING, PARTIAL, PAID, OVERDUE, CANCELLED
     val selectedStatus: StateFlow<String?> = _selectedStatus.asStateFlow()
 
@@ -60,28 +63,38 @@ class ClassInvoicesScreenModel(
     private var loadJob: Job? = null
 
     init {
-        loadInvoices(page = 0, append = false)
+        launchLoadInvoices(page = 0, append = false)
     }
 
     fun filterByStatus(status: String?) {
         _selectedStatus.value = if (status == "ALL" || status.isNullOrEmpty()) null else status
-        loadInvoices(page = 0, append = false)
+        launchLoadInvoices(page = 0, append = false)
     }
 
     fun filterByPaid(paid: Boolean?) {
         _paidFilter.value = paid
-        loadInvoices(page = 0, append = false)
+        launchLoadInvoices(page = 0, append = false)
     }
 
     fun loadNextPage() {
         val currentState = _state.value
         if (currentState is ClassInvoicesState.Success && currentState.hasNextPage) {
-            loadInvoices(page = currentState.currentPage + 1, append = true)
+            launchLoadInvoices(page = currentState.currentPage + 1, append = true)
         }
     }
 
     fun reload() {
-        loadInvoices(page = 0, append = false)
+        launchLoadInvoices(page = 0, append = false)
+    }
+
+    fun refreshData() {
+        if (loadJob?.isActive == true) return
+        loadJob?.cancel()
+        loadJob = screenModelScope.launch {
+            _isRefreshing.value = true
+            loadInvoicesInternal(page = 0, append = false, silent = true)
+            _isRefreshing.value = false
+        }
     }
 
     fun requestPaymentQr(invoiceId: Int, installmentId: Int?) {
@@ -107,7 +120,7 @@ class ClassInvoicesScreenModel(
     fun dismissPaymentCompleted() {
         _paymentQrState.value = PaymentQrState.Idle
         // Reload invoices list to reflect updated payment status
-        loadInvoices(page = 0, append = false)
+        launchLoadInvoices(page = 0, append = false)
     }
 
     private fun startPollingInvoice(invoiceId: Int) {
@@ -148,7 +161,7 @@ class ClassInvoicesScreenModel(
         pollingJob = null
     }
 
-    private fun loadInvoices(page: Int, append: Boolean) {
+    private fun launchLoadInvoices(page: Int, append: Boolean, silent: Boolean = false) {
         if (append && loadJob?.isActive == true) return
 
         if (!append) {
@@ -156,44 +169,48 @@ class ClassInvoicesScreenModel(
         }
 
         loadJob = screenModelScope.launch {
-            if (!append) {
-                _state.value = ClassInvoicesState.Loading
+            loadInvoicesInternal(page, append, silent)
+        }
+    }
+
+    private suspend fun loadInvoicesInternal(page: Int, append: Boolean, silent: Boolean = false) {
+        if (!append && !silent) {
+            _state.value = ClassInvoicesState.Loading
+        }
+
+        val result = getMyInvoicesUseCase(
+            classId = classId,
+            studentId = studentId,
+            status = _selectedStatus.value,
+            paid = _paidFilter.value,
+            page = page,
+            size = 20
+        )
+
+        when (result) {
+            is ApiResult.Error -> {
+                if (!append) {
+                    _state.value = ClassInvoicesState.Error(result.message ?: "Lỗi tải danh sách hóa đơn.")
+                }
             }
+            is ApiResult.Success -> {
+                val pagination = result.data
+                val newInvoices = pagination.content
 
-            val result = getMyInvoicesUseCase(
-                classId = classId,
-                studentId = studentId,
-                status = _selectedStatus.value,
-                paid = _paidFilter.value,
-                page = page,
-                size = 20
-            )
-
-            when (result) {
-                is ApiResult.Error -> {
-                    if (!append) {
-                        _state.value = ClassInvoicesState.Error(result.message ?: "Lỗi tải danh sách hóa đơn.")
-                    }
+                val currentInvoices = if (append && _state.value is ClassInvoicesState.Success) {
+                    val existing = (_state.value as ClassInvoicesState.Success).invoices
+                    (existing + newInvoices).distinctBy { it.id }
+                } else {
+                    newInvoices
                 }
-                is ApiResult.Success -> {
-                    val pagination = result.data
-                    val newInvoices = pagination.content
 
-                    val currentInvoices = if (append && _state.value is ClassInvoicesState.Success) {
-                        val existing = (_state.value as ClassInvoicesState.Success).invoices
-                        (existing + newInvoices).distinctBy { it.id }
-                    } else {
-                        newInvoices
-                    }
-
-                    _state.value = ClassInvoicesState.Success(
-                        invoices = currentInvoices,
-                        currentPage = pagination.number,
-                        totalPages = pagination.totalPages,
-                        totalElements = pagination.totalElements,
-                        hasNextPage = !pagination.last && pagination.content.isNotEmpty()
-                    )
-                }
+                _state.value = ClassInvoicesState.Success(
+                    invoices = currentInvoices,
+                    currentPage = pagination.number,
+                    totalPages = pagination.totalPages,
+                    totalElements = pagination.totalElements,
+                    hasNextPage = !pagination.last && pagination.content.isNotEmpty()
+                )
             }
         }
     }

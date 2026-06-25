@@ -47,13 +47,16 @@ class ProfileTab : Tab {
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<ProfileScreenModel>()
         val profileState by screenModel.state.collectAsState()
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
 
         ProfileScreenContent(
             profileState = profileState,
             onSettingsClick = {
                 navigator.parent?.push(SettingScreen())
             },
-            onRetry = { screenModel.loadProfile() }
+            onRetry = { screenModel.loadProfile() },
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.loadProfile(silent = true) }
         )
     }
 }

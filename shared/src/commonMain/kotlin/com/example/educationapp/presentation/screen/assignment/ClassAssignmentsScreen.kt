@@ -23,7 +23,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import com.example.educationapp.core.ui.layout.AppScaffold
+import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -71,6 +72,7 @@ class ClassAssignmentsScreen(
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<ClassAssignmentsScreenModel>()
         val state by screenModel.state.collectAsState()
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
 
         LaunchedEffect(classId) {
             screenModel.loadAssignments(classId)
@@ -79,6 +81,8 @@ class ClassAssignmentsScreen(
         ClassAssignmentsContent(
             className = className,
             state = state,
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.refreshData() },
             onBackClick = { navigator.pop() },
             onRetry = { screenModel.retry() },
             onLoadNextPage = { screenModel.loadNextPage() },
@@ -91,22 +95,25 @@ class ClassAssignmentsScreen(
 private fun ClassAssignmentsContent(
     className: String,
     state: ClassAssignmentsState,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     onBackClick: () -> Unit,
     onRetry: () -> Unit,
     onLoadNextPage: () -> Unit,
     onAssignmentClick: (Assignment) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
+    AppScaffold(
         modifier = modifier,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             AppTopBar(
                 title = stringResource(Res.string.tab_assignment),
                 onBackClick = onBackClick
             )
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -116,12 +123,12 @@ private fun ClassAssignmentsContent(
         ) {
             when (state) {
                 is ClassAssignmentsState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = AppColor.Primary)
-                    }
+                    AssignmentCardSkeleton(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        itemCount = 3
+                    )
                 }
 
                 is ClassAssignmentsState.Error -> {

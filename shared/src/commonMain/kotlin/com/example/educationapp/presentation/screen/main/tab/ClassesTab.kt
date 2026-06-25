@@ -50,6 +50,8 @@ class ClassesTab : Tab {
         val searchQuery by screenModel.searchQuery.collectAsState()
         val selectedStatus by screenModel.selectedStatus.collectAsState()
 
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
+
         LaunchedEffect(role) {
             screenModel.loadProfileAndClasses(role)
         }
@@ -77,7 +79,9 @@ class ClassesTab : Tab {
                 }
             },
             onLoadNextPage = { screenModel.loadNextPage() },
-            onRetry = { screenModel.loadProfileAndClasses() }
+            onRetry = { screenModel.loadProfileAndClasses() },
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.refreshData() }
         )
     }
 }
