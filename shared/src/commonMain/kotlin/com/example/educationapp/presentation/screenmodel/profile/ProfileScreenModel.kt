@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 
 sealed interface ProfileState {
     object Idle : ProfileState
     object Loading : ProfileState
     data class Success(val profile: UserProfile) : ProfileState
-    data class Error(val message: String) : ProfileState
+    data class Error(val error: UiText) : ProfileState
 }
 
 class ProfileScreenModel(
@@ -47,9 +49,7 @@ class ProfileScreenModel(
                 }
                 is ApiResult.Error -> {
                     if (!silent || _state.value !is ProfileState.Success) {
-                        _state.value = ProfileState.Error(
-                            result.message ?: "Failed to load profile"
-                        )
+                        _state.value = ProfileState.Error(result.asUiText())
                     }
                 }
             }

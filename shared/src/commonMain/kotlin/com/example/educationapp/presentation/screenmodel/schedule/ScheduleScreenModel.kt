@@ -16,12 +16,14 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.number
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 
 sealed interface ScheduleState {
     object Idle : ScheduleState
     object Loading : ScheduleState
     data class Success(val schedules: List<ScheduleSessionUiModel>) : ScheduleState
-    data class Error(val message: String) : ScheduleState
+    data class Error(val error: UiText) : ScheduleState
 }
 
 class ScheduleScreenModel(
@@ -157,9 +159,7 @@ class ScheduleScreenModel(
                     // Reset fetched range on error so retry triggers it again
                     lastFetchedFrom = null
                     lastFetchedTo = null
-                    _schedulesState.value = ScheduleState.Error(
-                        result.message ?: "Không thể tải lịch trình."
-                    )
+                    _schedulesState.value = ScheduleState.Error(result.asUiText())
                 }
             }
         }

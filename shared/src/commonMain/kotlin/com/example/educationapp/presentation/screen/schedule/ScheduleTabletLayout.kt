@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import com.example.educationapp.core.ui.shimmer.skeleton.ScheduleSessionSkeleton
+import com.example.educationapp.core.ui.error.ErrorStateView
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -162,9 +163,10 @@ fun CommonScheduleTabletLayout(
                                 .weight(1f),
                             contentAlignment = Alignment.Center
                         ) {
-                            ScheduleErrorView(
-                                message = schedulesState.message,
-                                onRetry = onRetry
+                            ErrorStateView(
+                                error = schedulesState.error,
+                                onRetry = onRetry,
+                                modifier = Modifier.padding(AppDimen.p16)
                             )
                         }
                     }

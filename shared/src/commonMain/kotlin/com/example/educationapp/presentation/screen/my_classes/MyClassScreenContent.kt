@@ -51,6 +51,7 @@ import androidx.compose.ui.zIndex
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
+import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.sheet.ClassStatusFilterBottomSheet
 import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
@@ -206,38 +207,10 @@ private fun ClassesContent(
                             .padding(AppDimen.p16),
                         contentAlignment = Alignment.TopCenter
                     ) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(AppDimen.p12),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer.copy(
-                                    alpha = 0.1f
-                                )
-                            ),
-                            border = BorderStroke(AppDimen.p1, AppColor.Error.copy(alpha = 0.3f))
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(AppDimen.p16),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
-                            ) {
-                                AppText(
-                                    text = state.message,
-                                    fontSize = 14.sp,
-                                    color = AppColor.Error,
-                                    textAlign = TextAlign.Center
-                                )
-                                Button(
-                                    onClick = onRetry,
-                                    colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
-                                ) {
-                                    AppText(
-                                        text = stringResource(Res.string.profile_retry),
-                                        color = Color.White
-                                    )
-                                }
-                            }
-                        }
+                        ErrorStateView(
+                            error = state.error,
+                            onRetry = onRetry
+                        )
                     }
                 }
 

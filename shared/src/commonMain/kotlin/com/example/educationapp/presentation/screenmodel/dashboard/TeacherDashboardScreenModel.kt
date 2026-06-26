@@ -3,15 +3,19 @@ package com.example.educationapp.presentation.screenmodel.dashboard
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
+import com.example.educationapp.domain.entity.TeacherCheckInResult
 import com.example.educationapp.domain.entity.TeacherRatingSummary
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
-import com.example.educationapp.domain.entity.TeacherCheckInResult
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.GetMySchedulesUseCase
 import com.example.educationapp.domain.usecase.GetTeacherCheckInsUseCase
 import com.example.educationapp.domain.usecase.GetTeacherRatingSummaryUseCase
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.error_unknown
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +36,7 @@ sealed interface TeacherDashboardState {
         val recentCheckIns: List<TeacherCheckInResult>
     ) : TeacherDashboardState
 
-    data class Error(val message: String) : TeacherDashboardState
+    data class Error(val error: UiText) : TeacherDashboardState
 }
 
 class TeacherDashboardScreenModel(
@@ -56,9 +60,7 @@ class TeacherDashboardScreenModel(
             // 1. Get profile to find teacherId
             when (val profileResult = getMyProfileUseCase(AppRole.TEACHER)) {
                 is ApiResult.Error -> {
-                    _state.value = TeacherDashboardState.Error(
-                        profileResult.message ?: "Không thể lấy thông tin profile giáo viên."
-                    )
+                    _state.value = TeacherDashboardState.Error(profileResult.asUiText())
                 }
 
                 is ApiResult.Success -> {
@@ -81,7 +83,8 @@ class TeacherDashboardScreenModel(
                         // Fetch rating summary, schedule, and check-ins in parallel
                         val ratingDeferred = async { getTeacherRatingSummaryUseCase(teacherId) }
                         val scheduleDeferred = async { getMySchedulesUseCase(fromTime, toTime) }
-                        val checkInDeferred = async { getTeacherCheckInsUseCase(teacherId, page = 0, size = 3) }
+                        val checkInDeferred =
+                            async { getTeacherCheckInsUseCase(teacherId, page = 0, size = 3) }
 
                         val ratingResult = ratingDeferred.await()
                         val scheduleResult = scheduleDeferred.await()
@@ -125,16 +128,19 @@ class TeacherDashboardScreenModel(
                                 recentCheckIns = checkInPage.content
                             )
                         } else {
-                            val ratingErrorMsg = (ratingResult as? ApiResult.Error)?.message
-                            val scheduleErrorMsg = (scheduleResult as? ApiResult.Error)?.message
-                            val checkInErrorMsg = (checkInResult as? ApiResult.Error)?.message
+                            val firstError = listOf(ratingResult, scheduleResult, checkInResult)
+                                .filterIsInstance<ApiResult.Error>()
+                                .firstOrNull()
+
                             _state.value = TeacherDashboardState.Error(
-                                ratingErrorMsg ?: scheduleErrorMsg ?: checkInErrorMsg ?: "Lỗi tải dữ liệu Dashboard."
+                                firstError?.asUiText()
+                                    ?: UiText.ResourceString(Res.string.error_unknown)
                             )
                         }
                     } else {
-                        _state.value =
-                            TeacherDashboardState.Error("Tài khoản không phải giáo viên.")
+                        _state.value = TeacherDashboardState.Error(
+                            UiText.DynamicString("Tài khoản không phải giáo viên.")
+                        )
                     }
                 }
             }
