@@ -32,7 +32,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.educationapp.core.ui.card.ProfileErrorCard
+import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.image.AppImage
 import com.example.educationapp.core.ui.image.CoreMediaSource
@@ -90,9 +90,10 @@ class EditProfileScreen : Screen {
                     }
 
                     is EditProfileUiState.Error -> {
-                        ProfileErrorCard(
-                            message = state.message,
-                            onRetry = { screenModel.loadProfile() }
+                        ErrorStateView(
+                            error = state.error,
+                            onRetry = { screenModel.loadProfile() },
+                            modifier = Modifier.padding(16.dp)
                         )
                     }
 
@@ -222,7 +223,7 @@ fun SaveButtonSection(
     Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
         if (saveStatus is SaveStatus.Error) {
             Text(
-                text = saveStatus.message,
+                text = saveStatus.error.asString(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(bottom = 8.dp)

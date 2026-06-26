@@ -6,6 +6,8 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.data.TokenManager
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.util.decodeByteArrayToImageBitmap
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
@@ -51,14 +53,14 @@ sealed interface EditProfileUiState {
         val avatarPreview: ImageBitmap? = null
     ) : EditProfileUiState
 
-    data class Error(val message: String) : EditProfileUiState
+    data class Error(val error: UiText) : EditProfileUiState
 }
 
 sealed interface SaveStatus {
     object Idle : SaveStatus
     object Saving : SaveStatus
     object Saved : SaveStatus
-    data class Error(val message: String) : SaveStatus
+    data class Error(val error: UiText) : SaveStatus
 }
 
 class EditProfileScreenModel(
@@ -140,14 +142,14 @@ class EditProfileScreenModel(
 
                         else -> {
                             _uiState.value =
-                                EditProfileUiState.Error("This role does not support profile editing.")
+                                EditProfileUiState.Error(UiText.DynamicString("This role does not support profile editing."))
                         }
                     }
                 }
 
                 is ApiResult.Error -> {
                     _uiState.value =
-                        EditProfileUiState.Error(result.message ?: "Failed to load profile.")
+                        EditProfileUiState.Error(result.asUiText())
                 }
             }
         }
@@ -322,9 +324,7 @@ class EditProfileScreenModel(
                     }
 
                     is ApiResult.Error -> {
-                        _saveStatus.value = SaveStatus.Error(
-                            uploadResult.message ?: "Không thể tải ảnh lên. Vui lòng thử lại."
-                        )
+                        _saveStatus.value = SaveStatus.Error(uploadResult.asUiText())
                         return@launch
                     }
                 }
@@ -338,7 +338,7 @@ class EditProfileScreenModel(
                 is EditProfileUiState.TeacherLoadSuccess -> saveTeacherProfile(state, avatarUrl)
                 is EditProfileUiState.ParentLoadSuccess -> saveParentProfile(state, avatarUrl)
                 else -> {
-                    _saveStatus.value = SaveStatus.Error("Cannot save: invalid state.")
+                    _saveStatus.value = SaveStatus.Error(UiText.DynamicString("Cannot save: invalid state."))
                 }
             }
         }
@@ -376,7 +376,7 @@ class EditProfileScreenModel(
             }
 
             is ApiResult.Error -> {
-                _saveStatus.value = SaveStatus.Error(result.message ?: "Failed to save profile.")
+                _saveStatus.value = SaveStatus.Error(result.asUiText())
             }
         }
     }
@@ -423,7 +423,7 @@ class EditProfileScreenModel(
             }
 
             is ApiResult.Error -> {
-                _saveStatus.value = SaveStatus.Error(result.message ?: "Failed to save profile.")
+                _saveStatus.value = SaveStatus.Error(result.asUiText())
             }
         }
     }
@@ -457,7 +457,7 @@ class EditProfileScreenModel(
             }
 
             is ApiResult.Error -> {
-                _saveStatus.value = SaveStatus.Error(result.message ?: "Failed to save profile.")
+                _saveStatus.value = SaveStatus.Error(result.asUiText())
             }
         }
     }

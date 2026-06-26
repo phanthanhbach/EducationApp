@@ -36,7 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
-import com.example.educationapp.core.ui.card.ProfileErrorCard
+import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.image.AppImage
 import com.example.educationapp.core.ui.image.CoreMediaSource
@@ -116,9 +116,11 @@ fun ProfileScreenContent(
                         SectionTitle(stringResource(Res.string.title_about_me))
                     }
                     item {
-                        ProfileErrorCard(
-                            message = profileState.message,
-                            onRetry = onRetry
+                        ErrorStateView(
+                            error = profileState.error,
+                            onRetry = onRetry,
+                            modifier = Modifier
+                                .fillMaxWidth()
                         )
                     }
                 }

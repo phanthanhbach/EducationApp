@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 
 sealed interface AssignmentTabState {
     object Loading : AssignmentTabState
@@ -25,7 +27,7 @@ sealed interface AssignmentTabState {
         val hasNextPage: Boolean,
         val isSearchingOrFiltering: Boolean = false
     ) : AssignmentTabState
-    data class Error(val message: String) : AssignmentTabState
+    data class Error(val error: UiText) : AssignmentTabState
 }
 
 class AssignmentTabScreenModel(
@@ -66,9 +68,7 @@ class AssignmentTabScreenModel(
             _state.value = AssignmentTabState.Loading
             when (val profileResult = getMyProfileUseCase(role)) {
                 is ApiResult.Error -> {
-                    _state.value = AssignmentTabState.Error(
-                        profileResult.message ?: "Không thể lấy thông tin profile."
-                    )
+                    _state.value = AssignmentTabState.Error(profileResult.asUiText())
                 }
                 is ApiResult.Success -> {
                     val profile = profileResult.data
@@ -82,7 +82,7 @@ class AssignmentTabScreenModel(
                             launchFetchClasses(page = 0, append = false)
                         }
                         else -> {
-                            _state.value = AssignmentTabState.Error("Tài khoản không đúng vai trò.")
+                            _state.value = AssignmentTabState.Error(UiText.DynamicString("Tài khoản không đúng vai trò."))
                         }
                     }
                 }
@@ -160,7 +160,7 @@ class AssignmentTabScreenModel(
         when (result) {
             is ApiResult.Error -> {
                 if (!append) {
-                    _state.value = AssignmentTabState.Error(result.message ?: "Lỗi tải danh sách lớp.")
+                    _state.value = AssignmentTabState.Error(result.asUiText())
                 }
             }
             is ApiResult.Success -> {

@@ -2,6 +2,28 @@ package com.example.educationapp.core.util
 
 import com.example.educationapp.core.network.ApiResult
 import educationapp.shared.generated.resources.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+@Serializable
+private data class ErrorResponseDto(
+    val message: String? = null,
+    val error: String? = null
+)
+
+private val json = Json { ignoreUnknownKeys = true }
+
+private fun parseErrorMessage(jsonStr: String?): String? {
+    if (jsonStr.isNullOrBlank()) return null
+    val trimmed = jsonStr.trim()
+    if (!trimmed.startsWith("{")) return trimmed
+    return try {
+        val parsed = json.decodeFromString<ErrorResponseDto>(trimmed)
+        parsed.message ?: parsed.error
+    } catch (_: Exception) {
+        null
+    }
+}
 
 /**
  * Extension function to map presentation-independent ApiResult.Error into localized UiText.
@@ -15,10 +37,14 @@ fun ApiResult.Error.asUiText(): UiText {
                 401 -> UiText.ResourceString(Res.string.error_unauthorized)
                 403 -> UiText.ResourceString(Res.string.error_forbidden)
                 404 -> UiText.ResourceString(Res.string.error_not_found)
-                500 -> UiText.ResourceString(Res.string.error_server)
+                in 500..599 -> UiText.ResourceString(Res.string.error_server)
                 else -> {
-                    if (!message.isNullOrBlank()) UiText.DynamicString(message)
-                    else UiText.ResourceString(Res.string.error_unknown)
+                    val parsed = parseErrorMessage(message)
+                    if (!parsed.isNullOrBlank()) {
+                        UiText.DynamicString(parsed)
+                    } else {
+                        UiText.ResourceString(Res.string.error_unknown)
+                    }
                 }
             }
         }

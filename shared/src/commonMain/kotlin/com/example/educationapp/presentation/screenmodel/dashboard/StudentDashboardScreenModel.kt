@@ -3,17 +3,21 @@ package com.example.educationapp.presentation.screenmodel.dashboard
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.AssignmentReminder
 import com.example.educationapp.domain.entity.Course
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.domain.usecase.GetAssignmentRemindersUseCase
 import com.example.educationapp.domain.usecase.GetAttendanceRateUseCase
 import com.example.educationapp.domain.usecase.GetMyCoursesUseCase
-import com.example.educationapp.domain.usecase.GetAssignmentRemindersUseCase
-import com.example.educationapp.domain.usecase.GetStudentClassesInfoUseCase
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.GetMySchedulesUseCase
+import com.example.educationapp.domain.usecase.GetStudentClassesInfoUseCase
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.error_unknown
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +40,7 @@ sealed interface StudentDashboardState {
         val currentCourses: List<Course>
     ) : StudentDashboardState
 
-    data class Error(val message: String) : StudentDashboardState
+    data class Error(val error: UiText) : StudentDashboardState
 }
 
 data class AttendanceByClassUiModel(
@@ -78,9 +82,7 @@ class StudentDashboardScreenModel(
             // 1. Get profile to find studentId
             when (val profileResult = getMyProfileUseCase(AppRole.STUDENT)) {
                 is ApiResult.Error -> {
-                    _state.value = StudentDashboardState.Error(
-                        profileResult.message ?: "Không thể lấy thông tin profile học sinh."
-                    )
+                    _state.value = StudentDashboardState.Error(profileResult.asUiText())
                 }
 
                 is ApiResult.Success -> {
@@ -89,7 +91,8 @@ class StudentDashboardScreenModel(
                         val studentId = profile.studentId.toLong()
 
                         // Calculate dates (From now to 2 days later 23:59:59)
-                        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                        val now =
+                            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                         val today = now.date
                         val dayPlus2 = LocalDate.fromEpochDays(today.toEpochDays() + 2)
 
@@ -101,9 +104,16 @@ class StudentDashboardScreenModel(
 
                         // Fetch concurrent dashboard components
                         val schedulesDeferred = async { getMySchedulesUseCase(fromTime, toTime) }
-                        val coursesDeferred = async { getMyCoursesUseCase(isActive = true, page = 0, size = 100) }
-                        val classesDeferred = async { getStudentClassesInfoUseCase(studentId = studentId, page = 0, size = 100) }
-                        val remindersDeferred = async { 
+                        val coursesDeferred =
+                            async { getMyCoursesUseCase(isActive = true, page = 0, size = 100) }
+                        val classesDeferred = async {
+                            getStudentClassesInfoUseCase(
+                                studentId = studentId,
+                                page = 0,
+                                size = 100
+                            )
+                        }
+                        val remindersDeferred = async {
                             getAssignmentRemindersUseCase(
                                 studentId = studentId.toInt(),
                                 classId = null,
@@ -139,28 +149,29 @@ class StudentDashboardScreenModel(
                             val attendanceResults = attendanceDeferredList.awaitAll()
 
                             // Map attendance info
-                            val attendanceByClass = attendanceResults.mapNotNull { (studentClass, rateResult) ->
-                                if (rateResult is ApiResult.Success) {
-                                    val data = rateResult.data
-                                    AttendanceByClassUiModel(
-                                        classId = studentClass.classId,
-                                        className = studentClass.className,
-                                        courseName = studentClass.courseName,
-                                        attendedSessions = data.attendedSessions,
-                                        totalSessions = data.totalSessions,
-                                        attendanceRate = data.attendanceRate
-                                    )
-                                } else {
-                                    AttendanceByClassUiModel(
-                                        classId = studentClass.classId,
-                                        className = studentClass.className,
-                                        courseName = studentClass.courseName,
-                                        attendedSessions = 0,
-                                        totalSessions = 0,
-                                        attendanceRate = 0.0
-                                    )
+                            val attendanceByClass =
+                                attendanceResults.mapNotNull { (studentClass, rateResult) ->
+                                    if (rateResult is ApiResult.Success) {
+                                        val data = rateResult.data
+                                        AttendanceByClassUiModel(
+                                            classId = studentClass.classId,
+                                            className = studentClass.className,
+                                            courseName = studentClass.courseName,
+                                            attendedSessions = data.attendedSessions,
+                                            totalSessions = data.totalSessions,
+                                            attendanceRate = data.attendanceRate
+                                        )
+                                    } else {
+                                        AttendanceByClassUiModel(
+                                            classId = studentClass.classId,
+                                            className = studentClass.className,
+                                            courseName = studentClass.courseName,
+                                            attendedSessions = 0,
+                                            totalSessions = 0,
+                                            attendanceRate = 0.0
+                                        )
+                                    }
                                 }
-                            }
 
                             // Extract teacher contacts
                             val teacherContacts = classesList.map { studentClass ->
@@ -180,11 +191,12 @@ class StudentDashboardScreenModel(
                                     LocalDate(2026, 6, 1)
                                 }
 
-                                val roomText = if (item.roomName.isNotBlank() && item.roomName != "string") {
-                                    item.roomName
-                                } else {
-                                    "Phòng ${item.roomId}"
-                                }
+                                val roomText =
+                                    if (item.roomName.isNotBlank() && item.roomName != "string") {
+                                        item.roomName
+                                    } else {
+                                        "Phòng ${item.roomId}"
+                                    }
 
                                 ScheduleSessionUiModel(
                                     id = "${item.classId}_${item.sessionNumber}_${item.startTime}",
@@ -208,17 +220,24 @@ class StudentDashboardScreenModel(
                                 currentCourses = coursesResult.data.content
                             )
                         } else {
-                            val errorMsg = listOf(
-                                (schedulesResult as? ApiResult.Error)?.message,
-                                (coursesResult as? ApiResult.Error)?.message,
-                                (classesResult as? ApiResult.Error)?.message,
-                                (remindersResult as? ApiResult.Error)?.message
-                            ).firstOrNull { it != null } ?: "Lỗi tải dữ liệu Student Dashboard."
+                            val firstError = listOf(
+                                schedulesResult,
+                                coursesResult,
+                                classesResult,
+                                remindersResult
+                            )
+                                .filterIsInstance<ApiResult.Error>()
+                                .firstOrNull()
 
-                            _state.value = StudentDashboardState.Error(errorMsg)
+                            _state.value = StudentDashboardState.Error(
+                                firstError?.asUiText()
+                                    ?: UiText.ResourceString(Res.string.error_unknown)
+                            )
                         }
                     } else {
-                        _state.value = StudentDashboardState.Error("Tài khoản không phải học sinh.")
+                        _state.value = StudentDashboardState.Error(
+                            UiText.DynamicString("Tài khoản không phải học sinh.")
+                        )
                     }
                 }
             }

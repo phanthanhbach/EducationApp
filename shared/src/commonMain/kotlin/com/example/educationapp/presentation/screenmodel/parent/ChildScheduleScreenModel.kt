@@ -20,6 +20,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.number
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 
 sealed interface ChildClassesState {
     object Loading : ChildClassesState
@@ -207,9 +209,7 @@ class ChildScheduleScreenModel(
                     lastFetchedClassId = null
                     lastFetchedFrom = null
                     lastFetchedTo = null
-                    _schedulesState.value = ScheduleState.Error(
-                        result.message ?: "Không thể tải lịch trình lớp học."
-                    )
+                    _schedulesState.value = ScheduleState.Error(result.asUiText())
                 }
             }
         }
