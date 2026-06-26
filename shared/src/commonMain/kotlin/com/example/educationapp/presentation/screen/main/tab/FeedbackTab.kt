@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,9 +18,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,23 +39,30 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.example.educationapp.core.theme.AppColor
+import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.rating.AppRatingBar
+import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
+import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.Feedback
+import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
 import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
-import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
-import dev.chrisbanes.haze.hazeSource
-import com.example.educationapp.presentation.screen.parent.component.ClassChipsRow
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
+import com.example.educationapp.presentation.screen.parent.component.ClassChipsRow
 import com.example.educationapp.presentation.screenmodel.parent.FeedbackClassesState
 import com.example.educationapp.presentation.screenmodel.parent.FeedbackDetailState
 import com.example.educationapp.presentation.screenmodel.parent.FeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ParentChildrenState
+import dev.chrisbanes.haze.hazeSource
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_chat_24dp
+import educationapp.shared.generated.resources.ic_star_24dp
+import educationapp.shared.generated.resources.ic_star_filled_24dp
 import educationapp.shared.generated.resources.tab_feedback
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -78,6 +84,7 @@ class FeedbackTab : Tab {
             }
         }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val parentMainScreenModel = LocalParentMainScreenModel.current
@@ -93,178 +100,192 @@ class FeedbackTab : Tab {
         val sharedHazeState = LocalSharedHazeState.current
         val bottomBarHeight = LocalBottomBarHeight.current
 
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
+
         LaunchedEffect(selectedChild) {
             selectedChild?.let {
                 screenModel.loadClasses(it.studentId.toLong())
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            AppTopBar(
-                titleContent = {
-                    AppText(
-                        text = stringResource(Res.string.tab_feedback),
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                isTitleCentered = false
-            )
-
-            when (val state = childrenState) {
-                is ParentChildrenState.Loading -> {
-                    ListCardSkeleton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        itemCount = 4
-                    )
-                }
-
-                is ParentChildrenState.Error -> {
-                    Box(
-                        modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+        AppScaffold(
+            topBar = {
+                AppTopBar(
+                    titleContent = {
                         AppText(
-                            text = state.message,
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 14.sp
+                            text = stringResource(Res.string.tab_feedback),
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    isTitleCentered = false
+                )
+            },
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.refreshData() }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = paddingValues.calculateTopPadding())
+            ) {
+                when (val state = childrenState) {
+                    is ParentChildrenState.Loading -> {
+                        ListCardSkeleton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            itemCount = 4
                         )
                     }
-                }
 
-                is ParentChildrenState.Success -> {
-                    val childrenList = state.children
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        if (childrenList.isNotEmpty()) {
-                            ChildSelectorBar(
-                                children = childrenList,
-                                selectedChild = selectedChild,
-                                onChildSelected = { parentMainScreenModel.selectChild(it) }
+                    is ParentChildrenState.Error -> {
+                        Box(
+                            modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            ErrorStateView(
+                                error = UiText.DynamicString(state.message),
+                                onRetry = { parentMainScreenModel.loadChildren() }
                             )
+                        }
+                    }
 
-                            when (val currentClassesState = classesState) {
-                                is FeedbackClassesState.Idle -> {
-                                    // Do nothing
-                                }
+                    is ParentChildrenState.Success -> {
+                        val childrenList = state.children
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (childrenList.isNotEmpty()) {
+                                ChildSelectorBar(
+                                    modifier = Modifier
+                                        .background(MaterialTheme.colorScheme.surface)
+                                        .padding(top = AppDimen.p12),
+                                    children = childrenList,
+                                    selectedChild = selectedChild,
+                                    onChildSelected = { parentMainScreenModel.selectChild(it) }
+                                )
 
-                                is FeedbackClassesState.Loading -> {
-                                    Box(
-                                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                                when (val currentClassesState = classesState) {
+                                    is FeedbackClassesState.Idle -> {
+                                        // Do nothing
                                     }
-                                }
 
-                                is FeedbackClassesState.Error -> {
-                                    Box(
-                                        modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        AppText(
-                                            text = currentClassesState.message,
-                                            color = MaterialTheme.colorScheme.error,
-                                            fontSize = 14.sp
+                                    is FeedbackClassesState.Loading -> {
+                                        ListCardSkeleton(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .fillMaxWidth()
+                                                .padding(16.dp),
+                                            itemCount = 3
                                         )
                                     }
-                                }
 
-                                is FeedbackClassesState.Success -> {
-                                    val classesList = currentClassesState.classes
-                                    if (classesList.isEmpty()) {
+                                    is FeedbackClassesState.Error -> {
                                         Box(
-                                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                                            modifier = Modifier.weight(1f).fillMaxWidth()
+                                                .padding(16.dp),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            AppText(
-                                                text = "Con chưa tham gia lớp học nào.",
-                                                fontSize = 14.sp,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            ErrorStateView(
+                                                error = currentClassesState.error,
+                                                onRetry = {
+                                                    selectedChild?.let {
+                                                        screenModel.loadClasses(it.studentId.toLong())
+                                                    }
+                                                }
                                             )
                                         }
-                                    } else {
-                                        Column(
-                                            modifier = Modifier.weight(1f).fillMaxWidth()
-                                        ) {
-                                            ClassChipsRow(
-                                                classes = classesList,
-                                                selectedClass = selectedClass,
-                                                onClassSelected = { screenModel.selectClass(it) }
-                                            )
+                                    }
 
-                                            HorizontalDivider(
-                                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
-                                                thickness = 1.dp
-                                            )
-
+                                    is FeedbackClassesState.Success -> {
+                                        val classesList = currentClassesState.classes
+                                        if (classesList.isEmpty()) {
                                             Box(
-                                                modifier = Modifier
-                                                    .weight(1f)
-                                                    .fillMaxWidth()
+                                                modifier = Modifier.weight(1f).fillMaxWidth(),
+                                                contentAlignment = Alignment.Center
                                             ) {
-                                                Column(
+                                                AppText(
+                                                    text = "Con chưa tham gia lớp học nào.",
+                                                    fontSize = 14.sp,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                        } else {
+                                            Column(
+                                                modifier = Modifier.weight(1f).fillMaxWidth()
+                                            ) {
+                                                ClassChipsRow(
+                                                    classes = classesList,
+                                                    selectedClass = selectedClass,
+                                                    onClassSelected = { screenModel.selectClass(it) }
+                                                )
+
+                                                HorizontalDivider(
+                                                    color = MaterialTheme.colorScheme.outlineVariant.copy(
+                                                        alpha = 0.4f
+                                                    ),
+                                                    thickness = 1.dp
+                                                )
+
+                                                Box(
                                                     modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .let { modifier ->
-                                                            if (sharedHazeState != null) modifier.hazeSource(state = sharedHazeState) else modifier
-                                                        }
-                                                        .verticalScroll(scrollState)
-                                                        .padding(
-                                                            start = 16.dp,
-                                                            top = 12.dp,
-                                                            end = 16.dp,
-                                                            bottom = 12.dp + bottomBarHeight
-                                                        ),
-                                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                                        .weight(1f)
+                                                        .fillMaxWidth()
                                                 ) {
-                                                    when (val currentFeedbackState = feedbackState) {
-                                                        is FeedbackDetailState.Idle -> {
-                                                            // Do nothing
-                                                        }
-
-                                                        is FeedbackDetailState.Loading -> {
-                                                            Box(
-                                                                modifier = Modifier.fillMaxWidth().height(200.dp),
-                                                                contentAlignment = Alignment.Center
-                                                            ) {
-                                                                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                                                    Column(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .let { modifier ->
+                                                                if (sharedHazeState != null) modifier.hazeSource(
+                                                                    state = sharedHazeState
+                                                                ) else modifier
                                                             }
-                                                        }
+                                                            .verticalScroll(scrollState)
+                                                            .padding(
+                                                                start = 16.dp,
+                                                                top = 12.dp,
+                                                                end = 16.dp,
+                                                                bottom = 12.dp + bottomBarHeight
+                                                            ),
+                                                        verticalArrangement = Arrangement.spacedBy(
+                                                            16.dp
+                                                        )
+                                                    ) {
+                                                        when (val currentFeedbackState =
+                                                            feedbackState) {
+                                                            is FeedbackDetailState.Idle -> {
+                                                                // Do nothing
+                                                            }
 
-                                                        is FeedbackDetailState.Error -> {
-                                                            Box(
-                                                                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                                                                contentAlignment = Alignment.Center
-                                                            ) {
-                                                                AppText(
-                                                                    text = currentFeedbackState.message,
-                                                                    color = MaterialTheme.colorScheme.error,
-                                                                    fontSize = 14.sp,
-                                                                    textAlign = TextAlign.Center
+                                                            is FeedbackDetailState.Loading -> {
+                                                                ListCardSkeleton(
+                                                                    modifier = Modifier.fillMaxWidth(),
+                                                                    itemCount = 2
                                                                 )
                                                             }
-                                                        }
 
-                                                        is FeedbackDetailState.Success -> {
-                                                            val feedback = currentFeedbackState.feedback
-                                                            if (feedback != null) {
-                                                                // Card 1: Teacher Feedback Card
-                                                                TeacherFeedbackCard(feedback = feedback)
+                                                            is FeedbackDetailState.Error -> {
+                                                                ErrorStateView(
+                                                                    modifier = Modifier.padding(16.dp),
+                                                                    error = currentFeedbackState.error
+                                                                )
+                                                            }
 
-                                                                // Card 2: Parent/Student Response Card
-                                                                ParentResponseCard(feedback = feedback)
-                                                            } else {
-                                                                NoFeedbackPlaceholder()
+                                                            is FeedbackDetailState.Success -> {
+                                                                val feedback =
+                                                                    currentFeedbackState.feedback
+                                                                if (feedback != null) {
+                                                                    // Card 1: Teacher Feedback Card
+                                                                    TeacherFeedbackCard(feedback = feedback)
+
+                                                                    // Card 2: Parent/Student Response Card
+                                                                    ParentResponseCard(feedback = feedback)
+                                                                } else {
+                                                                    NoFeedbackPlaceholder()
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -273,55 +294,22 @@ class FeedbackTab : Tab {
                                         }
                                     }
                                 }
-                            }
-                        } else {
-                            Box(
-                                modifier = Modifier.weight(1f).fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                AppText(
-                                    text = "Không có thông tin học sinh nào.",
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AppText(
+                                        text = "Không có thông tin học sinh nào.",
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-    }
-
-    @Composable
-    private fun StarIcon(
-        tint: Color,
-        modifier: Modifier = Modifier
-    ) {
-        Canvas(modifier = modifier) {
-            val path = Path()
-            val cx = size.width / 2
-            val cy = size.height / 2
-            val spikes = 5
-            val outerRadius = size.width / 2
-            val innerRadius = outerRadius * 0.4f
-
-            var rot = kotlin.math.PI / 2 * 3
-            val step = kotlin.math.PI / spikes
-
-            path.moveTo(cx, cy - outerRadius)
-            for (i in 0 until spikes) {
-                val x = cx + kotlin.math.cos(rot).toFloat() * outerRadius
-                val y = cy + kotlin.math.sin(rot).toFloat() * outerRadius
-                path.lineTo(x, y)
-                rot += step
-
-                val x2 = cx + kotlin.math.cos(rot).toFloat() * innerRadius
-                val y2 = cy + kotlin.math.sin(rot).toFloat() * innerRadius
-                path.lineTo(x2, y2)
-                rot += step
-            }
-            path.close()
-            drawPath(path = path, color = tint, style = Fill)
         }
     }
 
@@ -332,22 +320,15 @@ class FeedbackTab : Tab {
         maxStars: Int = 5,
         starSize: Dp = 18.dp
     ) {
-        Row(
+        AppRatingBar(
+            rating = rating,
             modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
-        ) {
-            for (i in 1..maxStars) {
-                val tint = if (i <= rating) {
-                    Color(0xFFFFB300)
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
-                }
-                StarIcon(
-                    tint = tint,
-                    modifier = Modifier.size(starSize)
-                )
-            }
-        }
+            maxStars = maxStars,
+            starSize = starSize,
+            spacing = 3.dp,
+            filledColor = Color(0xFFFFB300),
+            unfilledColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+        )
     }
 
     @Composable

@@ -56,7 +56,7 @@ fun ChildSelectorBar(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = AppDimen.p16)
+                .padding(horizontal = AppDimen.p16)
         ) {
             SectionHeader(
                 title = "Danh sách học sinh",
@@ -64,8 +64,8 @@ fun ChildSelectorBar(
 
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(vertical = AppDimen.p16),
+                horizontalArrangement = Arrangement.spacedBy(AppDimen.p12)
             ) {
                 items(children) { child ->
                     val isSelected = child.studentId == selectedChild?.studentId

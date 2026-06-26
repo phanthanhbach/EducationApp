@@ -3,6 +3,7 @@ package com.example.educationapp.presentation.screenmodel.parent
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.Feedback
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.usecase.GetFeedbackNoPaginationUseCase
@@ -16,14 +17,14 @@ sealed interface FeedbackClassesState {
     object Idle : FeedbackClassesState
     object Loading : FeedbackClassesState
     data class Success(val classes: List<SchoolClass>) : FeedbackClassesState
-    data class Error(val message: String) : FeedbackClassesState
+    data class Error(val error: UiText) : FeedbackClassesState
 }
 
 sealed interface FeedbackDetailState {
     object Idle : FeedbackDetailState
     object Loading : FeedbackDetailState
     data class Success(val feedback: Feedback?) : FeedbackDetailState
-    data class Error(val message: String) : FeedbackDetailState
+    data class Error(val error: UiText) : FeedbackDetailState
 }
 
 class FeedbackScreenModel(
@@ -42,6 +43,9 @@ class FeedbackScreenModel(
     private val _feedbackState = MutableStateFlow<FeedbackDetailState>(FeedbackDetailState.Idle)
     val feedbackState: StateFlow<FeedbackDetailState> = _feedbackState.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     init {
         screenModelScope.launch {
             _selectedClass.collect { clazz ->
@@ -55,28 +59,47 @@ class FeedbackScreenModel(
         }
     }
 
-    fun loadClasses(studentId: Long) {
-        if (currentStudentId == studentId && _classesState.value is FeedbackClassesState.Success) {
+    fun loadClasses(studentId: Long, forceRefresh: Boolean = false) {
+        if (!forceRefresh && currentStudentId == studentId && _classesState.value is FeedbackClassesState.Success) {
             return
         }
         currentStudentId = studentId
-        _selectedClass.value = null
-        _feedbackState.value = FeedbackDetailState.Idle
 
         screenModelScope.launch {
-            _classesState.value = FeedbackClassesState.Loading
+            if (!forceRefresh) {
+                _selectedClass.value = null
+                _feedbackState.value = FeedbackDetailState.Idle
+                _classesState.value = FeedbackClassesState.Loading
+            }
             when (val result = getStudentClassesNoPaginationUseCase(studentId)) {
                 is ApiResult.Error -> {
                     _classesState.value = FeedbackClassesState.Error(
-                        result.message ?: "Không thể tải danh sách lớp học."
+                        UiText.DynamicString(result.message ?: "Không thể tải danh sách lớp học.")
                     )
                 }
                 is ApiResult.Success -> {
                     val list = result.data
                     _classesState.value = FeedbackClassesState.Success(list)
-                    _selectedClass.value = list.firstOrNull()
+                    
+                    val currentSelected = _selectedClass.value
+                    val matchingClass = list.find { it.id == currentSelected?.id }
+                    if (matchingClass != null) {
+                        _selectedClass.value = matchingClass
+                        loadFeedback(matchingClass.id, studentId)
+                    } else {
+                        _selectedClass.value = list.firstOrNull()
+                    }
                 }
             }
+        }
+    }
+
+    fun refreshData() {
+        val studentId = currentStudentId ?: return
+        screenModelScope.launch {
+            _isRefreshing.value = true
+            loadClasses(studentId, forceRefresh = true)
+            _isRefreshing.value = false
         }
     }
 
@@ -90,7 +113,7 @@ class FeedbackScreenModel(
             when (val result = getFeedbackNoPaginationUseCase(classId = classId, studentId = studentId, feedbackType = "CLASS")) {
                 is ApiResult.Error -> {
                     _feedbackState.value = FeedbackDetailState.Error(
-                        result.message ?: "Không thể tải nhận xét từ giáo viên."
+                        UiText.DynamicString(result.message ?: "Không thể tải nhận xét từ giáo viên.")
                     )
                 }
                 is ApiResult.Success -> {
