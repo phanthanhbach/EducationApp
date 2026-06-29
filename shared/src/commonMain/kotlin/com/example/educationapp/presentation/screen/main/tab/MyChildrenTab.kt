@@ -29,6 +29,7 @@ import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.TopBarGreeting
 import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
@@ -134,7 +135,7 @@ class MyChildrenTab : Tab {
                             contentAlignment = Alignment.Center
                         ) {
                             AppText(
-                                text = state.message,
+                                text = state.error.asString(),
                                 color = MaterialTheme.colorScheme.error,
                                 fontSize = 14.sp
                             )

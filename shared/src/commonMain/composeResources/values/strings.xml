@@ -315,4 +315,12 @@
     <string name="student_feedback_submitted">Your feedback</string>
     <string name="student_feedback_teacher_section">Teacher's feedback</string>
     <string name="student_feedback_submitted_at">Submitted: %1$s</string>
+    <!-- Parent Feedback Screen Strings -->
+    <string name="parent_feedback_title_format">Feedback for class %1$s</string>
+    <string name="parent_feedback_empty">There is no feedback for this class.</string>
+    <string name="parent_feedback_teacher_empty">No detailed feedback comments yet.</string>
+    <string name="parent_feedback_teacher_date">Feedback date: %1$s</string>
+    <string name="parent_feedback_student_response_title">Student's response</string>
+    <string name="parent_feedback_student_response_date">Response date: %1$s</string>
+    <string name="parent_feedback_student_response_empty">No comments or responses from the student for this feedback yet.</string>
 </resources>

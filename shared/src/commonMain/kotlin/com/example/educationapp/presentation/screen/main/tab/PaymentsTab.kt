@@ -213,7 +213,7 @@ class PaymentsTab : Tab {
         onInvoiceClick: (SchoolClass) -> Unit
     ) {
         val bottomBarHeight = LocalBottomBarHeight.current
-        val parentMainScreenModel = LocalParentMainScreenModel.current
+        val parentMainScreenModel = if (isParent) LocalParentMainScreenModel.current else null
 
         LaunchedEffect(lazyListState) {
             snapshotFlow {
@@ -253,8 +253,8 @@ class PaymentsTab : Tab {
                         contentAlignment = Alignment.Center
                     ) {
                         ErrorStateView(
-                            error = UiText.DynamicString(childrenState.message),
-                            onRetry = { parentMainScreenModel.loadChildren() }
+                            error = childrenState.error,
+                            onRetry = { parentMainScreenModel?.loadChildren() }
                         )
                     }
                     return

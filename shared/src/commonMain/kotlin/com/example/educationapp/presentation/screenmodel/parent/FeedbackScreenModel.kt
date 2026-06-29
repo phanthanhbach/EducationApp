@@ -4,121 +4,155 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.util.UiText
-import com.example.educationapp.domain.entity.Feedback
 import com.example.educationapp.domain.entity.SchoolClass
-import com.example.educationapp.domain.usecase.GetFeedbackNoPaginationUseCase
-import com.example.educationapp.domain.usecase.GetStudentClassesNoPaginationUseCase
+import com.example.educationapp.domain.usecase.GetStudentClassesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 
 sealed interface FeedbackClassesState {
-    object Idle : FeedbackClassesState
     object Loading : FeedbackClassesState
-    data class Success(val classes: List<SchoolClass>) : FeedbackClassesState
+    data class Success(
+        val classes: List<SchoolClass>,
+        val currentPage: Int,
+        val totalPages: Int,
+        val totalElements: Int,
+        val hasNextPage: Boolean,
+        val isSearchingOrFiltering: Boolean = false
+    ) : FeedbackClassesState
     data class Error(val error: UiText) : FeedbackClassesState
 }
 
-sealed interface FeedbackDetailState {
-    object Idle : FeedbackDetailState
-    object Loading : FeedbackDetailState
-    data class Success(val feedback: Feedback?) : FeedbackDetailState
-    data class Error(val error: UiText) : FeedbackDetailState
-}
-
 class FeedbackScreenModel(
-    private val getStudentClassesNoPaginationUseCase: GetStudentClassesNoPaginationUseCase,
-    private val getFeedbackNoPaginationUseCase: GetFeedbackNoPaginationUseCase
+    private val getStudentClassesUseCase: GetStudentClassesUseCase
 ) : ScreenModel {
 
     private var currentStudentId: Long? = null
+    val studentId: Long? get() = currentStudentId
 
-    private val _classesState = MutableStateFlow<FeedbackClassesState>(FeedbackClassesState.Idle)
+    private val _classesState = MutableStateFlow<FeedbackClassesState>(FeedbackClassesState.Loading)
     val classesState: StateFlow<FeedbackClassesState> = _classesState.asStateFlow()
 
-    private val _selectedClass = MutableStateFlow<SchoolClass?>(null)
-    val selectedClass: StateFlow<SchoolClass?> = _selectedClass.asStateFlow()
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _feedbackState = MutableStateFlow<FeedbackDetailState>(FeedbackDetailState.Idle)
-    val feedbackState: StateFlow<FeedbackDetailState> = _feedbackState.asStateFlow()
+    private val _selectedStatus = MutableStateFlow<String?>(null) // null means "ALL"
+    val selectedStatus: StateFlow<String?> = _selectedStatus.asStateFlow()
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
-    init {
-        screenModelScope.launch {
-            _selectedClass.collect { clazz ->
-                val studentId = currentStudentId
-                if (clazz != null && studentId != null) {
-                    loadFeedback(clazz.id, studentId)
-                } else {
-                    _feedbackState.value = FeedbackDetailState.Idle
-                }
-            }
+    private var fetchJob: Job? = null
+
+    fun loadClasses(studentId: Long, forceRefresh: Boolean = false) {
+        val currentState = _classesState.value
+        val isSameStudent = currentStudentId == studentId
+
+        if (!forceRefresh && isSameStudent && currentState is FeedbackClassesState.Success) {
+            launchFetchClasses(page = 0, append = false, silent = true)
+            return
+        }
+
+        currentStudentId = studentId
+        if (!forceRefresh) {
+            _classesState.value = FeedbackClassesState.Loading
+        }
+        launchFetchClasses(page = 0, append = false)
+    }
+
+    fun searchClasses(query: String) {
+        _searchQuery.value = query
+        currentStudentId?.let {
+            launchFetchClasses(page = 0, append = false)
         }
     }
 
-    fun loadClasses(studentId: Long, forceRefresh: Boolean = false) {
-        if (!forceRefresh && currentStudentId == studentId && _classesState.value is FeedbackClassesState.Success) {
-            return
+    fun filterByStatus(status: String?) {
+        _selectedStatus.value = if (status == "ALL" || status.isNullOrEmpty()) null else status
+        currentStudentId?.let {
+            launchFetchClasses(page = 0, append = false)
         }
-        currentStudentId = studentId
+    }
 
-        screenModelScope.launch {
-            if (!forceRefresh) {
-                _selectedClass.value = null
-                _feedbackState.value = FeedbackDetailState.Idle
-                _classesState.value = FeedbackClassesState.Loading
-            }
-            when (val result = getStudentClassesNoPaginationUseCase(studentId)) {
-                is ApiResult.Error -> {
-                    _classesState.value = FeedbackClassesState.Error(
-                        UiText.DynamicString(result.message ?: "Không thể tải danh sách lớp học.")
-                    )
-                }
-                is ApiResult.Success -> {
-                    val list = result.data
-                    _classesState.value = FeedbackClassesState.Success(list)
-                    
-                    val currentSelected = _selectedClass.value
-                    val matchingClass = list.find { it.id == currentSelected?.id }
-                    if (matchingClass != null) {
-                        _selectedClass.value = matchingClass
-                        loadFeedback(matchingClass.id, studentId)
-                    } else {
-                        _selectedClass.value = list.firstOrNull()
-                    }
-                }
-            }
+    fun loadNextPage() {
+        val currentState = _classesState.value
+        if (currentState is FeedbackClassesState.Success && currentState.hasNextPage) {
+            launchFetchClasses(page = currentState.currentPage + 1, append = true)
         }
     }
 
     fun refreshData() {
         val studentId = currentStudentId ?: return
-        screenModelScope.launch {
+        if (fetchJob?.isActive == true) return
+        fetchJob?.cancel()
+        fetchJob = screenModelScope.launch {
             _isRefreshing.value = true
-            loadClasses(studentId, forceRefresh = true)
+            fetchClasses(studentId, page = 0, append = false, silent = true)
             _isRefreshing.value = false
         }
     }
 
-    fun selectClass(schoolClass: SchoolClass) {
-        _selectedClass.value = schoolClass
+    private fun launchFetchClasses(page: Int, append: Boolean, silent: Boolean = false) {
+        val studentId = currentStudentId ?: return
+        if (append && fetchJob?.isActive == true) {
+            return
+        }
+        fetchJob?.cancel()
+        fetchJob = screenModelScope.launch {
+            fetchClasses(studentId, page, append, silent)
+        }
     }
 
-    private fun loadFeedback(classId: Long, studentId: Long) {
-        screenModelScope.launch {
-            _feedbackState.value = FeedbackDetailState.Loading
-            when (val result = getFeedbackNoPaginationUseCase(classId = classId, studentId = studentId, feedbackType = "CLASS")) {
-                is ApiResult.Error -> {
-                    _feedbackState.value = FeedbackDetailState.Error(
-                        UiText.DynamicString(result.message ?: "Không thể tải nhận xét từ giáo viên.")
+    private suspend fun fetchClasses(studentId: Long, page: Int, append: Boolean, silent: Boolean = false) {
+        if (!append && !silent) {
+            _classesState.value = FeedbackClassesState.Loading
+        }
+
+        val result = getStudentClassesUseCase(
+            studentId = studentId,
+            status = _selectedStatus.value,
+            page = page,
+            size = 20
+        )
+
+        when (result) {
+            is ApiResult.Error -> {
+                if (!append) {
+                    _classesState.value = FeedbackClassesState.Error(
+                        UiText.DynamicString(result.message ?: "Không thể tải danh sách lớp học.")
                     )
                 }
-                is ApiResult.Success -> {
-                    _feedbackState.value = FeedbackDetailState.Success(result.data)
+            }
+            is ApiResult.Success -> {
+                val pagination = result.data
+                val newClasses = pagination.content
+
+                val searchQueryVal = searchQuery.value
+                val filteredNewClasses = if (searchQueryVal.isNotBlank()) {
+                    newClasses.filter { schoolClass ->
+                        schoolClass.name.contains(searchQueryVal, ignoreCase = true) ||
+                                schoolClass.courseName.contains(searchQueryVal, ignoreCase = true)
+                    }
+                } else {
+                    newClasses
                 }
+
+                val currentClasses = if (append && _classesState.value is FeedbackClassesState.Success) {
+                    (_classesState.value as FeedbackClassesState.Success).classes + filteredNewClasses
+                } else {
+                    filteredNewClasses
+                }
+
+                _classesState.value = FeedbackClassesState.Success(
+                    classes = currentClasses,
+                    currentPage = pagination.number,
+                    totalPages = pagination.totalPages,
+                    totalElements = pagination.totalElements,
+                    hasNextPage = !pagination.last && pagination.content.isNotEmpty(),
+                    isSearchingOrFiltering = searchQuery.value.isNotBlank() || _selectedStatus.value != null
+                )
             }
         }
     }
