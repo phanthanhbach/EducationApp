@@ -284,7 +284,7 @@ fun ClassCard(
                         fontSize = 13.sp
                     )
                 )
-            } else if (onFeedbacksClick != null) {
+            } else if (onFeedbacksClick != null && onAssignmentsClick != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -309,7 +309,7 @@ fun ClassCard(
 
                     AppButton(
                         text = stringResource(Res.string.my_classes_btn_assignment),
-                        onClick = onAssignmentsClick ?: {},
+                        onClick = onAssignmentsClick,
                         modifier = Modifier.weight(1f).height(40.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -322,6 +322,21 @@ fun ClassCard(
                         )
                     )
                 }
+            } else if (onFeedbacksClick != null) {
+                AppButton(
+                    text = stringResource(Res.string.my_classes_btn_feedback),
+                    onClick = onFeedbacksClick,
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
+                    )
+                )
             } else {
                 AppButton(
                     text = stringResource(Res.string.my_classes_btn_assignment),

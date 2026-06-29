@@ -47,6 +47,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.rating.AppRatingBar
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
@@ -258,7 +259,7 @@ private fun StudentFeedbackContent(
                                                 color = MaterialTheme.colorScheme.onSurface
                                             )
 
-                                            RatingBar(
+                                            AppRatingBar(
                                                 rating = rating,
                                                 onRatingChanged = null,
                                                 starSize = 22.dp
@@ -296,7 +297,7 @@ private fun StudentFeedbackContent(
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
-                                                RatingBar(
+                                                AppRatingBar(
                                                     rating = ratingInput,
                                                     onRatingChanged = { ratingInput = it },
                                                     starSize = 32.dp
@@ -358,33 +359,6 @@ private fun StudentFeedbackContent(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun RatingBar(
-    rating: Int,
-    onRatingChanged: ((Int) -> Unit)?,
-    starSize: androidx.compose.ui.unit.Dp,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        for (i in 1..5) {
-            val isFilled = i <= rating
-            val starIcon = if (isFilled) Res.drawable.ic_star_filled_24dp else Res.drawable.ic_star_24dp
-            val tint = if (isFilled) AppColor.Tertiary else MaterialTheme.colorScheme.outline
-
-            AppIcon(
-                drawableRes = starIcon,
-                iconModifier = Modifier.size(starSize),
-                tint = tint,
-                onClick = onRatingChanged?.let { { it(i) } }
-            )
         }
     }
 }

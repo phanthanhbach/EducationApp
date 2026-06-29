@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,11 +23,13 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.core.network.ApiResult
-import com.example.educationapp.core.theme.AppColor
+import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.TopBarGreeting
+import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
@@ -134,7 +135,7 @@ class MyChildrenTab : Tab {
                             contentAlignment = Alignment.Center
                         ) {
                             AppText(
-                                text = state.message,
+                                text = state.error.asString(),
                                 color = MaterialTheme.colorScheme.error,
                                 fontSize = 14.sp
                             )
@@ -145,6 +146,7 @@ class MyChildrenTab : Tab {
                         val childrenList = state.children
                         if (childrenList.isNotEmpty()) {
                             ChildSelectorBar(
+                                modifier = Modifier.padding(vertical = AppDimen.p12),
                                 children = childrenList,
                                 selectedChild = selectedChild,
                                 onChildSelected = { parentMainScreenModel.selectChild(it) }

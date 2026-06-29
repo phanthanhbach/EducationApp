@@ -315,4 +315,12 @@
     <string name="student_feedback_submitted">Nhận xét của bạn</string>
     <string name="student_feedback_teacher_section">Nhận xét của giáo viên</string>
     <string name="student_feedback_submitted_at">Đã gửi: %1$s</string>
+    <!-- Parent Feedback Screen Strings -->
+    <string name="parent_feedback_title_format">Nhận xét lớp %1$s</string>
+    <string name="parent_feedback_empty">Chưa có nhận xét cho lớp học này.</string>
+    <string name="parent_feedback_teacher_empty">Chưa có nội dung nhận xét chi tiết.</string>
+    <string name="parent_feedback_teacher_date">Ngày nhận xét: %1$s</string>
+    <string name="parent_feedback_student_response_title">Phản hồi của học sinh</string>
+    <string name="parent_feedback_student_response_date">Ngày gửi phản hồi: %1$s</string>
+    <string name="parent_feedback_student_response_empty">Chưa có ý kiến hay phản hồi từ học sinh cho nhận xét này.</string>
 </resources>

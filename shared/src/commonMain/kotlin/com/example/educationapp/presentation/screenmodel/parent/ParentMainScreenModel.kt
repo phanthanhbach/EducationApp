@@ -3,6 +3,8 @@ package com.example.educationapp.presentation.screenmodel.parent
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.usecase.GetChildrenUseCase
 import com.russhwolf.settings.Settings
@@ -15,7 +17,7 @@ import kotlinx.coroutines.launch
 sealed interface ParentChildrenState {
     object Loading : ParentChildrenState
     data class Success(val children: List<UserProfile.Student>) : ParentChildrenState
-    data class Error(val message: String) : ParentChildrenState
+    data class Error(val error: UiText) : ParentChildrenState
 }
 
 class ParentMainScreenModel(
@@ -42,9 +44,7 @@ class ParentMainScreenModel(
             _childrenState.value = ParentChildrenState.Loading
             when (val result = getChildrenUseCase()) {
                 is ApiResult.Error -> {
-                    _childrenState.value = ParentChildrenState.Error(
-                        result.message ?: "Không thể tải danh sách học sinh."
-                    )
+                    _childrenState.value = ParentChildrenState.Error(result.asUiText())
                 }
                 is ApiResult.Success -> {
                     val childrenList = result.data

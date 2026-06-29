@@ -4,9 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,14 +16,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,12 +29,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,11 +41,12 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
-import com.example.educationapp.core.ui.chip.AppChip
+import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
-import com.example.educationapp.core.ui.sheet.AppBottomSheet
 import com.example.educationapp.core.ui.sheet.ClassStatusFilterBottomSheet
+import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.invoice.ClassInvoicesScreen
@@ -75,8 +67,8 @@ import educationapp.shared.generated.resources.lb_status_completed
 import educationapp.shared.generated.resources.lb_status_dropped
 import educationapp.shared.generated.resources.my_classes_empty
 import educationapp.shared.generated.resources.my_classes_search_placeholder
-import educationapp.shared.generated.resources.profile_retry
 import educationapp.shared.generated.resources.tab_payments
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -165,6 +157,7 @@ class PaymentsTab : Tab {
             extraContent = {
                 if (isParent && childrenState != null && childrenState is ParentChildrenState.Success) {
                     ChildSelectorBar(
+                        modifier = Modifier.padding(top = AppDimen.p12),
                         children = childrenState.children,
                         selectedChild = selectedChild,
                         onChildSelected = { parentMainScreenModel.selectChild(it) }
@@ -220,6 +213,7 @@ class PaymentsTab : Tab {
         onInvoiceClick: (SchoolClass) -> Unit
     ) {
         val bottomBarHeight = LocalBottomBarHeight.current
+        val parentMainScreenModel = if (isParent) LocalParentMainScreenModel.current else null
 
         LaunchedEffect(lazyListState) {
             snapshotFlow {
@@ -258,10 +252,9 @@ class PaymentsTab : Tab {
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        AppText(
-                            text = childrenState.message,
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 14.sp
+                        ErrorStateView(
+                            error = childrenState.error,
+                            onRetry = { parentMainScreenModel?.loadChildren() }
                         )
                     }
                     return
@@ -288,36 +281,10 @@ class PaymentsTab : Tab {
                         .padding(AppDimen.p16),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
-                        ),
-                        border = BorderStroke(1.dp, AppColor.Error.copy(alpha = 0.3f))
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(AppDimen.p16),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            AppText(
-                                text = state.message,
-                                fontSize = 14.sp,
-                                color = AppColor.Error,
-                                textAlign = TextAlign.Center
-                            )
-                            Button(
-                                onClick = onRetry,
-                                colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
-                            ) {
-                                AppText(
-                                    text = stringResource(Res.string.profile_retry),
-                                    color = Color.White
-                                )
-                            }
-                        }
-                    }
+                    ErrorStateView(
+                        error = UiText.DynamicString(state.message),
+                        onRetry = onRetry
+                    )
                 }
             }
 
