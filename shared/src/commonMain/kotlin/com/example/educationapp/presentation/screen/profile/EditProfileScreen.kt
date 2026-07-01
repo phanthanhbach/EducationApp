@@ -21,7 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
@@ -45,6 +49,8 @@ import educationapp.shared.generated.resources.btn_save_changes
 import educationapp.shared.generated.resources.ic_edit_24dp
 import educationapp.shared.generated.resources.ic_person_filled_24dp
 import educationapp.shared.generated.resources.profile_change_avatar
+import educationapp.shared.generated.resources.msg_profile_update_success
+import com.example.educationapp.core.ui.toast.LocalToastController
 import org.jetbrains.compose.resources.stringResource
 
 class EditProfileScreen : Screen {
@@ -56,8 +62,12 @@ class EditProfileScreen : Screen {
         val saveStatus by screenModel.saveStatus.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
 
+        val toastController = LocalToastController.current
+        val successMsg = stringResource(Res.string.msg_profile_update_success)
+
         LaunchedEffect(saveStatus) {
             if (saveStatus is SaveStatus.Saved) {
+                toastController.show(successMsg)
                 screenModel.resetSaveStatus()
                 navigator.pop()
             }

@@ -29,6 +29,7 @@ object AppDimen {
     val p120 = 120.dp
     val p150 = 150.dp
     val p200 = 200.dp
+    val p400 = 400.dp
 
     val s10 = 10.sp
     val s12 = 12.sp

@@ -5,11 +5,13 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.util.asUiText
+import com.example.educationapp.core.util.Validator
 import com.example.educationapp.domain.usecase.LoginUseCase
 import com.example.educationapp.domain.usecase.LogoutUseCase
 import com.example.educationapp.presentation.screenmodel.login.LoginState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.error_empty_credentials
+import educationapp.shared.generated.resources.error_invalid_email_or_phone
 import educationapp.shared.generated.resources.error_role_not_allowed
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,8 +27,14 @@ class LoginScreenModel(
     val state: StateFlow<LoginState> = _state.asStateFlow()
 
     fun login(username: String, password: String) {
-        if (username.isBlank() || password.isBlank()) {
-            _state.value = LoginState.Error(UiText.ResourceString(Res.string.error_empty_credentials))
+        val validationError = when {
+            username.isBlank() || password.isBlank() -> Res.string.error_empty_credentials
+            !Validator.isValidEmailOrPhone(username) -> Res.string.error_invalid_email_or_phone
+            else -> null
+        }
+
+        if (validationError != null) {
+            _state.value = LoginState.Error(UiText.ResourceString(validationError))
             return
         }
 

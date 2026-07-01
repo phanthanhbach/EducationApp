@@ -58,6 +58,7 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.button.AppButton
 import com.example.educationapp.core.ui.layout.AppTopBar
+import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.TeacherCheckInResult
 import com.example.educationapp.domain.enums.SessionStatus
@@ -82,19 +83,11 @@ class SessionDetailScreen(
         val state by screenModel.state.collectAsState()
         val scrollState = rememberScrollState()
 
-        var toastMessage by remember { mutableStateOf<String?>(null) }
+        val toastController = LocalToastController.current
 
         // Fetch check-in status when screen launches
         LaunchedEffect(session) {
             screenModel.loadCheckInStatus(session)
-        }
-
-        // Auto dismiss toast
-        LaunchedEffect(toastMessage) {
-            if (toastMessage != null) {
-                delay(2500)
-                toastMessage = null
-            }
         }
 
         Scaffold(
@@ -153,7 +146,7 @@ class SessionDetailScreen(
                                     session = session,
                                     onCheckInClick = {
                                         screenModel.performCheckIn(session) { msg ->
-                                            toastMessage = msg
+                                            toastController.show(msg)
                                         }
                                     },
                                     onAttendanceClick = { isCheckedOut ->
@@ -169,7 +162,7 @@ class SessionDetailScreen(
                                     },
                                     onCheckOutClick = { checkinId ->
                                         screenModel.performCheckOut(checkinId, session) { msg ->
-                                            toastMessage = msg
+                                            toastController.show(msg)
                                         }
                                     },
                                     onRetry = {
@@ -194,7 +187,7 @@ class SessionDetailScreen(
                                 session = session,
                                 onCheckInClick = {
                                     screenModel.performCheckIn(session) { msg ->
-                                        toastMessage = msg
+                                        toastController.show(msg)
                                     }
                                 },
                                 onAttendanceClick = { isCheckedOut ->
@@ -210,45 +203,12 @@ class SessionDetailScreen(
                                 },
                                 onCheckOutClick = { checkinId ->
                                     screenModel.performCheckOut(checkinId, session) { msg ->
-                                        toastMessage = msg
+                                        toastController.show(msg)
                                     }
                                 },
                                 onRetry = {
                                     screenModel.loadCheckInStatus(session)
                                 }
-                            )
-                        }
-                    }
-                }
-
-                // Toast overlay
-                AnimatedVisibility(
-                    visible = toastMessage != null,
-                    enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                    exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .zIndex(10f)
-                        .padding(bottom = AppDimen.p24, start = AppDimen.p24, end = AppDimen.p24)
-                ) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(
-                                horizontal = AppDimen.p16,
-                                vertical = AppDimen.p12
-                            ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            AppText(
-                                text = toastMessage ?: "",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.inverseOnSurface,
-                                textAlign = TextAlign.Center
                             )
                         }
                     }

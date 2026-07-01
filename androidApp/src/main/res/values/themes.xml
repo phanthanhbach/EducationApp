@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <!-- Official system splash screen background for Android 12+ (API 31+) -->
+        <item name="android:windowSplashScreenBackground">@color/splash_bg</item>
+        
+        <!-- Fallback window background for Android 11 and below -->
+        <item name="android:windowBackground">@color/splash_bg</item>
+    </style>
+</resources>

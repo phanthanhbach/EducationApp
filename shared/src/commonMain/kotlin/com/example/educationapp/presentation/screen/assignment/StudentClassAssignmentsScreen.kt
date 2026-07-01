@@ -56,6 +56,7 @@ import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.LocalTopBarHazeState
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.core.ui.upload.UploadReviewDialog
 import com.example.educationapp.domain.entity.StudentAssignment
 import com.example.educationapp.presentation.screen.assignment.composable.StudentAssignmentCard
@@ -87,21 +88,13 @@ class StudentClassAssignmentsScreen(
         val submittingAssignmentIds by screenModel.submittingAssignmentIds.collectAsState()
         val isRefreshing by screenModel.isRefreshing.collectAsState()
 
-        var toastMessage by remember { mutableStateOf<String?>(null) }
+        val toastController = LocalToastController.current
         var uploadAssignment by remember { mutableStateOf<StudentAssignment?>(null) }
         var selectedUploadFile by remember { mutableStateOf<UploadFile?>(null) }
         val uploadFilePicker = rememberUploadFilePicker(
             onFileSelected = { file -> selectedUploadFile = file },
-            onError = { message -> toastMessage = message }
+            onError = { message -> toastController.show(message) }
         )
-
-        // Auto dismiss toast
-        LaunchedEffect(toastMessage) {
-            if (toastMessage != null) {
-                delay(2500.milliseconds)
-                toastMessage = null
-            }
-        }
 
         LaunchedEffect(classId) {
             screenModel.init(classId)
@@ -207,7 +200,7 @@ class StudentClassAssignmentsScreen(
                         onSubmit = {
                             val file = selectedUploadFile ?: return@UploadReviewDialog
                             screenModel.submitAssignment(assignment, file) { success, message ->
-                                toastMessage = message
+                                toastController.show(message)
                                 if (success) {
                                     uploadAssignment = null
                                     selectedUploadFile = null
@@ -219,34 +212,6 @@ class StudentClassAssignmentsScreen(
                             selectedUploadFile = null
                         }
                     )
-                }
-
-                // Toast message
-                AnimatedVisibility(
-                    visible = toastMessage != null,
-                    enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                    exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .zIndex(10f)
-                        .padding(bottom = AppDimen.p24, start = AppDimen.p24, end = AppDimen.p24)
-                ) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-                    ) {
-                        AppText(
-                            text = toastMessage ?: "",
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.inverseOnSurface,
-                            modifier = Modifier.padding(
-                                horizontal = AppDimen.p16,
-                                vertical = AppDimen.p12
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-                    }
                 }
             }
         }
