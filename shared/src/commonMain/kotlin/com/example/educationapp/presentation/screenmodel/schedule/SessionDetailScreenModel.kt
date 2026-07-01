@@ -35,45 +35,56 @@ class SessionDetailScreenModel(
     private val _state = MutableStateFlow<SessionDetailState>(SessionDetailState.Loading)
     val state: StateFlow<SessionDetailState> = _state.asStateFlow()
 
-    fun loadCheckInStatus(session: ScheduleSessionUiModel) {
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    fun loadCheckInStatus(session: ScheduleSessionUiModel, isRefresh: Boolean = false) {
         screenModelScope.launch {
-            _state.value = SessionDetailState.Loading
-            when (val profileResult = getMyProfileUseCase(AppRole.TEACHER)) {
-                is ApiResult.Error -> {
-                    _state.value = SessionDetailState.Error(
-                        profileResult.message ?: "Không thể lấy thông tin profile giáo viên."
-                    )
-                }
-                is ApiResult.Success -> {
-                    val profile = profileResult.data
-                    if (profile is UserProfile.Teacher) {
-                        val teacherId = profile.teacherId.toLong()
-                        val result = getCheckInStatusUseCase(
-                            classId = session.classId,
-                            sessionNumber = session.sessionNumber,
-                            teacherId = teacherId
+            if (isRefresh) {
+                _isRefreshing.value = true
+            } else {
+                _state.value = SessionDetailState.Loading
+            }
+            try {
+                when (val profileResult = getMyProfileUseCase(AppRole.TEACHER)) {
+                    is ApiResult.Error -> {
+                        _state.value = SessionDetailState.Error(
+                            profileResult.message ?: "Không thể lấy thông tin profile giáo viên."
                         )
-                        when (result) {
-                            is ApiResult.Success -> {
-                                _state.value = SessionDetailState.CheckedIn(
-                                    session = session,
-                                    checkInInfo = result.data
-                                )
-                            }
-                            is ApiResult.Error -> {
-                                if (result is ApiResult.Error.HttpError && result.code == 404) {
-                                    _state.value = SessionDetailState.NotCheckedIn(session)
-                                } else {
-                                    _state.value = SessionDetailState.Error(
-                                        result.message ?: "Đã có lỗi xảy ra khi lấy trạng thái check-in."
+                    }
+                    is ApiResult.Success -> {
+                        val profile = profileResult.data
+                        if (profile is UserProfile.Teacher) {
+                            val teacherId = profile.teacherId.toLong()
+                            val result = getCheckInStatusUseCase(
+                                classId = session.classId,
+                                sessionNumber = session.sessionNumber,
+                                teacherId = teacherId
+                            )
+                            when (result) {
+                                is ApiResult.Success -> {
+                                    _state.value = SessionDetailState.CheckedIn(
+                                        session = session,
+                                        checkInInfo = result.data
                                     )
                                 }
+                                is ApiResult.Error -> {
+                                    if (result is ApiResult.Error.HttpError && result.code == 404) {
+                                        _state.value = SessionDetailState.NotCheckedIn(session)
+                                    } else {
+                                        _state.value = SessionDetailState.Error(
+                                            result.message ?: "Đã có lỗi xảy ra khi lấy trạng thái check-in."
+                                        )
+                                    }
+                                }
                             }
+                        } else {
+                            _state.value = SessionDetailState.Error("Tài khoản không phải giáo viên.")
                         }
-                    } else {
-                        _state.value = SessionDetailState.Error("Tài khoản không phải giáo viên.")
                     }
                 }
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }

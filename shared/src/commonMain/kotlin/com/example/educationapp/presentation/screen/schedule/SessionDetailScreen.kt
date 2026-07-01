@@ -1,10 +1,5 @@
 package com.example.educationapp.presentation.screen.schedule
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,18 +22,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -57,19 +45,49 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.button.AppButton
+import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
-import com.example.educationapp.core.ui.toast.LocalToastController
+import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.domain.entity.TeacherCheckInResult
 import com.example.educationapp.domain.enums.SessionStatus
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.SessionDetailScreenModel
 import com.example.educationapp.presentation.screenmodel.schedule.SessionDetailState
 import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.btn_check_in_now
+import educationapp.shared.generated.resources.btn_check_out_session
+import educationapp.shared.generated.resources.btn_retry
+import educationapp.shared.generated.resources.btn_take_attendance
+import educationapp.shared.generated.resources.btn_view_attendance
+import educationapp.shared.generated.resources.date_time_format
 import educationapp.shared.generated.resources.ic_assignment_filled_24dp
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
-import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.painterResource
+import educationapp.shared.generated.resources.msg_error_occurred
+import educationapp.shared.generated.resources.session_checkin_status_title
+import educationapp.shared.generated.resources.session_class_prefix
+import educationapp.shared.generated.resources.session_desc_completed
+import educationapp.shared.generated.resources.session_desc_ongoing
+import educationapp.shared.generated.resources.session_desc_upcoming
+import educationapp.shared.generated.resources.session_detail_title
+import educationapp.shared.generated.resources.session_info_title
+import educationapp.shared.generated.resources.session_label_checkin_status
+import educationapp.shared.generated.resources.session_label_checkin_time
+import educationapp.shared.generated.resources.session_label_checkout_time
+import educationapp.shared.generated.resources.session_not_checked_in
+import educationapp.shared.generated.resources.session_number_prefix
+import educationapp.shared.generated.resources.session_room
+import educationapp.shared.generated.resources.session_status_checked_in_success
+import educationapp.shared.generated.resources.session_status_checked_out_success
+import educationapp.shared.generated.resources.session_status_completed
+import educationapp.shared.generated.resources.session_status_late_minutes
+import educationapp.shared.generated.resources.session_status_on_time
+import educationapp.shared.generated.resources.session_status_ongoing
+import educationapp.shared.generated.resources.session_status_upcoming
+import educationapp.shared.generated.resources.session_time
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 
 class SessionDetailScreen(
@@ -81,6 +99,7 @@ class SessionDetailScreen(
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<SessionDetailScreenModel>()
         val state by screenModel.state.collectAsState()
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
         val scrollState = rememberScrollState()
 
         val toastController = LocalToastController.current
@@ -90,14 +109,16 @@ class SessionDetailScreen(
             screenModel.loadCheckInStatus(session)
         }
 
-        Scaffold(
+        AppScaffold(
             topBar = {
                 AppTopBar(
-                    title = "Chi Tiết Tiết Dạy",
+                    title = stringResource(Res.string.session_detail_title),
                     onBackClick = { navigator.pop() }
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.loadCheckInStatus(session, isRefresh = true) }
         ) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -125,6 +146,7 @@ class SessionDetailScreen(
                             ) {
                                 SessionHeaderCard(session = session)
                                 SessionInfoSection(session = session)
+                                Spacer(modifier = Modifier.height(AppDimen.p12))
                             }
 
                             Column(
@@ -134,7 +156,7 @@ class SessionDetailScreen(
                                 verticalArrangement = Arrangement.spacedBy(AppDimen.p20)
                             ) {
                                 AppText(
-                                    text = "Trạng Thái Check-in",
+                                    text = stringResource(Res.string.session_checkin_status_title),
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface,
@@ -169,6 +191,7 @@ class SessionDetailScreen(
                                         screenModel.loadCheckInStatus(session)
                                     }
                                 )
+                                Spacer(modifier = Modifier.height(AppDimen.p12))
                             }
                         }
                     } else {
@@ -210,6 +233,7 @@ class SessionDetailScreen(
                                     screenModel.loadCheckInStatus(session)
                                 }
                             )
+                            Spacer(modifier = Modifier.height(AppDimen.p16))
                         }
                     }
                 }
@@ -244,7 +268,10 @@ class SessionDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AppText(
-                            text = "BUỔI HỌC #${session.sessionNumber}",
+                            text = stringResource(
+                                Res.string.session_number_prefix,
+                                session.sessionNumber
+                            ),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White.copy(alpha = 0.8f)
@@ -262,7 +289,7 @@ class SessionDetailScreen(
                     )
 
                     AppText(
-                        text = "Lớp: ${session.className}",
+                        text = stringResource(Res.string.session_class_prefix, session.className),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.White.copy(alpha = 0.9f)
@@ -275,7 +302,9 @@ class SessionDetailScreen(
     @Composable
     private fun SessionInfoSection(session: ScheduleSessionUiModel) {
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = AppDimen.p12),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -286,7 +315,7 @@ class SessionDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
             ) {
                 AppText(
-                    text = "Thông Tin Tiết Học",
+                    text = stringResource(Res.string.session_info_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -300,7 +329,7 @@ class SessionDetailScreen(
                     InfoBlock(
                         icon = Res.drawable.ic_calendar_month_filled_24dp,
                         iconTint = AppColor.Primary,
-                        title = "Thời Gian",
+                        title = stringResource(Res.string.session_time),
                         value = "${session.startTimeFormatted} - ${session.endTimeFormatted}",
                         modifier = Modifier.weight(1f)
                     )
@@ -308,8 +337,8 @@ class SessionDetailScreen(
                     // Room block
                     InfoBlock(
                         icon = Res.drawable.ic_assignment_filled_24dp,
-                        iconTint = AppColor.Secondary,
-                        title = "Phòng Học",
+                        iconTint = AppColor.Primary,
+                        title = stringResource(Res.string.session_room),
                         value = session.room,
                         modifier = Modifier.weight(1f)
                     )
@@ -333,20 +362,15 @@ class SessionDetailScreen(
                 .padding(AppDimen.p12),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
+            AppIcon(
+                drawableRes = icon,
+                iconModifier = Modifier.size(20.dp),
+                boxModifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(iconTint.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = title,
-                    tint = iconTint,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+                tint = iconTint
+            )
             Spacer(modifier = Modifier.width(AppDimen.p12))
             Column {
                 AppText(
@@ -415,7 +439,9 @@ class SessionDetailScreen(
     @Composable
     private fun ErrorStateView(message: String, onRetry: () -> Unit) {
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = AppDimen.p12),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f)
@@ -428,7 +454,7 @@ class SessionDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
             ) {
                 AppText(
-                    text = "Đã xảy ra lỗi",
+                    text = stringResource(Res.string.msg_error_occurred),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.error
@@ -446,7 +472,7 @@ class SessionDetailScreen(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     AppText(
-                        text = "Thử lại",
+                        text = stringResource(Res.string.btn_retry),
                         color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
@@ -464,7 +490,9 @@ class SessionDetailScreen(
         val status = session.getStatus(now)
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = AppDimen.p12),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -490,7 +518,7 @@ class SessionDetailScreen(
                             .background(if (status == SessionStatus.ONGOING) AppColor.Warning else MaterialTheme.colorScheme.outline)
                     )
                     AppText(
-                        text = "Chưa Thực Hiện Check-in",
+                        text = stringResource(Res.string.session_not_checked_in),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -499,9 +527,9 @@ class SessionDetailScreen(
 
                 AppText(
                     text = when (status) {
-                        SessionStatus.ONGOING -> "Tiết học đang diễn ra. Vui lòng nhấn nút check-in bên dưới để xác nhận sự hiện diện giảng dạy."
-                        SessionStatus.UPCOMING -> "Tiết học này chưa bắt đầu. Bạn chỉ có thể thực hiện check-in khi tới giờ học."
-                        SessionStatus.COMPLETED -> "Tiết học đã kết thúc. Không thể thực hiện check-in cho buổi học này."
+                        SessionStatus.ONGOING -> stringResource(Res.string.session_desc_ongoing)
+                        SessionStatus.UPCOMING -> stringResource(Res.string.session_desc_upcoming)
+                        SessionStatus.COMPLETED -> stringResource(Res.string.session_desc_completed)
                     },
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -510,7 +538,7 @@ class SessionDetailScreen(
 
                 if (status == SessionStatus.ONGOING) {
                     AppButton(
-                        text = "CHECK IN NGAY",
+                        text = stringResource(Res.string.btn_check_in_now),
                         onClick = onCheckInClick,
                         modifier = Modifier.fillMaxWidth().height(50.dp)
                     )
@@ -529,11 +557,18 @@ class SessionDetailScreen(
         val isCheckedOut = checkInInfo.checkedOut == true
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = AppDimen.p12),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            border = BorderStroke(1.dp, if (isCheckedOut) AppColor.Primary.copy(alpha = 0.5f) else AppColor.Success.copy(alpha = 0.5f))
+            border = BorderStroke(
+                1.dp,
+                if (isCheckedOut) AppColor.Primary.copy(alpha = 0.5f) else AppColor.Success.copy(
+                    alpha = 0.5f
+                )
+            )
         ) {
             Column(
                 modifier = Modifier.padding(AppDimen.p20),
@@ -550,7 +585,9 @@ class SessionDetailScreen(
                             .background(if (isCheckedOut) AppColor.Primary else AppColor.Success)
                     )
                     AppText(
-                        text = if (isCheckedOut) "Đã Check-out Thành Công" else "Đã Check-in Thành Công",
+                        text = if (isCheckedOut) stringResource(Res.string.session_status_checked_out_success) else stringResource(
+                            Res.string.session_status_checked_in_success
+                        ),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isCheckedOut) AppColor.Primary else AppColor.Success
@@ -579,12 +616,14 @@ class SessionDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AppText(
-                            text = "Thời gian check-in",
+                            text = stringResource(Res.string.session_label_checkin_time),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         AppText(
-                            text = formatDateTime(checkInInfo.checkinTime),
+                            text = parseDateTimeParts(checkInInfo.checkinTime)?.let { (time, date) ->
+                                stringResource(Res.string.date_time_format, time, date)
+                            } ?: "--:--",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
@@ -597,13 +636,16 @@ class SessionDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AppText(
-                            text = "Trạng thái check-in",
+                            text = stringResource(Res.string.session_label_checkin_status),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         val isLate = checkInInfo.lateMinutes != null && checkInInfo.lateMinutes > 0
                         AppText(
-                            text = if (isLate) "Trễ ${checkInInfo.lateMinutes} phút" else "Đúng giờ",
+                            text = if (isLate) stringResource(
+                                Res.string.session_status_late_minutes,
+                                checkInInfo.lateMinutes
+                            ) else stringResource(Res.string.session_status_on_time),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (isLate) AppColor.Error else AppColor.Success
@@ -617,12 +659,14 @@ class SessionDetailScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AppText(
-                                text = "Thời gian check-out",
+                                text = stringResource(Res.string.session_label_checkout_time),
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             AppText(
-                                text = formatDateTime(checkInInfo.checkoutTime),
+                                text = parseDateTimeParts(checkInInfo.checkoutTime)?.let { (time, date) ->
+                                    stringResource(Res.string.date_time_format, time, date)
+                                } ?: "--:--",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -637,14 +681,16 @@ class SessionDetailScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     AppButton(
-                        text = if (isCheckedOut) "XEM DANH SÁCH ĐIỂM DANH" else "ĐIỂM DANH LỚP HỌC",
+                        text = if (isCheckedOut) stringResource(Res.string.btn_view_attendance) else stringResource(
+                            Res.string.btn_take_attendance
+                        ),
                         onClick = onAttendanceClick,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     if (!isCheckedOut) {
                         AppButton(
-                            text = "CHECK OUT TIẾT DẠY",
+                            text = stringResource(Res.string.btn_check_out_session),
                             onClick = { onCheckOutClick(checkInInfo.checkinId) },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = AppColor.Error,
@@ -664,21 +710,21 @@ class SessionDetailScreen(
     private fun SessionStatusBadge(status: SessionStatus) {
         val (text, badgeBg, textColor) = when (status) {
             SessionStatus.COMPLETED -> Triple(
-                "Hoàn thành",
-                AppColor.Success.copy(alpha = 0.25f),
-                Color(0xFFE8F5E9)
+                stringResource(Res.string.session_status_completed),
+                Color(0xFFE8F5E9),
+                Color(0xFF2E7D32)
             )
 
             SessionStatus.ONGOING -> Triple(
-                "Đang diễn ra",
-                Color.White.copy(alpha = 0.25f),
-                Color.White
+                stringResource(Res.string.session_status_ongoing),
+                Color(0xFFFFF3E0),
+                Color(0xFFE65100)
             )
 
             SessionStatus.UPCOMING -> Triple(
-                "Sắp diễn ra",
-                Color.Black.copy(alpha = 0.15f),
-                Color.White.copy(alpha = 0.9f)
+                stringResource(Res.string.session_status_upcoming),
+                Color(0xFFECEFF1),
+                Color(0xFF37474F)
             )
         }
 
@@ -686,10 +732,6 @@ class SessionDetailScreen(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .background(badgeBg)
-                .border(
-                    BorderStroke(1.dp, Color.White.copy(alpha = 0.3f)),
-                    shape = RoundedCornerShape(8.dp)
-                )
                 .padding(horizontal = AppDimen.p8, vertical = AppDimen.p4),
             contentAlignment = Alignment.Center
         ) {
@@ -702,21 +744,20 @@ class SessionDetailScreen(
         }
     }
 
-    private fun formatDateTime(dateTimeStr: String?): String {
-        if (dateTimeStr.isNullOrBlank()) return "--:--"
+    private fun parseDateTimeParts(dateTimeStr: String?): Pair<String, String>? {
+        if (dateTimeStr.isNullOrBlank()) return null
         return try {
             val tIndex = dateTimeStr.indexOf('T')
             if (tIndex != -1) {
                 val datePart = dateTimeStr.substring(0, tIndex)
-                // Extract time up to seconds e.g. "10:24:10"
                 val timePart =
                     dateTimeStr.substring(tIndex + 1, minOf(tIndex + 9, dateTimeStr.length))
-                "$timePart ngày $datePart"
+                Pair(timePart, datePart)
             } else {
-                dateTimeStr
+                null
             }
-        } catch (e: Exception) {
-            dateTimeStr
+        } catch (_: Exception) {
+            null
         }
     }
 }
