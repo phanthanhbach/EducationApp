@@ -39,14 +39,13 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.button.AppButton
 import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.core.ui.textfield.EmailTextField
 import com.example.educationapp.core.ui.textfield.PasswordTextField
 import com.example.educationapp.presentation.screen.main.MainScreen
 import com.example.educationapp.presentation.screenmodel.login.LoginScreenModel
 import com.example.educationapp.presentation.screenmodel.login.LoginState
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.lb_email_address
-import educationapp.shared.generated.resources.lb_email_address_placeholder
+import educationapp.shared.generated.resources.lb_email_or_phone
+import educationapp.shared.generated.resources.lb_email_or_phone_placeholder
 import educationapp.shared.generated.resources.lb_login_desc
 import educationapp.shared.generated.resources.lb_login_title
 import educationapp.shared.generated.resources.lb_password
@@ -203,11 +202,11 @@ class LoginScreen : Screen {
                 modifier = Modifier.padding(bottom = AppDimen.p8)
             )
 
-            EmailTextField(
+            EmailOrPhoneTextField(
                 value = username,
                 onValueChange = onUsernameChange,
-                label = stringResource(Res.string.lb_email_address),
-                placeholder = stringResource(Res.string.lb_email_address_placeholder),
+                label = stringResource(Res.string.lb_email_or_phone),
+                placeholder = stringResource(Res.string.lb_email_or_phone_placeholder),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = state !is LoginState.Loading
             )

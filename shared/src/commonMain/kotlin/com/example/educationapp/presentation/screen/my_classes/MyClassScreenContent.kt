@@ -136,15 +136,7 @@ private fun ClassesContent(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
-    var toastMessage by remember { mutableStateOf<String?>(null) }
     var showFilterSheet by remember { mutableStateOf(false) }
-
-    LaunchedEffect(toastMessage) {
-        if (toastMessage != null) {
-            delay(2500.milliseconds)
-            toastMessage = null
-        }
-    }
 
     val statuses = if (role == AppRole.TEACHER) {
         listOf(
@@ -313,42 +305,10 @@ private fun ClassesContent(
                             }
                         }
                     }
-                }
-            }
-
-            AnimatedVisibility(
-                visible = toastMessage != null,
-                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .zIndex(10f)
-                    .padding(bottom = AppDimen.p24, start = AppDimen.p24, end = AppDimen.p24)
-            ) {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = AppDimen.p6)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(
-                            horizontal = AppDimen.p16,
-                            vertical = AppDimen.p12
-                        ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        AppText(
-                            text = toastMessage ?: "",
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.inverseOnSurface,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
             }
         }
     }
+}
 
     if (showFilterSheet) {
         ClassStatusFilterBottomSheet(

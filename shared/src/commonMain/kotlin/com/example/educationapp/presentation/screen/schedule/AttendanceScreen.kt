@@ -64,6 +64,7 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.button.AppButton
 import com.example.educationapp.core.ui.layout.AppTopBar
+import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AttendanceStatus
 import com.example.educationapp.presentation.screenmodel.schedule.AttendanceScreenModel
@@ -87,8 +88,8 @@ class AttendanceScreen(
         val state by screenModel.state.collectAsState()
 
         var searchQuery by remember { mutableStateOf("") }
-        var toastMessage by remember { mutableStateOf<String?>(null) }
         var selectedFilterStatus by remember { mutableStateOf<AttendanceStatus?>(null) }
+        val toastController = LocalToastController.current
 
         // Fetch data
         LaunchedEffect(classId, sessionNumber) {
@@ -98,16 +99,7 @@ class AttendanceScreen(
         // Handle saved state
         LaunchedEffect(state) {
             if (state is AttendanceState.Saved) {
-                delay(1000)
                 navigator.pop()
-            }
-        }
-
-        // Auto dismiss toast
-        LaunchedEffect(toastMessage) {
-            if (toastMessage != null) {
-                delay(2500)
-                toastMessage = null
             }
         }
 
@@ -349,44 +341,11 @@ class AttendanceScreen(
                                     isSaving = currentState.isSaving,
                                     onSave = {
                                         screenModel.saveAttendances(classId, sessionNumber) { msg ->
-                                            toastMessage = msg
+                                            toastController.show(msg)
                                         }
                                     }
                                 )
                             }
-                        }
-                    }
-                }
-
-                // Toast overlay
-                AnimatedVisibility(
-                    visible = toastMessage != null,
-                    enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                    exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .zIndex(10f)
-                        .padding(bottom = AppDimen.p24, start = AppDimen.p24, end = AppDimen.p24)
-                ) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(
-                                horizontal = AppDimen.p16,
-                                vertical = AppDimen.p12
-                            ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            AppText(
-                                text = toastMessage ?: "",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.inverseOnSurface,
-                                textAlign = TextAlign.Center
-                            )
                         }
                     }
                 }

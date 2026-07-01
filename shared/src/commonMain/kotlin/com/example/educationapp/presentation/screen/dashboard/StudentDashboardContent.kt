@@ -35,6 +35,7 @@ import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.shimmer.skeleton.DashboardSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.course.MyCoursesScreen
@@ -74,17 +75,7 @@ fun StudentDashboardContent(
 
     val coroutineScope = rememberCoroutineScope()
 
-    var toastMessage by remember { mutableStateOf<String?>(null) }
-
-    fun showToast(message: String) {
-        coroutineScope.launch {
-            toastMessage = message
-            delay(2000.milliseconds)
-            if (toastMessage == message) {
-                toastMessage = null
-            }
-        }
-    }
+    val toastController = LocalToastController.current
 
     Box(modifier = modifier.fillMaxWidth()) {
         when (val currentState = state) {
@@ -171,7 +162,7 @@ fun StudentDashboardContent(
                         } else {
                             TeacherContactSection(
                                 contacts = currentState.teacherContacts,
-                                onShowToast = { showToast(it) }
+                                onShowToast = { toastController.show(it) }
                             )
                         }
                     }
@@ -203,34 +194,6 @@ fun StudentDashboardContent(
                             )
                         }
                     }
-                }
-            }
-        }
-
-        // Beautiful floating Toast
-        AnimatedVisibility(
-            visible = toastMessage != null,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-        ) {
-            toastMessage?.let { msg ->
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF323232)),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                ) {
-                    AppText(
-                        text = msg,
-                        color = Color.White,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
                 }
             }
         }

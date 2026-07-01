@@ -20,9 +20,12 @@
     <string name="login_button">Sign In</string>
     <string name="login_tagline">Explore a new world of knowledge</string>
     <string name="login_description">Intuitive, modern and friendly educational management system for all student ages.</string>
+    <string name="error_invalid_email_or_phone">Invalid email or phone number format.</string>
 
     <string name="lb_email_address">Email Address</string>
     <string name="lb_email_address_placeholder">you@example.com</string>
+    <string name="lb_email_or_phone">Email or Phone Number</string>
+    <string name="lb_email_or_phone_placeholder">email@example.com or 0912345678</string>
     <string name="lb_password">Password</string>
     <string name="lb_password_placeholder">Enter your password</string>
 
@@ -57,6 +60,7 @@
     <string name="sheet_title_language">Choose language</string>
     <string name="btn_edit_profile">Edit Profile</string>
     <string name="btn_save_changes">Save changes</string>
+    <string name="msg_profile_update_success">Profile updated successfully!</string>
     <string name="profile_student_code">Student code</string>
     <string name="profile_current_level">Current level</string>
     <string name="profile_zalo_placeholder">https://zalo.me/...</string>

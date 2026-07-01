@@ -20,9 +20,12 @@
     <string name="login_button">Đăng Nhập</string>
     <string name="login_tagline">Khám phá thế giới tri thức mới</string>
     <string name="login_description">Hệ thống quản lý giáo dục trực quan, hiện đại và thân thiện cho mọi lứa tuổi học sinh.</string>
+    <string name="error_invalid_email_or_phone">Email hoặc số điện thoại không đúng định dạng.</string>
 
     <string name="lb_email_address">Địa chỉ email</string>
     <string name="lb_email_address_placeholder">you@example.com</string>
+    <string name="lb_email_or_phone">Email hoặc Số điện thoại</string>
+    <string name="lb_email_or_phone_placeholder">email@example.com hoặc 0912345678</string>
     <string name="lb_password">Mật khẩu</string>
     <string name="lb_password_placeholder">Nhập mật khẩu của bạn</string>
 
@@ -57,6 +60,7 @@
     <string name="sheet_title_language">Chọn ngôn ngữ</string>
     <string name="btn_edit_profile">Chỉnh sửa hồ sơ</string>
     <string name="btn_save_changes">Lưu thay đổi</string>
+    <string name="msg_profile_update_success">Cập nhật hồ sơ thành công!</string>
     <string name="profile_student_code">Mã học sinh</string>
     <string name="profile_current_level">Trình độ hiện tại</string>
     <string name="profile_zalo_placeholder">https://zalo.me/...</string>
