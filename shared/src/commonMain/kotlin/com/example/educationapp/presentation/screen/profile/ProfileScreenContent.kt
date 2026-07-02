@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -32,13 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.avatar.AppAvatar
 import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.icon.AppIcon
-import com.example.educationapp.core.ui.image.AppImage
 import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.layout.CollapsingHeaderScaffold
 import com.example.educationapp.core.ui.layout.lerpDp
@@ -49,7 +51,6 @@ import com.example.educationapp.domain.enums.StudentStatus
 import com.example.educationapp.domain.enums.TeacherStatus
 import com.example.educationapp.presentation.screenmodel.profile.ProfileState
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_person_filled_24dp
 import educationapp.shared.generated.resources.ic_settings_24dp
 import educationapp.shared.generated.resources.profile_cover
 import educationapp.shared.generated.resources.profile_parent
@@ -266,36 +267,23 @@ private fun CollapsingProfileIdentity(
             .fillMaxWidth()
             .statusBarsPadding()
     ) {
-        Box(
+        AppAvatar(
+            name = fullName,
+            source = mediaSource,
             modifier = Modifier
                 .offset(x = avatarStart, y = avatarTop)
                 .size(avatarSize)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(avatarSize / 2)
-                )
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(avatarSize / 2)
-                )
-                .clip(RoundedCornerShape(avatarSize / 2)),
-            contentAlignment = Alignment.Center
-        ) {
-            if (mediaSource is CoreMediaSource.None) {
-                AppIcon(
-                    drawableRes = Res.drawable.ic_person_filled_24dp,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    iconModifier = Modifier.size(avatarSize * 0.5f)
-                )
-            } else {
-                AppImage(
-                    source = mediaSource,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                )
-            }
-        }
+                    shape = CircleShape
+                ),
+            textStyle = TextStyle(
+                fontSize = lerpDp(24.dp, 14.dp, collapseProgress).value.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        )
 
         Column(
             modifier = Modifier.offset(x = textStart, y = textTop)

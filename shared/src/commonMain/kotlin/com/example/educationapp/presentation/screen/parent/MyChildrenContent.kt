@@ -2,11 +2,11 @@ package com.example.educationapp.presentation.screen.parent
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,9 +28,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppDimen
-import com.example.educationapp.core.ui.icon.AppIcon
-import com.example.educationapp.core.ui.image.AppImage
-import com.example.educationapp.core.ui.image.CoreMediaSource
+import com.example.educationapp.core.ui.avatar.AppAvatar
 import com.example.educationapp.core.ui.row.OptionRow
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
@@ -38,8 +36,6 @@ import com.example.educationapp.domain.enums.StudentStatus
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
 import educationapp.shared.generated.resources.ic_event_24dp
-import educationapp.shared.generated.resources.ic_person_filled_24dp
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun ChildDetailCard(
@@ -74,42 +70,21 @@ fun ChildDetailCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Avatar using AppImage with AppIcon fallback
-                    if (!child.img.isNullOrBlank()) {
-                        Box(
-                            modifier = Modifier
-                                .size(72.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            AppImage(
-                                source = CoreMediaSource.Url(child.img),
-                                modifier = Modifier.fillMaxSize(),
-                                placeholder = painterResource(Res.drawable.ic_person_filled_24dp),
-                                error = painterResource(Res.drawable.ic_person_filled_24dp)
-                            )
-                        }
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .size(72.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primaryContainer,
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            AppIcon(
-                                drawableRes = Res.drawable.ic_person_filled_24dp,
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                iconModifier = Modifier.size(36.dp)
-                            )
-                        }
-                    }
+                    AppAvatar(
+                        name = child.fullName,
+                        imageUrl = child.img,
+                        modifier = Modifier
+                            .size(72.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                shape = CircleShape
+                            ),
+                        textStyle = MaterialTheme.typography.titleLarge.copy(
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
 
                     Column(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
