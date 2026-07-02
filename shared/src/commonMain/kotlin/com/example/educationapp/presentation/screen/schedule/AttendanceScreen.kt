@@ -4,35 +4,33 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,7 +44,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -57,11 +54,15 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.avatar.AppAvatar
 import com.example.educationapp.core.ui.button.AppButton
+import com.example.educationapp.core.ui.chip.AppChip
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
+import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.shimmer.skeleton.StudentListSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.domain.enums.AttendanceStatus
 import com.example.educationapp.presentation.screenmodel.schedule.AttendanceScreenModel
@@ -90,7 +91,6 @@ import educationapp.shared.generated.resources.attendance_title
 import educationapp.shared.generated.resources.btn_retry
 import educationapp.shared.generated.resources.btn_save_attendance
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.absoluteValue
 
 class AttendanceScreen(
     private val classId: Long,
@@ -123,125 +123,161 @@ class AttendanceScreen(
             }
         }
 
-        AppScaffold(
-            topBar = {
-                AppTopBar(
-                    title = stringResource(Res.string.attendance_title),
-                    onBackClick = { navigator.pop() }
-                )
-            },
-            containerColor = MaterialTheme.colorScheme.background,
-            isRefreshing = isRefreshing,
-            onRefresh = { screenModel.loadAttendances(classId, sessionNumber, isRefresh = true) }
-        ) { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = paddingValues.calculateTopPadding())
-            ) {
-                when (val currentState = state) {
-                    is AttendanceState.Loading -> {
-                        StudentListSkeleton(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            itemCount = 6
+        when (val currentState = state) {
+            is AttendanceState.Loading -> {
+                AppScaffold(
+                    topBar = {
+                        AppTopBar(
+                            title = stringResource(Res.string.attendance_title),
+                            onBackClick = { navigator.pop() }
                         )
-                    }
+                    },
+                    containerColor = MaterialTheme.colorScheme.background
+                ) { paddingValues ->
+                    StudentListSkeleton(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = paddingValues.calculateTopPadding())
+                            .padding(16.dp),
+                        itemCount = 6
+                    )
+                }
+            }
 
-                    is AttendanceState.Error -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+            is AttendanceState.Error -> {
+                AppScaffold(
+                    topBar = {
+                        AppTopBar(
+                            title = stringResource(Res.string.attendance_title),
+                            onBackClick = { navigator.pop() }
+                        )
+                    },
+                    containerColor = MaterialTheme.colorScheme.background
+                ) { paddingValues ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = paddingValues.calculateTopPadding()),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.padding(24.dp)
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier.padding(24.dp)
+                            AppText(
+                                text = currentState.message,
+                                color = AppColor.Error,
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Button(
+                                onClick = {
+                                    screenModel.loadAttendances(
+                                        classId,
+                                        sessionNumber
+                                    )
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
                             ) {
                                 AppText(
-                                    text = currentState.message,
-                                    color = AppColor.Error,
-                                    fontSize = 16.sp,
-                                    textAlign = TextAlign.Center
+                                    text = stringResource(Res.string.btn_retry),
+                                    color = Color.White
                                 )
-                                Button(
-                                    onClick = {
-                                        screenModel.loadAttendances(
-                                            classId,
-                                            sessionNumber
-                                        )
-                                    },
-                                    colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
-                                ) {
-                                    AppText(
-                                        text = stringResource(Res.string.btn_retry),
-                                        color = Color.White
-                                    )
-                                }
                             }
                         }
                     }
+                }
+            }
 
-                    is AttendanceState.Saved -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+            is AttendanceState.Saved -> {
+                AppScaffold(
+                    topBar = {
+                        AppTopBar(
+                            title = stringResource(Res.string.attendance_title),
+                            onBackClick = { navigator.pop() }
+                        )
+                    },
+                    containerColor = MaterialTheme.colorScheme.background
+                ) { paddingValues ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = paddingValues.calculateTopPadding()),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            Box(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(CircleShape)
+                                    .background(AppColor.Success.copy(alpha = 0.1f)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(64.dp)
-                                        .clip(CircleShape)
-                                        .background(AppColor.Success.copy(alpha = 0.1f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    AppText(
-                                        text = "✓",
-                                        fontSize = 32.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = AppColor.Success
-                                    )
-                                }
                                 AppText(
-                                    text = stringResource(Res.string.attendance_save_success),
-                                    fontSize = 18.sp,
+                                    text = "✓",
+                                    fontSize = 32.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                AppText(
-                                    text = stringResource(Res.string.attendance_returning_message),
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = AppColor.Success
                                 )
                             }
+                            AppText(
+                                text = stringResource(Res.string.attendance_save_success),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            AppText(
+                                text = stringResource(Res.string.attendance_returning_message),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
+                }
+            }
 
-                    is AttendanceState.Loaded -> {
-                        // Filter students based on search text and status filters
-                        val filteredStudents = currentState.students.filter { student ->
-                            val matchesSearch =
-                                student.studentName.contains(searchQuery, ignoreCase = true)
-                            val matchesStatus =
-                                selectedFilterStatus == null || student.status == selectedFilterStatus
-                            matchesSearch && matchesStatus
-                        }
+            is AttendanceState.Loaded -> {
+                val filteredStudents = currentState.students.filter { student ->
+                    val matchesSearch =
+                        student.studentName.contains(searchQuery, ignoreCase = true)
+                    val matchesStatus =
+                        selectedFilterStatus == null || student.status == selectedFilterStatus
+                    matchesSearch && matchesStatus
+                }
 
-                        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                            val isTablet = maxWidth >= 600.dp
+                val lazyListState = rememberLazyListState()
 
-                            Column(modifier = Modifier.fillMaxSize()) {
-                                // Header Card
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
+                    SearchTopBarLayout(
+                        title = stringResource(Res.string.attendance_title),
+                        searchQuery = searchQuery,
+                        onSearch = { searchQuery = it },
+                        lazyListState = lazyListState,
+                        placeholder = stringResource(Res.string.attendance_search_placeholder),
+                        onBackClick = { navigator.pop() },
+                        isRefreshing = isRefreshing,
+                        onRefresh = {
+                            screenModel.loadAttendances(
+                                classId,
+                                sessionNumber,
+                                isRefresh = true
+                            )
+                        },
+                        extraContent = {
+                            Column {
                                 HeaderBlock(
                                     className = className,
                                     subjectName = subjectName,
                                     sessionNumber = sessionNumber
                                 )
-
                                 if (readOnly) {
                                     Box(
                                         modifier = Modifier
@@ -260,121 +296,130 @@ class AttendanceScreen(
                                         )
                                     }
                                 }
+                            }
+                        }
+                    ) { maxScrollDp, _, listTopPaddingDp ->
+                        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                            val isTablet = maxWidth >= 600.dp
+                            val chunkedStudents =
+                                remember(filteredStudents) { filteredStudents.chunked(2) }
 
-                                // Statistics block
-                                StatisticsRow(
-                                    students = currentState.students,
-                                    selectedStatus = selectedFilterStatus,
-                                    onStatusSelect = { selectedFilterStatus = it }
-                                )
+                            LazyColumn(
+                                state = lazyListState,
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(
+                                    start = 0.dp,
+                                    end = 0.dp,
+                                    top = listTopPaddingDp,
+                                    bottom = 90.dp + WindowInsets.navigationBars.asPaddingValues()
+                                        .calculateBottomPadding()
+                                ),
+                                verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                            ) {
+                                item {
+                                    Spacer(modifier = Modifier.height(maxScrollDp - AppDimen.p16))
+                                }
 
-                                // Search bar
-                                SearchBar(
-                                    query = searchQuery,
-                                    onQueryChange = { searchQuery = it }
-                                )
+                                item {
+                                    StatisticsRow(
+                                        students = currentState.students,
+                                        selectedStatus = selectedFilterStatus,
+                                        onStatusSelect = { selectedFilterStatus = it }
+                                    )
+                                }
 
-                                // Student list
                                 if (filteredStudents.isEmpty()) {
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        AppText(
-                                            text = stringResource(Res.string.attendance_no_students_found),
-                                            fontSize = 14.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                    item {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(200.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            AppText(
+                                                text = stringResource(Res.string.attendance_no_students_found),
+                                                fontSize = 14.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
                                 } else {
-                                    Box(modifier = Modifier.weight(1f)) {
-                                        if (isTablet) {
-                                            LazyVerticalGrid(
-                                                columns = GridCells.Adaptive(minSize = 340.dp),
-                                                modifier = Modifier.fillMaxSize(),
-                                                contentPadding = PaddingValues(
-                                                    start = AppDimen.p16,
-                                                    end = AppDimen.p16,
-                                                    top = AppDimen.p8,
-                                                    bottom = 90.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                                                ),
+                                    if (isTablet) {
+                                        items(
+                                            chunkedStudents,
+                                            key = { chunk ->
+                                                chunk.map { it.studentId }.joinToString()
+                                            }) { rowStudents ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = AppDimen.p16),
                                                 horizontalArrangement = Arrangement.spacedBy(
                                                     AppDimen.p12
-                                                ),
-                                                verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                                                )
                                             ) {
-                                                items(
-                                                    filteredStudents,
-                                                    key = { it.studentId }) { student ->
-                                                    StudentCard(
-                                                        student = student,
-                                                        onStatusSelect = { status ->
-                                                            screenModel.updateStudentStatus(
-                                                                student.studentId,
-                                                                status
-                                                            )
-                                                        },
-                                                        onReasonChange = { reason ->
-                                                            screenModel.updateStudentReason(
-                                                                student.studentId,
-                                                                reason
-                                                            )
-                                                        }
-                                                    )
+                                                rowStudents.forEach { student ->
+                                                    Box(modifier = Modifier.weight(1f)) {
+                                                        StudentCard(
+                                                            student = student,
+                                                            onStatusSelect = { status ->
+                                                                screenModel.updateStudentStatus(
+                                                                    student.studentId,
+                                                                    status
+                                                                )
+                                                            },
+                                                            onReasonChange = { reason ->
+                                                                screenModel.updateStudentReason(
+                                                                    student.studentId,
+                                                                    reason
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                                if (rowStudents.size < 2) {
+                                                    Spacer(modifier = Modifier.weight(1f))
                                                 }
                                             }
-                                        } else {
-                                            LazyColumn(
-                                                modifier = Modifier.fillMaxSize(),
-                                                contentPadding = PaddingValues(
-                                                    start = AppDimen.p16,
-                                                    end = AppDimen.p16,
-                                                    top = AppDimen.p8,
-                                                    bottom = 90.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                                                ),
-                                                verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
-                                            ) {
-                                                items(
-                                                    filteredStudents,
-                                                    key = { it.studentId }) { student ->
-                                                    StudentCard(
-                                                        student = student,
-                                                        onStatusSelect = { status ->
-                                                            screenModel.updateStudentStatus(
-                                                                student.studentId,
-                                                                status
-                                                            )
-                                                        },
-                                                        onReasonChange = { reason ->
-                                                            screenModel.updateStudentReason(
-                                                                student.studentId,
-                                                                reason
-                                                            )
-                                                        }
-                                                    )
-                                                }
+                                        }
+                                    } else {
+                                        items(filteredStudents, key = { it.studentId }) { student ->
+                                            Box(modifier = Modifier.padding(horizontal = AppDimen.p16)) {
+                                                StudentCard(
+                                                    student = student,
+                                                    onStatusSelect = { status ->
+                                                        screenModel.updateStudentStatus(
+                                                            student.studentId,
+                                                            status
+                                                        )
+                                                    },
+                                                    onReasonChange = { reason ->
+                                                        screenModel.updateStudentReason(
+                                                            student.studentId,
+                                                            reason
+                                                        )
+                                                    }
+                                                )
                                             }
                                         }
                                     }
                                 }
                             }
-
-                            // Submit bottom bar
-                            if (!readOnly) {
-                                SubmitBottomBar(
-                                    modifier = Modifier.align(Alignment.BottomCenter),
-                                    hasChanges = currentState.hasChanges,
-                                    isSaving = currentState.isSaving,
-                                    onSave = {
-                                        screenModel.saveAttendances(classId, sessionNumber) { msg ->
-                                            toastController.show(msg)
-                                        }
-                                    }
-                                )
-                            }
                         }
+                    }
+
+                    // Submit bottom bar
+                    if (!readOnly) {
+                        SubmitBottomBar(
+                            modifier = Modifier.align(Alignment.BottomCenter),
+                            hasChanges = currentState.hasChanges,
+                            isSaving = currentState.isSaving,
+                            onSave = {
+                                screenModel.saveAttendances(classId, sessionNumber) { msg ->
+                                    toastController.show(msg)
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -452,102 +497,37 @@ class AttendanceScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AppDimen.p16, vertical = AppDimen.p12),
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = AppDimen.p16),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            StatFilterChip(
-                label = stringResource(Res.string.attendance_filter_all, total),
+            AppChip(
+                text = stringResource(Res.string.attendance_filter_all, total),
                 selected = selectedStatus == null,
-                activeColor = AppColor.Primary,
                 onClick = { onStatusSelect(null) }
             )
-            StatFilterChip(
-                label = stringResource(Res.string.attendance_filter_present, present),
+            AppChip(
+                text = stringResource(Res.string.attendance_filter_present, present),
                 selected = selectedStatus == AttendanceStatus.PRESENT,
-                activeColor = AppColor.Success,
                 onClick = { onStatusSelect(AttendanceStatus.PRESENT) }
             )
-            StatFilterChip(
-                label = stringResource(Res.string.attendance_filter_late, late),
+            AppChip(
+                text = stringResource(Res.string.attendance_filter_late, late),
                 selected = selectedStatus == AttendanceStatus.LATE,
-                activeColor = AppColor.Warning,
                 onClick = { onStatusSelect(AttendanceStatus.LATE) }
             )
-            StatFilterChip(
-                label = stringResource(Res.string.attendance_filter_excused, excused),
+            AppChip(
+                text = stringResource(Res.string.attendance_filter_excused, excused),
                 selected = selectedStatus == AttendanceStatus.EXCUSED,
-                activeColor = Color(0xFF2196F3),
                 onClick = { onStatusSelect(AttendanceStatus.EXCUSED) }
             )
-            StatFilterChip(
-                label = stringResource(Res.string.attendance_filter_absent, absent),
+            AppChip(
+                text = stringResource(Res.string.attendance_filter_absent, absent),
                 selected = selectedStatus == AttendanceStatus.ABSENT,
-                activeColor = AppColor.Error,
                 onClick = { onStatusSelect(AttendanceStatus.ABSENT) }
             )
         }
-    }
-
-    @Composable
-    private fun StatFilterChip(
-        label: String,
-        selected: Boolean,
-        activeColor: Color,
-        onClick: () -> Unit
-    ) {
-        val bg =
-            if (selected) activeColor.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface
-        val border =
-            if (selected) activeColor else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
-        val text = if (selected) activeColor else MaterialTheme.colorScheme.onSurfaceVariant
-
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(bg)
-                .border(BorderStroke(1.dp, border), shape = RoundedCornerShape(8.dp))
-                .clickable(onClick = onClick)
-                .padding(horizontal = 8.dp, vertical = 6.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            AppText(
-                text = label,
-                fontSize = 11.sp,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                color = text
-            )
-        }
-    }
-
-    @Composable
-    private fun SearchBar(
-        query: String,
-        onQueryChange: (String) -> Unit
-    ) {
-        OutlinedTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = AppDimen.p16, end = AppDimen.p16, bottom = AppDimen.p8),
-            placeholder = {
-                AppText(
-                    text = stringResource(Res.string.attendance_search_placeholder),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
-            },
-            singleLine = true,
-            shape = RoundedCornerShape(10.dp),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedIndicatorColor = AppColor.Primary.copy(alpha = 0.7f),
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
-            )
-        )
     }
 
     @Composable
@@ -573,8 +553,9 @@ class AttendanceScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    StudentAvatar(
+                    AppAvatar(
                         name = student.studentName,
+                        imageUrl = null,
                         modifier = Modifier.size(36.dp)
                     )
                     Column(modifier = Modifier.weight(1f)) {
@@ -643,30 +624,16 @@ class AttendanceScreen(
 
                 // Show reason field conditionally (if status is not PRESENT)
                 if (student.status != AttendanceStatus.PRESENT) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = student.reason ?: "",
                         onValueChange = { onReasonChange(it) },
                         modifier = Modifier.fillMaxWidth(),
                         readOnly = readOnly,
                         enabled = !readOnly,
-                        placeholder = {
-                            AppText(
-                                text = if (readOnly) stringResource(Res.string.attendance_no_reason) else stringResource(
-                                    Res.string.attendance_reason_placeholder
-                                ),
-                                fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                            )
-                        },
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = AppColor.Primary.copy(alpha = 0.5f),
-                            unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant.copy(
-                                alpha = 0.4f
-                            )
+                        placeholder = if (readOnly) stringResource(Res.string.attendance_no_reason) else stringResource(
+                            Res.string.attendance_reason_placeholder
                         ),
+                        singleLine = true,
                         shape = RoundedCornerShape(8.dp)
                     )
                 }
@@ -712,37 +679,6 @@ class AttendanceScreen(
         }
     }
 
-    @Composable
-    private fun StudentAvatar(name: String, modifier: Modifier = Modifier) {
-        val initials = name.split(" ")
-            .filter { it.isNotBlank() }
-            .takeLast(2)
-            .map { it.firstOrNull()?.uppercase() ?: "" }
-            .joinToString("")
-
-        val colorHash = name.hashCode().absoluteValue
-        val bgColors = listOf(
-            Color(0xFFEF5350), Color(0xFFEC407A), Color(0xFFAB47BC), Color(0xFF7E57C2),
-            Color(0xFF5C6BC0), Color(0xFF42A5F5), Color(0xFF26A69A), Color(0xFF26C6DA),
-            Color(0xFF66BB6A), Color(0xFF9CCC65), Color(0xFFFFCA28), Color(0xFFFFA726),
-            Color(0xFFFF7043), Color(0xFF8D6E63)
-        )
-        val bgColor = bgColors[colorHash % bgColors.size]
-
-        Box(
-            modifier = modifier
-                .clip(CircleShape)
-                .background(bgColor),
-            contentAlignment = Alignment.Center
-        ) {
-            AppText(
-                text = initials,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-        }
-    }
 
     @Composable
     private fun SubmitBottomBar(
