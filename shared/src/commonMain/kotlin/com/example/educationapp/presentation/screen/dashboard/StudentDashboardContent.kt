@@ -1,8 +1,5 @@
 package com.example.educationapp.presentation.screen.dashboard
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,15 +14,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -59,10 +51,7 @@ import educationapp.shared.generated.resources.dashboard_teacher_contact_empty
 import educationapp.shared.generated.resources.dashboard_teacher_contact_title
 import educationapp.shared.generated.resources.lb_dashboard_assignments
 import educationapp.shared.generated.resources.lb_dashboard_schedules
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun StudentDashboardContent(
@@ -72,8 +61,6 @@ fun StudentDashboardContent(
 ) {
     val parentNavigator = LocalNavigator.currentOrThrow.parent
     val state by screenModel.state.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
 
     val toastController = LocalToastController.current
 

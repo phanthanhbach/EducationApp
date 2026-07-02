@@ -90,7 +90,7 @@ fun AppToast(
                     modifier = Modifier.weight(
                         1f,
                         fill = false
-                    ) // Cho phép co giãn tự động theo text và xuống dòng khi vượt quá giới hạn
+                    )
                 )
             }
         }
