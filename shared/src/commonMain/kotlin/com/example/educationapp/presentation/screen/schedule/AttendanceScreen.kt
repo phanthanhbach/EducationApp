@@ -1,10 +1,5 @@
 package com.example.educationapp.presentation.screen.schedule
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +9,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,10 +30,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import com.example.educationapp.core.ui.shimmer.skeleton.StudentListSkeleton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,7 +51,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -63,14 +58,38 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.button.AppButton
+import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
-import com.example.educationapp.core.ui.toast.LocalToastController
+import com.example.educationapp.core.ui.shimmer.skeleton.StudentListSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.domain.enums.AttendanceStatus
 import com.example.educationapp.presentation.screenmodel.schedule.AttendanceScreenModel
 import com.example.educationapp.presentation.screenmodel.schedule.AttendanceState
 import com.example.educationapp.presentation.screenmodel.schedule.AttendanceUiModel
-import kotlinx.coroutines.delay
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.attendance_filter_absent
+import educationapp.shared.generated.resources.attendance_filter_all
+import educationapp.shared.generated.resources.attendance_filter_excused
+import educationapp.shared.generated.resources.attendance_filter_late
+import educationapp.shared.generated.resources.attendance_filter_present
+import educationapp.shared.generated.resources.attendance_label_saved
+import educationapp.shared.generated.resources.attendance_no_reason
+import educationapp.shared.generated.resources.attendance_no_students_found
+import educationapp.shared.generated.resources.attendance_readonly_warning
+import educationapp.shared.generated.resources.attendance_reason_placeholder
+import educationapp.shared.generated.resources.attendance_returning_message
+import educationapp.shared.generated.resources.attendance_save_success
+import educationapp.shared.generated.resources.attendance_search_placeholder
+import educationapp.shared.generated.resources.attendance_session_number_format
+import educationapp.shared.generated.resources.attendance_status_absent
+import educationapp.shared.generated.resources.attendance_status_excused
+import educationapp.shared.generated.resources.attendance_status_late
+import educationapp.shared.generated.resources.attendance_status_present
+import educationapp.shared.generated.resources.attendance_title
+import educationapp.shared.generated.resources.btn_retry
+import educationapp.shared.generated.resources.btn_save_attendance
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.absoluteValue
 
 class AttendanceScreen(
@@ -86,6 +105,7 @@ class AttendanceScreen(
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = koinScreenModel<AttendanceScreenModel>()
         val state by screenModel.state.collectAsState()
+        val isRefreshing by screenModel.isRefreshing.collectAsState()
 
         var searchQuery by remember { mutableStateOf("") }
         var selectedFilterStatus by remember { mutableStateOf<AttendanceStatus?>(null) }
@@ -103,19 +123,21 @@ class AttendanceScreen(
             }
         }
 
-        Scaffold(
+        AppScaffold(
             topBar = {
                 AppTopBar(
-                    title = "Điểm Danh Lớp Học",
+                    title = stringResource(Res.string.attendance_title),
                     onBackClick = { navigator.pop() }
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
+            isRefreshing = isRefreshing,
+            onRefresh = { screenModel.loadAttendances(classId, sessionNumber, isRefresh = true) }
         ) { paddingValues ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(top = paddingValues.calculateTopPadding())
             ) {
                 when (val currentState = state) {
                     is AttendanceState.Loading -> {
@@ -152,7 +174,10 @@ class AttendanceScreen(
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
                                 ) {
-                                    AppText(text = "Thử lại", color = Color.White)
+                                    AppText(
+                                        text = stringResource(Res.string.btn_retry),
+                                        color = Color.White
+                                    )
                                 }
                             }
                         }
@@ -182,13 +207,13 @@ class AttendanceScreen(
                                     )
                                 }
                                 AppText(
-                                    text = "Đã lưu điểm danh!",
+                                    text = stringResource(Res.string.attendance_save_success),
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 AppText(
-                                    text = "Đang quay lại chi tiết tiết dạy...",
+                                    text = stringResource(Res.string.attendance_returning_message),
                                     fontSize = 14.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -222,10 +247,13 @@ class AttendanceScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .background(AppColor.Warning.copy(alpha = 0.15f))
-                                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p8)
+                                            .padding(
+                                                horizontal = AppDimen.p16,
+                                                vertical = AppDimen.p8
+                                            )
                                     ) {
                                         AppText(
-                                            text = "⚠️ Buổi học đã check-out. Đang hiển thị ở chế độ chỉ xem.",
+                                            text = stringResource(Res.string.attendance_readonly_warning),
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = AppColor.Warning
@@ -255,7 +283,7 @@ class AttendanceScreen(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         AppText(
-                                            text = "Không tìm thấy học sinh nào",
+                                            text = stringResource(Res.string.attendance_no_students_found),
                                             fontSize = 14.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -270,7 +298,7 @@ class AttendanceScreen(
                                                     start = AppDimen.p16,
                                                     end = AppDimen.p16,
                                                     top = AppDimen.p8,
-                                                    bottom = 90.dp
+                                                    bottom = 90.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                                                 ),
                                                 horizontalArrangement = Arrangement.spacedBy(
                                                     AppDimen.p12
@@ -304,7 +332,7 @@ class AttendanceScreen(
                                                     start = AppDimen.p16,
                                                     end = AppDimen.p16,
                                                     top = AppDimen.p8,
-                                                    bottom = 90.dp
+                                                    bottom = 90.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                                                 ),
                                                 verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                                             ) {
@@ -375,7 +403,10 @@ class AttendanceScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     AppText(
-                        text = "BUỔI HỌC SỐ $sessionNumber",
+                        text = stringResource(
+                            Res.string.attendance_session_number_format,
+                            sessionNumber
+                        ),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White.copy(alpha = 0.8f)
@@ -426,31 +457,31 @@ class AttendanceScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             StatFilterChip(
-                label = "Tất cả ($total)",
+                label = stringResource(Res.string.attendance_filter_all, total),
                 selected = selectedStatus == null,
                 activeColor = AppColor.Primary,
                 onClick = { onStatusSelect(null) }
             )
             StatFilterChip(
-                label = "Có mặt ($present)",
+                label = stringResource(Res.string.attendance_filter_present, present),
                 selected = selectedStatus == AttendanceStatus.PRESENT,
                 activeColor = AppColor.Success,
                 onClick = { onStatusSelect(AttendanceStatus.PRESENT) }
             )
             StatFilterChip(
-                label = "Trễ ($late)",
+                label = stringResource(Res.string.attendance_filter_late, late),
                 selected = selectedStatus == AttendanceStatus.LATE,
                 activeColor = AppColor.Warning,
                 onClick = { onStatusSelect(AttendanceStatus.LATE) }
             )
             StatFilterChip(
-                label = "Phép ($excused)",
+                label = stringResource(Res.string.attendance_filter_excused, excused),
                 selected = selectedStatus == AttendanceStatus.EXCUSED,
                 activeColor = Color(0xFF2196F3),
                 onClick = { onStatusSelect(AttendanceStatus.EXCUSED) }
             )
             StatFilterChip(
-                label = "Vắng ($absent)",
+                label = stringResource(Res.string.attendance_filter_absent, absent),
                 selected = selectedStatus == AttendanceStatus.ABSENT,
                 activeColor = AppColor.Error,
                 onClick = { onStatusSelect(AttendanceStatus.ABSENT) }
@@ -502,7 +533,7 @@ class AttendanceScreen(
                 .padding(start = AppDimen.p16, end = AppDimen.p16, bottom = AppDimen.p8),
             placeholder = {
                 AppText(
-                    text = "Tìm kiếm học sinh theo tên...",
+                    text = stringResource(Res.string.attendance_search_placeholder),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
@@ -562,7 +593,7 @@ class AttendanceScreen(
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             AppText(
-                                text = "Đã lưu",
+                                text = stringResource(Res.string.attendance_label_saved),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -577,7 +608,7 @@ class AttendanceScreen(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     StatusSelectorButton(
-                        label = "Có mặt",
+                        label = stringResource(Res.string.attendance_status_present),
                         selected = student.status == AttendanceStatus.PRESENT,
                         color = AppColor.Success,
                         modifier = Modifier.weight(1f),
@@ -585,7 +616,7 @@ class AttendanceScreen(
                         onClick = { onStatusSelect(AttendanceStatus.PRESENT) }
                     )
                     StatusSelectorButton(
-                        label = "Trễ",
+                        label = stringResource(Res.string.attendance_status_late),
                         selected = student.status == AttendanceStatus.LATE,
                         color = AppColor.Warning,
                         modifier = Modifier.weight(1f),
@@ -593,7 +624,7 @@ class AttendanceScreen(
                         onClick = { onStatusSelect(AttendanceStatus.LATE) }
                     )
                     StatusSelectorButton(
-                        label = "Phép",
+                        label = stringResource(Res.string.attendance_status_excused),
                         selected = student.status == AttendanceStatus.EXCUSED,
                         color = Color(0xFF2196F3),
                         modifier = Modifier.weight(1f),
@@ -601,7 +632,7 @@ class AttendanceScreen(
                         onClick = { onStatusSelect(AttendanceStatus.EXCUSED) }
                     )
                     StatusSelectorButton(
-                        label = "Vắng",
+                        label = stringResource(Res.string.attendance_status_absent),
                         selected = student.status == AttendanceStatus.ABSENT,
                         color = AppColor.Error,
                         modifier = Modifier.weight(1f),
@@ -620,7 +651,9 @@ class AttendanceScreen(
                         enabled = !readOnly,
                         placeholder = {
                             AppText(
-                                text = if (readOnly) "Không có lý do" else "Nhập lý do vắng/phép/trễ...",
+                                text = if (readOnly) stringResource(Res.string.attendance_no_reason) else stringResource(
+                                    Res.string.attendance_reason_placeholder
+                                ),
                                 fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                             )
@@ -718,6 +751,7 @@ class AttendanceScreen(
         isSaving: Boolean,
         onSave: () -> Unit
     ) {
+        val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
         Card(
             modifier = modifier
                 .fillMaxWidth()
@@ -729,10 +763,15 @@ class AttendanceScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = AppDimen.p20, vertical = AppDimen.p16)
+                    .padding(
+                        start = AppDimen.p20,
+                        end = AppDimen.p20,
+                        top = AppDimen.p16,
+                        bottom = AppDimen.p16 + bottomPadding
+                    )
             ) {
                 AppButton(
-                    text = "LƯU ĐIỂM DANH",
+                    text = stringResource(Res.string.btn_save_attendance),
                     onClick = onSave,
                     enabled = hasChanges,
                     isLoading = isSaving,

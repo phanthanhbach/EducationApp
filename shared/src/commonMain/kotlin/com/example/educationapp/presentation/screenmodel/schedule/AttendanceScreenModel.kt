@@ -30,30 +30,41 @@ class AttendanceScreenModel(
     private val _state = MutableStateFlow<AttendanceState>(AttendanceState.Loading)
     val state: StateFlow<AttendanceState> = _state.asStateFlow()
 
-    fun loadAttendances(classId: Long, sessionNumber: Int) {
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    fun loadAttendances(classId: Long, sessionNumber: Int, isRefresh: Boolean = false) {
         screenModelScope.launch {
-            _state.value = AttendanceState.Loading
-            when (val result = getAttendancesUseCase(classId, sessionNumber)) {
-                is ApiResult.Success -> {
-                    val students = result.data.map { record ->
-                        AttendanceUiModel(
-                            studentId = record.studentId,
-                            studentName = record.studentName,
-                            originalStatus = record.status,
-                            status = record.status ?: AttendanceStatus.PRESENT,
-                            reason = record.note
+            if (isRefresh) {
+                _isRefreshing.value = true
+            } else {
+                _state.value = AttendanceState.Loading
+            }
+            try {
+                when (val result = getAttendancesUseCase(classId, sessionNumber)) {
+                    is ApiResult.Success -> {
+                        val students = result.data.map { record ->
+                            AttendanceUiModel(
+                                studentId = record.studentId,
+                                studentName = record.studentName,
+                                originalStatus = record.status,
+                                status = record.status ?: AttendanceStatus.PRESENT,
+                                reason = record.note
+                            )
+                        }
+                        _state.value = AttendanceState.Loaded(
+                            students = students,
+                            hasChanges = false
                         )
                     }
-                    _state.value = AttendanceState.Loaded(
-                        students = students,
-                        hasChanges = false
-                    )
+                    is ApiResult.Error -> {
+                        _state.value = AttendanceState.Error(
+                            result.message ?: "Không thể tải danh sách học sinh."
+                        )
+                    }
                 }
-                is ApiResult.Error -> {
-                    _state.value = AttendanceState.Error(
-                        result.message ?: "Không thể tải danh sách học sinh."
-                    )
-                }
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }
