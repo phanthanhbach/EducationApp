@@ -27,7 +27,9 @@ import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.DateTimeFormatter
 import com.example.educationapp.domain.entity.TeacherCheckInResult
+import com.example.educationapp.domain.enums.CheckInStatus
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.dashboard_checkin_status_late
 import educationapp.shared.generated.resources.dashboard_checkin_status_on_time
@@ -39,8 +41,6 @@ import educationapp.shared.generated.resources.dashboard_session_number_format
 import educationapp.shared.generated.resources.dashboard_teaching_checkin_empty
 import educationapp.shared.generated.resources.dashboard_teaching_checkin_history
 import educationapp.shared.generated.resources.dashboard_total_checkins
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -115,38 +115,15 @@ private fun CheckInItemCard(
     checkIn: TeacherCheckInResult,
     modifier: Modifier = Modifier
 ) {
-    val isLate = checkIn.status == "LATE"
+    val isLate = checkIn.status == CheckInStatus.LATE
 
     val checkInTimeFormatted = remember(checkIn.checkinTime) {
-        if (checkIn.checkinTime.isNullOrBlank()) null else {
-            try {
-                val localDateTime = LocalDateTime.parse(checkIn.checkinTime)
-                val day = localDateTime.date.day.toString().padStart(2, '0')
-                val month = localDateTime.date.month.number.toString().padStart(2, '0')
-                val year = localDateTime.date.year
-                val hour = localDateTime.hour.toString().padStart(2, '0')
-                val minute = localDateTime.minute.toString().padStart(2, '0')
-                "$day/$month/$year · $hour:$minute"
-            } catch (_: Exception) {
-                checkIn.checkinTime
-            }
-        }
+        DateTimeFormatter.formatToDateTimeString(checkIn.checkinTime)
     }
 
-    val checkoutTimeText = remember(checkIn.checkoutTime, checkIn.checkedOut) {
+    val checkoutTimeFormatted = remember(checkIn.checkoutTime, checkIn.checkedOut) {
         if (checkIn.checkedOut == true) {
-            if (!checkIn.checkoutTime.isNullOrBlank()) {
-                try {
-                    val localDateTime = LocalDateTime.parse(checkIn.checkoutTime)
-                    val hour = localDateTime.hour.toString().padStart(2, '0')
-                    val minute = localDateTime.minute.toString().padStart(2, '0')
-                    hour to minute
-                } catch (_: Exception) {
-                    null
-                }
-            } else {
-                null
-            }
+            DateTimeFormatter.formatToTimeString(checkIn.checkoutTime)
         } else {
             null
         }
@@ -233,10 +210,10 @@ private fun CheckInItemCard(
             // Check-out Info below
             AppText(
                 text = if (checkIn.checkedOut == true) {
-                    if (checkoutTimeText != null) {
+                    if (checkoutTimeFormatted != null) {
                         stringResource(
                             Res.string.dashboard_checkout_time_format,
-                            "${checkoutTimeText.first}:${checkoutTimeText.second}"
+                            checkoutTimeFormatted
                         )
                     } else {
                         stringResource(Res.string.dashboard_checkout_done)

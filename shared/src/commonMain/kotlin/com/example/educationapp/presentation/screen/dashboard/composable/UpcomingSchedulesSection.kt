@@ -19,38 +19,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.calendar_month_1
-import educationapp.shared.generated.resources.calendar_month_10
-import educationapp.shared.generated.resources.calendar_month_11
-import educationapp.shared.generated.resources.calendar_month_12
-import educationapp.shared.generated.resources.calendar_month_2
-import educationapp.shared.generated.resources.calendar_month_3
-import educationapp.shared.generated.resources.calendar_month_4
-import educationapp.shared.generated.resources.calendar_month_5
-import educationapp.shared.generated.resources.calendar_month_6
-import educationapp.shared.generated.resources.calendar_month_7
-import educationapp.shared.generated.resources.calendar_month_8
-import educationapp.shared.generated.resources.calendar_month_9
 import educationapp.shared.generated.resources.dashboard_coming_up_title
-import educationapp.shared.generated.resources.dashboard_date_format
 import educationapp.shared.generated.resources.dashboard_no_classes_desc
 import educationapp.shared.generated.resources.dashboard_no_classes_title
 import educationapp.shared.generated.resources.dashboard_today_classes_title
 import educationapp.shared.generated.resources.dashboard_today_label
 import educationapp.shared.generated.resources.dashboard_view_schedule_btn
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -143,15 +128,18 @@ private fun NoClassesTodayCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(AppDimen.p16),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        border = BorderStroke(
+            AppDimen.p1,
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = AppDimen.p1)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 24.dp, horizontal = 20.dp),
+                .padding(vertical = AppDimen.p24, horizontal = AppDimen.p20),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppText(
@@ -162,37 +150,16 @@ private fun NoClassesTodayCard(
                 letterSpacing = 1.sp
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AppDimen.p4))
 
-            val monthRes = remember(today.month.number) {
-                when (today.month.number) {
-                    1 -> Res.string.calendar_month_1
-                    2 -> Res.string.calendar_month_2
-                    3 -> Res.string.calendar_month_3
-                    4 -> Res.string.calendar_month_4
-                    5 -> Res.string.calendar_month_5
-                    6 -> Res.string.calendar_month_6
-                    7 -> Res.string.calendar_month_7
-                    8 -> Res.string.calendar_month_8
-                    9 -> Res.string.calendar_month_9
-                    10 -> Res.string.calendar_month_10
-                    11 -> Res.string.calendar_month_11
-                    12 -> Res.string.calendar_month_12
-                    else -> Res.string.calendar_month_1
-                }
-            }
-            val monthName = stringResource(monthRes)
-            val formattedDate = stringResource(
-                Res.string.dashboard_date_format, monthName,
-                today.day, today.year
-            )
+            val formattedDate = CalendarHelper.getFormattedDate(today)
             AppText(
                 text = formattedDate,
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppDimen.p16))
 
             AppText(
                 text = stringResource(Res.string.dashboard_no_classes_title),
@@ -202,7 +169,7 @@ private fun NoClassesTodayCard(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppDimen.p8))
 
             AppText(
                 text = stringResource(Res.string.dashboard_no_classes_desc),
@@ -210,16 +177,16 @@ private fun NoClassesTodayCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 lineHeight = 18.sp,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = AppDimen.p16)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(AppDimen.p20))
 
             Row(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(AppDimen.p8))
                     .clickable { onViewScheduleClick() }
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                    .padding(horizontal = AppDimen.p12, vertical = AppDimen.p6),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -229,7 +196,7 @@ private fun NoClassesTodayCard(
                     fontWeight = FontWeight.Bold,
                     color = AppColor.Primary
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(AppDimen.p4))
                 AppText(
                     text = "→",
                     fontSize = 14.sp,

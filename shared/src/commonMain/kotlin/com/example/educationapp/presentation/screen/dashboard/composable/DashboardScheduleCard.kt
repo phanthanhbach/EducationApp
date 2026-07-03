@@ -35,6 +35,7 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_door_open_24dp
+import kotlinx.datetime.number
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -79,8 +80,8 @@ fun DashboardScheduleCard(
             }
 
             val (topText, bottomText) = if (isComingUp) {
-                val day = schedule.date.dayOfMonth.toString().padStart(2, '0')
-                val month = schedule.date.monthNumber.toString().padStart(2, '0')
+                val day = schedule.date.day.toString().padStart(2, '0')
+                val month = schedule.date.month.number.toString().padStart(2, '0')
                 day to month
             } else {
                 val parts = schedule.startTimeFormatted.split(":")

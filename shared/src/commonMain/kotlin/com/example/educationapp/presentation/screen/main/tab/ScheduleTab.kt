@@ -9,10 +9,9 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.schedule.ScheduleScreenContent
-import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
+import com.example.educationapp.presentation.screen.session.SessionDetailScreen
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleScreenModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp

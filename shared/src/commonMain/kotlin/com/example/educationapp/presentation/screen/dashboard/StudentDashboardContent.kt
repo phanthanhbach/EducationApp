@@ -37,7 +37,7 @@ import com.example.educationapp.presentation.screen.dashboard.composable.Current
 import com.example.educationapp.presentation.screen.dashboard.composable.SectionHeader
 import com.example.educationapp.presentation.screen.dashboard.composable.TeacherContactSection
 import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
-import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
+import com.example.educationapp.presentation.screen.session.SessionDetailScreen
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardState
 import educationapp.shared.generated.resources.Res

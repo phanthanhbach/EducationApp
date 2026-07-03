@@ -22,7 +22,7 @@ import com.example.educationapp.presentation.screen.dashboard.composable.RecentC
 import com.example.educationapp.presentation.screen.dashboard.composable.SectionHeader
 import com.example.educationapp.presentation.screen.dashboard.composable.TeacherRatingSummaryCard
 import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
-import com.example.educationapp.presentation.screen.schedule.SessionDetailScreen
+import com.example.educationapp.presentation.screen.session.SessionDetailScreen
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardState
 import educationapp.shared.generated.resources.Res

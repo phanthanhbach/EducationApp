@@ -10,11 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import com.example.educationapp.core.ui.shimmer.skeleton.ScheduleSessionSkeleton
-import com.example.educationapp.core.ui.error.ErrorStateView
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,11 +21,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.button.AppTextButton
+import com.example.educationapp.core.ui.error.ErrorStateView
+import com.example.educationapp.core.ui.shimmer.skeleton.ScheduleSessionSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
 import com.example.educationapp.presentation.screen.main.tab.component.ScheduleCalendar
+import com.example.educationapp.presentation.screen.schedule.composable.ClassSessionCard
+import com.example.educationapp.presentation.screen.schedule.composable.EmptyScheduleView
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
-import com.example.educationapp.domain.enums.AppRole
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.schedule_btn_today
 import educationapp.shared.generated.resources.schedule_header_date_format
@@ -38,9 +40,6 @@ import educationapp.shared.generated.resources.schedule_header_today_student
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
-import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
-import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
-import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun CommonScheduleMobileLayout(
@@ -57,7 +56,6 @@ fun CommonScheduleMobileLayout(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val sharedHazeState = LocalSharedHazeState.current
     val bottomBarHeight = LocalBottomBarHeight.current
 
     Column(

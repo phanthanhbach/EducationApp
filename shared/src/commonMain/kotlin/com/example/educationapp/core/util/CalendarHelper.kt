@@ -14,6 +14,7 @@ import educationapp.shared.generated.resources.calendar_month_6
 import educationapp.shared.generated.resources.calendar_month_7
 import educationapp.shared.generated.resources.calendar_month_8
 import educationapp.shared.generated.resources.calendar_month_9
+import educationapp.shared.generated.resources.dashboard_date_format
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -71,5 +72,19 @@ object CalendarHelper {
             else -> Res.string.calendar_month_1
         }
         return stringResource(stringRes)
+    }
+
+    /**
+     * Format a LocalDate into a localized display date string (e.g., "Tháng 6 1, 2026").
+     */
+    @Composable
+    fun getFormattedDate(date: LocalDate): String {
+        val monthName = getMonthDisplayName(date)
+        return stringResource(
+            Res.string.dashboard_date_format,
+            monthName,
+            date.day,
+            date.year
+        )
     }
 }
