@@ -1,26 +1,17 @@
-package com.example.educationapp.presentation.screenmodel.schedule
+package com.example.educationapp.presentation.screenmodel.attendance
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.enums.AttendanceStatus
 import com.example.educationapp.domain.usecase.GetAttendancesUseCase
 import com.example.educationapp.domain.usecase.SubmitAttendancesUseCase
+import com.example.educationapp.presentation.model.AttendanceUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-sealed interface AttendanceState {
-    object Loading : AttendanceState
-    data class Loaded(
-        val students: List<AttendanceUiModel>,
-        val isSaving: Boolean = false,
-        val hasChanges: Boolean = false
-    ) : AttendanceState
-    data class Error(val message: String) : AttendanceState
-    object Saved : AttendanceState
-}
 
 class AttendanceScreenModel(
     private val getAttendancesUseCase: GetAttendancesUseCase,
@@ -58,9 +49,7 @@ class AttendanceScreenModel(
                         )
                     }
                     is ApiResult.Error -> {
-                        _state.value = AttendanceState.Error(
-                            result.message ?: "Không thể tải danh sách học sinh."
-                        )
+                        _state.value = AttendanceState.Error(result.asUiText())
                     }
                 }
             } finally {

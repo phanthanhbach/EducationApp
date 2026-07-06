@@ -3,11 +3,12 @@ package com.example.educationapp.presentation.screenmodel.parent
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.usecase.FilterSchedulesNoPaginationUseCase
 import com.example.educationapp.domain.usecase.GetStudentClassesNoPaginationUseCase
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,14 +21,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.number
-import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.util.asUiText
 
-sealed interface ChildClassesState {
-    object Loading : ChildClassesState
-    data class Success(val classes: List<SchoolClass>) : ChildClassesState
-    data class Error(val message: String) : ChildClassesState
-}
 
 class ChildScheduleScreenModel(
     private val studentId: Long,
@@ -107,9 +102,7 @@ class ChildScheduleScreenModel(
             _classesState.value = ChildClassesState.Loading
             when (val result = getStudentClassesNoPaginationUseCase(studentId)) {
                 is ApiResult.Error -> {
-                    _classesState.value = ChildClassesState.Error(
-                        result.message ?: "Không thể tải danh sách lớp học."
-                    )
+                    _classesState.value = ChildClassesState.Error(result.asUiText())
                 }
                 is ApiResult.Success -> {
                     val list = result.data

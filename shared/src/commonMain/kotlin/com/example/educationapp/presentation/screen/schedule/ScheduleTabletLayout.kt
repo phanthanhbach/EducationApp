@@ -32,7 +32,7 @@ import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.presentation.screen.main.tab.component.ScheduleCalendar
 import com.example.educationapp.presentation.screen.schedule.composable.ClassSessionCard
 import com.example.educationapp.presentation.screen.schedule.composable.EmptyScheduleView
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.schedule_btn_today

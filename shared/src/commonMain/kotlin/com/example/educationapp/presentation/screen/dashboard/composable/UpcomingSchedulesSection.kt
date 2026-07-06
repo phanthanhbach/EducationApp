@@ -27,7 +27,7 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.dashboard_coming_up_title
 import educationapp.shared.generated.resources.dashboard_no_classes_desc

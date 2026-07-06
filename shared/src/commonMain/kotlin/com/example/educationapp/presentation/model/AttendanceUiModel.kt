@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screenmodel.schedule
+package com.example.educationapp.presentation.model
 
 import com.example.educationapp.domain.enums.AttendanceStatus
 

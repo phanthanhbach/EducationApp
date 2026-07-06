@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.profile
+package com.example.educationapp.presentation.screen.update_profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +22,9 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
 import com.example.educationapp.core.file.rememberImagePickerCropper
+import com.example.educationapp.presentation.screenmodel.EditProfileScreenModel
+import com.example.educationapp.presentation.screenmodel.EditProfileUiState
+import com.example.educationapp.presentation.screenmodel.SaveStatus
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_add_24dp
 import educationapp.shared.generated.resources.ic_close_24dp

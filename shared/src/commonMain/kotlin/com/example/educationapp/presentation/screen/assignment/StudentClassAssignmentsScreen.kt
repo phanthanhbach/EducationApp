@@ -56,6 +56,7 @@ import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.LocalTopBarHazeState
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.core.ui.upload.UploadReviewDialog
 import com.example.educationapp.domain.entity.StudentAssignment
@@ -278,7 +279,7 @@ private fun StudentAssignmentsList(
 
 @Composable
 private fun StudentAssignmentErrorCard(
-    message: String,
+    message: UiText,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -296,7 +297,7 @@ private fun StudentAssignmentErrorCard(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             AppText(
-                text = message,
+                text = message.asString(),
                 fontSize = 14.sp,
                 color = AppColor.Error
             )

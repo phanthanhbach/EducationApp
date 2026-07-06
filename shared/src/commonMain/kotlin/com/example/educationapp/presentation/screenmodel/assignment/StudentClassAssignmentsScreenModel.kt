@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.file.UploadFile
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.StudentAssignment
 import com.example.educationapp.domain.usecase.GetMyAssignmentsFilteredUseCase
 import com.example.educationapp.domain.usecase.SubmitAssignmentUseCase
@@ -12,17 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface StudentClassAssignmentsState {
-    object Loading : StudentClassAssignmentsState
-    data class Success(
-        val assignments: List<StudentAssignment>,
-        val currentPage: Int,
-        val totalPages: Int,
-        val totalElements: Int,
-        val hasNextPage: Boolean
-    ) : StudentClassAssignmentsState
-    data class Error(val message: String) : StudentClassAssignmentsState
-}
 
 class StudentClassAssignmentsScreenModel(
     private val getMyAssignmentsFilteredUseCase: GetMyAssignmentsFilteredUseCase,
@@ -126,9 +116,7 @@ class StudentClassAssignmentsScreenModel(
         when (val result = getMyAssignmentsFilteredUseCase(currentClassId, submitted, page)) {
             is ApiResult.Error -> {
                 if (!append) {
-                    _state.value = StudentClassAssignmentsState.Error(
-                        result.message ?: "Không thể tải danh sách bài tập."
-                    )
+                    _state.value = StudentClassAssignmentsState.Error(result.asUiText())
                 }
             }
             is ApiResult.Success -> {

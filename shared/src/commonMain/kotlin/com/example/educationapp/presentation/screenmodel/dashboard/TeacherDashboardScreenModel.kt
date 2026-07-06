@@ -13,7 +13,7 @@ import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.GetMySchedulesUseCase
 import com.example.educationapp.domain.usecase.GetTeacherCheckInsUseCase
 import com.example.educationapp.domain.usecase.GetTeacherRatingSummaryUseCase
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.error_unknown
 import kotlinx.coroutines.async
@@ -27,17 +27,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
-sealed interface TeacherDashboardState {
-    object Loading : TeacherDashboardState
-    data class Success(
-        val ratingSummary: TeacherRatingSummary,
-        val upcomingSchedules: List<ScheduleSessionUiModel>,
-        val totalCheckIns: Int,
-        val recentCheckIns: List<TeacherCheckInResult>
-    ) : TeacherDashboardState
-
-    data class Error(val error: UiText) : TeacherDashboardState
-}
 
 class TeacherDashboardScreenModel(
     private val getMyProfileUseCase: GetMyProfileUseCase,

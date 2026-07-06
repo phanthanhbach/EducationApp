@@ -62,12 +62,13 @@ import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.shimmer.skeleton.StudentListSkeleton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.domain.enums.AttendanceStatus
-import com.example.educationapp.presentation.screenmodel.schedule.AttendanceScreenModel
-import com.example.educationapp.presentation.screenmodel.schedule.AttendanceState
-import com.example.educationapp.presentation.screenmodel.schedule.AttendanceUiModel
+import com.example.educationapp.presentation.screenmodel.attendance.AttendanceScreenModel
+import com.example.educationapp.presentation.screenmodel.attendance.AttendanceState
+import com.example.educationapp.presentation.model.AttendanceUiModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.attendance_filter_absent
 import educationapp.shared.generated.resources.attendance_filter_all
@@ -166,7 +167,7 @@ class AttendanceScreen(
                             modifier = Modifier.padding(24.dp)
                         ) {
                             AppText(
-                                text = currentState.message,
+                                text = currentState.message.asString(),
                                 color = AppColor.Error,
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Center

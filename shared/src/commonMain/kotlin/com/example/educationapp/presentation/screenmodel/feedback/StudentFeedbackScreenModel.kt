@@ -3,6 +3,7 @@ package com.example.educationapp.presentation.screenmodel.feedback
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.StudentClassFeedback
 import com.example.educationapp.domain.usecase.GetStudentFeedbackUseCase
 import com.example.educationapp.domain.usecase.SubmitStudentFeedbackUseCase
@@ -11,15 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface StudentFeedbackState {
-    object Loading : StudentFeedbackState
-    data class Success(
-        val feedback: StudentClassFeedback?,
-        val isSubmitting: Boolean = false,
-        val submitError: String? = null
-    ) : StudentFeedbackState
-    data class Error(val message: String) : StudentFeedbackState
-}
 
 class StudentFeedbackScreenModel(
     private val getStudentFeedbackUseCase: GetStudentFeedbackUseCase,
@@ -50,9 +42,7 @@ class StudentFeedbackScreenModel(
             _state.value = StudentFeedbackState.Loading
             when (val result = getStudentFeedbackUseCase(currentStudentId, currentClassId)) {
                 is ApiResult.Error -> {
-                    _state.value = StudentFeedbackState.Error(
-                        result.message ?: "Lỗi tải thông tin phản hồi."
-                    )
+                    _state.value = StudentFeedbackState.Error(result.asUiText())
                 }
                 is ApiResult.Success -> {
                     _state.value = StudentFeedbackState.Success(feedback = result.data)
@@ -73,7 +63,7 @@ class StudentFeedbackScreenModel(
                     val latestState = _state.value as? StudentFeedbackState.Success ?: return@launch
                     _state.value = latestState.copy(
                         isSubmitting = false,
-                        submitError = result.message ?: "Lỗi gửi phản hồi."
+                        submitError = result.asUiText()
                     )
                 }
                 is ApiResult.Success -> {

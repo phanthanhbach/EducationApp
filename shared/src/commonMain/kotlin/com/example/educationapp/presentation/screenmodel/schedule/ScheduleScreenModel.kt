@@ -4,7 +4,9 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.util.CalendarHelper
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.usecase.GetMySchedulesUseCase
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,15 +18,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.number
-import com.example.educationapp.core.util.UiText
-import com.example.educationapp.core.util.asUiText
-
-sealed interface ScheduleState {
-    object Idle : ScheduleState
-    object Loading : ScheduleState
-    data class Success(val schedules: List<ScheduleSessionUiModel>) : ScheduleState
-    data class Error(val error: UiText) : ScheduleState
-}
 
 class ScheduleScreenModel(
     private val getMySchedulesUseCase: GetMySchedulesUseCase

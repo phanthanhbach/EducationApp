@@ -3,7 +3,6 @@ package com.example.educationapp.presentation.screen.setting
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,14 +19,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -52,7 +48,6 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import org.jetbrains.compose.resources.DrawableResource
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.button.AppButton
-import com.example.educationapp.core.ui.chip.AppChip
 import com.example.educationapp.core.ui.dialog.AppAlertDialog
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.layout.AppScaffold
@@ -63,14 +58,15 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppLanguage
 import com.example.educationapp.domain.enums.AppThemeMode
 import com.example.educationapp.presentation.screen.login.LoginScreen
-import com.example.educationapp.presentation.screen.profile.EditProfileScreen
+import com.example.educationapp.presentation.screen.update_profile.EditProfileScreen
+import com.example.educationapp.presentation.screenmodel.setting.SettingScreenModel
+import com.example.educationapp.presentation.screenmodel.setting.SettingState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.btn_cancel
 import educationapp.shared.generated.resources.btn_change_password
 import educationapp.shared.generated.resources.btn_edit_profile
 import educationapp.shared.generated.resources.dialog_logout_desc
 import educationapp.shared.generated.resources.ic_check_24dp
-import educationapp.shared.generated.resources.ic_check_circle_24dp
 import educationapp.shared.generated.resources.ic_edit_24dp
 import educationapp.shared.generated.resources.ic_language_24dp
 import educationapp.shared.generated.resources.ic_lock_24dp
@@ -78,8 +74,6 @@ import educationapp.shared.generated.resources.ic_palette_24dp
 import educationapp.shared.generated.resources.ic_light_mode_24dp
 import educationapp.shared.generated.resources.ic_dark_mode_24dp
 import educationapp.shared.generated.resources.ic_system_24dp
-import educationapp.shared.generated.resources.language_english
-import educationapp.shared.generated.resources.language_vietnamese
 import educationapp.shared.generated.resources.lb_logout
 import educationapp.shared.generated.resources.option_language
 import educationapp.shared.generated.resources.option_theme

@@ -3,6 +3,7 @@ package com.example.educationapp.presentation.screenmodel.feedback
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.StudentClassFeedback
 import com.example.educationapp.domain.usecase.GetClassFeedbacksUseCase
 import com.example.educationapp.domain.usecase.SubmitTeacherFeedbackUseCase
@@ -11,19 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface ClassFeedbackState {
-    object Loading : ClassFeedbackState
-    data class Success(
-        val feedbacks: List<StudentClassFeedback>,
-        val currentPage: Int,
-        val totalPages: Int,
-        val totalElements: Int,
-        val hasNextPage: Boolean,
-        val submittingFeedbackKeys: Set<String> = emptySet(),
-        val submitErrorMessage: String? = null
-    ) : ClassFeedbackState
-    data class Error(val message: String) : ClassFeedbackState
-}
 
 class ClassFeedbackScreenModel(
     private val getClassFeedbacksUseCase: GetClassFeedbacksUseCase,
@@ -79,7 +67,7 @@ class ClassFeedbackScreenModel(
                     val latestState = _state.value as? ClassFeedbackState.Success ?: return@launch
                     _state.value = latestState.copy(
                         submittingFeedbackKeys = latestState.submittingFeedbackKeys - feedbackKey,
-                        submitErrorMessage = result.message ?: "Lỗi gửi phản hồi."
+                        submitErrorMessage = result.asUiText()
                     )
                 }
 
@@ -115,9 +103,7 @@ class ClassFeedbackScreenModel(
             when (val result = getClassFeedbacksUseCase(currentClassId, page, 20)) {
                 is ApiResult.Error -> {
                     if (!append) {
-                        _state.value = ClassFeedbackState.Error(
-                            result.message ?: "Lỗi tải danh sách feedback."
-                        )
+                        _state.value = ClassFeedbackState.Error(result.asUiText())
                     }
                 }
                 is ApiResult.Success -> {

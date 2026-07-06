@@ -56,8 +56,8 @@ import com.example.educationapp.presentation.screen.main.LocalParentMainScreenMo
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
 import com.example.educationapp.presentation.screen.my_classes.ClassCard
 import com.example.educationapp.presentation.screenmodel.parent.ParentChildrenState
-import com.example.educationapp.presentation.screenmodel.parent.PaymentsScreenModel
-import com.example.educationapp.presentation.screenmodel.parent.PaymentsTabState
+import com.example.educationapp.presentation.screenmodel.payment.PaymentsScreenModel
+import com.example.educationapp.presentation.screenmodel.payment.PaymentsTabState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_account_balance_wallet_24dp
 import educationapp.shared.generated.resources.ic_sort_24dp
@@ -282,7 +282,7 @@ class PaymentsTab : Tab {
                     contentAlignment = Alignment.TopCenter
                 ) {
                     ErrorStateView(
-                        error = UiText.DynamicString(state.message),
+                        error = state.message,
                         onRetry = onRetry
                     )
                 }

@@ -46,15 +46,14 @@ import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.sheet.ClassStatusFilterBottomSheet
 import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.presentation.screen.feedback.ParentFeedbackScreen
 import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
 import com.example.educationapp.presentation.screen.my_classes.ClassCard
-import com.example.educationapp.presentation.screenmodel.parent.FeedbackClassesState
-import com.example.educationapp.presentation.screenmodel.parent.FeedbackScreenModel
+import com.example.educationapp.presentation.screenmodel.feedback.FeedbackClassesState
+import com.example.educationapp.presentation.screenmodel.feedback.ParentFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ParentChildrenState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_chat_24dp
@@ -95,7 +94,7 @@ class FeedbackTab : Tab {
         val childrenState by parentMainScreenModel.childrenState.collectAsState()
         val selectedChild by parentMainScreenModel.selectedChild.collectAsState()
 
-        val screenModel = koinScreenModel<FeedbackScreenModel>()
+        val screenModel = koinScreenModel<ParentFeedbackScreenModel>()
         val classesState by screenModel.classesState.collectAsState()
         val searchQuery by screenModel.searchQuery.collectAsState()
         val selectedStatus by screenModel.selectedStatus.collectAsState()

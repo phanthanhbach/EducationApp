@@ -1,29 +1,21 @@
-package com.example.educationapp.presentation.screenmodel.schedule
+package com.example.educationapp.presentation.screenmodel.session_detail
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
-import com.example.educationapp.domain.entity.TeacherCheckInResult
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.GetCheckInStatusUseCase
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.TeacherCheckInUseCase
 import com.example.educationapp.domain.usecase.TeacherCheckOutUseCase
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-sealed interface SessionDetailState {
-    object Loading : SessionDetailState
-    data class NotCheckedIn(val session: ScheduleSessionUiModel) : SessionDetailState
-    data class CheckedIn(
-        val session: ScheduleSessionUiModel,
-        val checkInInfo: TeacherCheckInResult
-    ) : SessionDetailState
-    data class Error(val message: String) : SessionDetailState
-}
 
 class SessionDetailScreenModel(
     private val getCheckInStatusUseCase: GetCheckInStatusUseCase,
@@ -48,10 +40,9 @@ class SessionDetailScreenModel(
             try {
                 when (val profileResult = getMyProfileUseCase(AppRole.TEACHER)) {
                     is ApiResult.Error -> {
-                        _state.value = SessionDetailState.Error(
-                            profileResult.message ?: "Không thể lấy thông tin profile giáo viên."
-                        )
+                        _state.value = SessionDetailState.Error(profileResult.asUiText())
                     }
+
                     is ApiResult.Success -> {
                         val profile = profileResult.data
                         if (profile is UserProfile.Teacher) {
@@ -68,18 +59,18 @@ class SessionDetailScreenModel(
                                         checkInInfo = result.data
                                     )
                                 }
+
                                 is ApiResult.Error -> {
                                     if (result is ApiResult.Error.HttpError && result.code == 404) {
                                         _state.value = SessionDetailState.NotCheckedIn(session)
                                     } else {
-                                        _state.value = SessionDetailState.Error(
-                                            result.message ?: "Đã có lỗi xảy ra khi lấy trạng thái check-in."
-                                        )
+                                        _state.value = SessionDetailState.Error(result.asUiText())
                                     }
                                 }
                             }
                         } else {
-                            _state.value = SessionDetailState.Error("Tài khoản không phải giáo viên.")
+                            _state.value =
+                                SessionDetailState.Error(UiText.DynamicString("Tài khoản không phải giáo viên."))
                         }
                     }
                 }
@@ -97,6 +88,7 @@ class SessionDetailScreenModel(
                     onToast(profileResult.message ?: "Không thể lấy thông tin profile giáo viên.")
                     _state.value = SessionDetailState.NotCheckedIn(session)
                 }
+
                 is ApiResult.Success -> {
                     val profile = profileResult.data
                     if (profile is UserProfile.Teacher) {
@@ -114,8 +106,10 @@ class SessionDetailScreenModel(
                                     checkInInfo = result.data
                                 )
                             }
+
                             is ApiResult.Error -> {
-                                val errMsg = result.message ?: "Check-in thất bại. Vui lòng thử lại."
+                                val errMsg =
+                                    result.message ?: "Check-in thất bại. Vui lòng thử lại."
                                 onToast(errMsg)
                                 _state.value = SessionDetailState.NotCheckedIn(session)
                             }
@@ -129,11 +123,14 @@ class SessionDetailScreenModel(
         }
     }
 
-    fun performCheckOut(checkinId: Long, session: ScheduleSessionUiModel, onToast: (String) -> Unit = {}) {
+    fun performCheckOut(
+        checkinId: Long,
+        session: ScheduleSessionUiModel,
+        onToast: (String) -> Unit = {}
+    ) {
         screenModelScope.launch {
             _state.value = SessionDetailState.Loading
-            val result = teacherCheckOutUseCase(checkinId)
-            when (result) {
+            when (val result = teacherCheckOutUseCase(checkinId)) {
                 is ApiResult.Success -> {
                     onToast("Check-out thành công!")
                     _state.value = SessionDetailState.CheckedIn(
@@ -141,6 +138,7 @@ class SessionDetailScreenModel(
                         checkInInfo = result.data
                     )
                 }
+
                 is ApiResult.Error -> {
                     val errMsg = result.message ?: "Check-out thất bại. Vui lòng thử lại."
                     onToast(errMsg)

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -30,11 +29,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.blur.HazeColorEffect
-import dev.chrisbanes.haze.blur.blurEffect
-import dev.chrisbanes.haze.hazeEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,7 +45,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.blurEffect
+import dev.chrisbanes.haze.hazeEffect
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_arrow_back_24dp
 import educationapp.shared.generated.resources.ic_menu_24dp
@@ -129,7 +130,17 @@ fun VerticalNavigationRail(
                 .fillMaxHeight()
                 .width(surfaceWidth)
                 .background(barColor)
-        )
+        ) {
+            // Subtle vertical separator line on the right edge
+            VerticalDivider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .align(Alignment.CenterEnd)
+                    .offset(x = (-1).dp), // Offset slightly to the left to prevent clipping at the outer container bounds when expanded
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f),
+                thickness = 1.dp
+            )
+        }
 
         // Left-edge indicator strip – offset by startInset
         Box(
@@ -137,7 +148,7 @@ fun VerticalNavigationRail(
                 .offset(x = startInset, y = animatedIndicatorY)
                 .width(4.dp)
                 .height(indicatorHeight)
-                .clip(RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
+                .clip(RoundedCornerShape(topEnd = AppDimen.p8, bottomEnd = AppDimen.p8))
                 .background(indicatorColor)
         )
 
@@ -153,7 +164,7 @@ fun VerticalNavigationRail(
                     if (hazeState != null) {
                         it.hazeEffect(state = hazeState) {
                             blurEffect {
-                                blurRadius = 16.dp
+                                blurRadius = AppDimen.p16
                                 colorEffects = listOf(
                                     HazeColorEffect.tint(pillColor.copy(alpha = 0.45f))
                                 )
@@ -234,7 +245,7 @@ private fun MenuToggleButton(
                 if (hazeState != null) {
                     it.hazeEffect(state = hazeState) {
                         blurEffect {
-                            blurRadius = 16.dp
+                            blurRadius = AppDimen.p16
                             colorEffects = listOf(
                                 HazeColorEffect.tint(containerColor.copy(alpha = 0.45f))
                             )
@@ -261,7 +272,7 @@ private fun MenuToggleButton(
             ),
             contentDescription = if (isExpanded) "Collapse navigation" else "Expand navigation",
             tint = tint,
-            modifier = Modifier.size(22.dp)
+            modifier = Modifier.size(AppDimen.p24)
         )
     }
 }
@@ -299,7 +310,7 @@ private fun VerticalNavigationItem(
                 indication = null,
                 onClick = onClick
             )
-            .padding(start = 0.dp, end = 12.dp * expandedProgress),
+            .padding(start = AppDimen.zero, end = AppDimen.p12 * expandedProgress),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -314,7 +325,7 @@ private fun VerticalNavigationItem(
                 painter = item.icon,
                 contentDescription = item.title,
                 tint = iconTint,
-                modifier = Modifier.size(23.dp)
+                modifier = Modifier.size(AppDimen.p24)
             )
         }
 
@@ -325,7 +336,7 @@ private fun VerticalNavigationItem(
             },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(AppDimen.p12))
             AppText(
                 text = item.title,
                 fontSize = 14.sp,

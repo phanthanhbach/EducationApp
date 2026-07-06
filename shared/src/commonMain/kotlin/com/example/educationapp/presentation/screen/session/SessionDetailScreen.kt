@@ -32,8 +32,8 @@ import com.example.educationapp.presentation.screen.attendance.AttendanceScreen
 import com.example.educationapp.presentation.screen.session.composable.CheckInInteractionSection
 import com.example.educationapp.presentation.screen.session.composable.SessionHeaderCard
 import com.example.educationapp.presentation.screen.session.composable.SessionInfoSection
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
-import com.example.educationapp.presentation.screenmodel.schedule.SessionDetailScreenModel
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
+import com.example.educationapp.presentation.screenmodel.session_detail.SessionDetailScreenModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.session_checkin_status_title
 import educationapp.shared.generated.resources.session_detail_title

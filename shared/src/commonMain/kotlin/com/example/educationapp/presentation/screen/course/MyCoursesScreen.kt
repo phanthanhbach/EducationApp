@@ -161,7 +161,7 @@ class MyCoursesScreen : Screen {
                                     verticalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     AppText(
-                                        text = currentState.message,
+                                        text = currentState.message.asString(),
                                         fontSize = 14.sp,
                                         color = AppColor.Error,
                                         textAlign = TextAlign.Center

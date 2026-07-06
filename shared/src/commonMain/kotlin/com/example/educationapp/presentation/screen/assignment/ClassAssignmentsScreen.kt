@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import com.example.educationapp.core.ui.layout.AppScaffold
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -367,7 +368,7 @@ private fun CountPill(
 
 @Composable
 private fun AssignmentErrorCard(
-    message: String,
+    message: UiText,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -385,7 +386,7 @@ private fun AssignmentErrorCard(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             AppText(
-                text = message,
+                text = message.asString(),
                 fontSize = 14.sp,
                 color = AppColor.Error
             )

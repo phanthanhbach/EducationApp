@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,9 +40,10 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.AttendanceRate
 import com.example.educationapp.domain.entity.SchoolClass
-import com.example.educationapp.presentation.screen.parent.component.ClassChipsRow
+import com.example.educationapp.presentation.screen.parent.composable.ClassChipsRow
 import com.example.educationapp.presentation.screenmodel.parent.ChildAttendanceRateScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ChildAttendanceRateState
 import org.koin.core.parameter.parametersOf
@@ -103,7 +102,7 @@ class ChildAttendanceRateScreen(
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 AppText(
-                                    text = currentState.message,
+                                    text = currentState.message.asString(),
                                     color = MaterialTheme.colorScheme.error,
                                     fontSize = 14.sp
                                 )

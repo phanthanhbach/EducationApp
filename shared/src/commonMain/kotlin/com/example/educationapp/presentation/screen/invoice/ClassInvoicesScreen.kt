@@ -66,6 +66,7 @@ import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.sheet.AppBottomSheet
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.Invoice
 import com.example.educationapp.domain.entity.PaymentQr
 import com.example.educationapp.presentation.screenmodel.invoice.ClassInvoicesScreenModel
@@ -206,7 +207,7 @@ class ClassInvoicesScreen(
                                             verticalArrangement = Arrangement.spacedBy(12.dp)
                                         ) {
                                             AppText(
-                                                text = invoiceState.message,
+                                                text = invoiceState.message.asString(),
                                                 fontSize = 14.sp,
                                                 color = AppColor.Error,
                                                 textAlign = TextAlign.Center
@@ -310,10 +311,10 @@ class ClassInvoicesScreen(
                                 }
                             }
                         }
+                    }
                 }
             }
         }
-    }
 
         // Payment QR Bottom Sheet
         when (val qrState = paymentQrState) {
@@ -367,7 +368,7 @@ class ClassInvoicesScreen(
                             color = AppColor.Error
                         )
                         AppText(
-                            text = qrState.message,
+                            text = qrState.message.asString(),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center

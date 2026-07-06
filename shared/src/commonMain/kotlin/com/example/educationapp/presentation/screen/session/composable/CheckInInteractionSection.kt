@@ -35,8 +35,8 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.DateTimeFormatter
 import com.example.educationapp.domain.entity.TeacherCheckInResult
 import com.example.educationapp.domain.enums.SessionStatus
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
-import com.example.educationapp.presentation.screenmodel.schedule.SessionDetailState
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
+import com.example.educationapp.presentation.screenmodel.session_detail.SessionDetailState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.btn_check_in_now
 import educationapp.shared.generated.resources.btn_check_out_session
@@ -75,7 +75,7 @@ fun CheckInInteractionSection(
         }
 
         is SessionDetailState.Error -> {
-            ErrorStateView(message = state.message, onRetry = onRetry)
+            ErrorStateView(message = state.message.asString(), onRetry = onRetry)
         }
 
         is SessionDetailState.NotCheckedIn -> {

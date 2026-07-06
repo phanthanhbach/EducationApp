@@ -3,6 +3,7 @@ package com.example.educationapp.presentation.screenmodel.assignment
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.Assignment
 import com.example.educationapp.domain.usecase.FilterAssignmentsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,17 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface ClassAssignmentsState {
-    object Loading : ClassAssignmentsState
-    data class Success(
-        val assignments: List<Assignment>,
-        val currentPage: Int,
-        val totalPages: Int,
-        val totalElements: Int,
-        val hasNextPage: Boolean
-    ) : ClassAssignmentsState
-    data class Error(val message: String) : ClassAssignmentsState
-}
 
 class ClassAssignmentsScreenModel(
     private val filterAssignmentsUseCase: FilterAssignmentsUseCase
@@ -78,9 +68,7 @@ class ClassAssignmentsScreenModel(
         when (val result = filterAssignmentsUseCase(currentClassId, page, 20)) {
             is ApiResult.Error -> {
                 if (!append) {
-                    _state.value = ClassAssignmentsState.Error(
-                        result.message ?: "Lỗi tải danh sách bài tập."
-                    )
+                    _state.value = ClassAssignmentsState.Error(result.asUiText())
                 }
             }
             is ApiResult.Success -> {
