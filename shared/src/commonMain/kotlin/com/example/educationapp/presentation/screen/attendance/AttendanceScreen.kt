@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.schedule
+package com.example.educationapp.presentation.screen.attendance
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -538,7 +538,7 @@ class AttendanceScreen(
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
@@ -569,7 +569,7 @@ class AttendanceScreen(
                     if (student.originalStatus != null) {
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
+                                .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
@@ -634,7 +634,7 @@ class AttendanceScreen(
                             Res.string.attendance_reason_placeholder
                         ),
                         singleLine = true,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                     )
                 }
             }
@@ -646,7 +646,7 @@ class AttendanceScreen(
         label: String,
         selected: Boolean,
         color: Color,
-        modifier: Modifier = Modifier,
+        modifier: Modifier = Modifier.Companion,
         enabled: Boolean = true,
         onClick: () -> Unit
     ) {
@@ -658,14 +658,17 @@ class AttendanceScreen(
         val clickableModifier = if (enabled) {
             Modifier.clickable(onClick = onClick)
         } else {
-            Modifier
+            Modifier.Companion
         }
 
         Box(
             modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
                 .background(bg)
-                .border(BorderStroke(1.dp, border), shape = RoundedCornerShape(8.dp))
+                .border(
+                    BorderStroke(1.dp, border),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                )
                 .then(clickableModifier)
                 .padding(vertical = 8.dp),
             contentAlignment = Alignment.Center
@@ -682,7 +685,7 @@ class AttendanceScreen(
 
     @Composable
     private fun SubmitBottomBar(
-        modifier: Modifier = Modifier,
+        modifier: Modifier = Modifier.Companion,
         hasChanges: Boolean,
         isSaving: Boolean,
         onSave: () -> Unit

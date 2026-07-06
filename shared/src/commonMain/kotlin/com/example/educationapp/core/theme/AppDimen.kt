@@ -22,8 +22,10 @@ object AppDimen {
     val p28 = 28.dp
     val p32 = 32.dp
     val p36 = 36.dp
+    val p40 = 40.dp
     val p45 = 45.dp
     val p48 = 48.dp
+    val p50 = 50.dp
     val p56 = 56.dp
     val p64 = 64.dp
     val p90 = 90.dp
@@ -32,6 +34,7 @@ object AppDimen {
     val p150 = 150.dp
     val p200 = 200.dp
     val p400 = 400.dp
+    val tabletWidth = 600.dp
 
     val s10 = 10.sp
     val s12 = 12.sp

@@ -1,6 +1,7 @@
 package com.example.educationapp.data.dto.response
 
 import com.example.educationapp.domain.entity.TeacherCheckInResult
+import com.example.educationapp.domain.enums.CheckInStatus
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -27,7 +28,11 @@ fun TeacherCheckInResponseDTO.toDomainEntity() = TeacherCheckInResult(
     classId = classId,
     className = className,
     sessionNumber = sessionNumber,
-    status = status ?: "PENDING",
+    status = try {
+        status?.let { CheckInStatus.valueOf(it) }
+    } catch (_: IllegalArgumentException) {
+        null
+    },
     checkedOut = checkedOut,
     lateMinutes = lateMinutes,
     checkinTime = checkinTime,
