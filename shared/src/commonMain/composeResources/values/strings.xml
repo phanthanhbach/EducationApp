@@ -217,6 +217,8 @@
     <string name="lb_dashboard_schedules">Study Schedule</string>
     <string name="lb_dashboard_assignments">Assignments &amp; Homework</string>
     <string name="dashboard_assignments_empty">No assignments due soon.</string>
+    <string name="dashboard_assignments_empty_title">All Caught Up!</string>
+    <string name="dashboard_assignments_empty_desc">You don\'t have any assignments due within the next 48 hours. Keep up the good work!</string>
     <string name="dashboard_attendance_title">Attendance Rate by Class</string>
     <string name="dashboard_attendance_empty">No attendance records available.</string>
     <string name="dashboard_teacher_contact_title">Teacher Contacts</string>

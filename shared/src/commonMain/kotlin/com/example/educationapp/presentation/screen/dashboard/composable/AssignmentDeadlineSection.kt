@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,30 +23,85 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.AssignmentReminder
-import educationapp.shared.generated.resources.*
-import org.jetbrains.compose.resources.stringResource
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.dashboard_assignment_class_name
+import educationapp.shared.generated.resources.dashboard_assignment_due_date
+import educationapp.shared.generated.resources.dashboard_assignment_hours_remaining
+import educationapp.shared.generated.resources.dashboard_assignments_empty_desc
+import educationapp.shared.generated.resources.dashboard_assignments_empty_title
+import educationapp.shared.generated.resources.ic_check_circle_filled_24dp
+import educationapp.shared.generated.resources.ic_docs_24dp
 import kotlinx.datetime.LocalDateTime
-
-import org.jetbrains.compose.resources.painterResource
+import kotlinx.datetime.number
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AssignmentDeadlineSection(
     reminders: List<AssignmentReminder>,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppDimen.p10)
-    ) {
-        reminders.forEach { reminder ->
-            AssignmentReminderCard(reminder = reminder)
+    if (reminders.isEmpty()) {
+        NoAssignmentsView(modifier = modifier)
+    } else {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(AppDimen.p10)
+        ) {
+            reminders.forEach { reminder ->
+                AssignmentReminderCard(reminder = reminder)
+            }
         }
+    }
+}
+
+@Composable
+private fun NoAssignmentsView(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = AppDimen.p16, horizontal = AppDimen.p20),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AppIcon(
+            drawableRes = Res.drawable.ic_check_circle_filled_24dp,
+            boxModifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
+            iconModifier = Modifier.size(24.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(AppDimen.p12))
+
+        AppText(
+            text = stringResource(Res.string.dashboard_assignments_empty_title),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(AppDimen.p6))
+
+        AppText(
+            text = stringResource(Res.string.dashboard_assignments_empty_desc),
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            lineHeight = 18.sp,
+            modifier = Modifier.padding(horizontal = AppDimen.p16)
+        )
     }
 }
 
@@ -66,10 +121,10 @@ private fun AssignmentReminderCard(
         val ldt = LocalDateTime.parse(reminder.dueDate)
         "${ldt.hour.toString().padStart(2, '0')}:${
             ldt.minute.toString().padStart(2, '0')
-        } ${ldt.dayOfMonth.toString().padStart(2, '0')}/${
-            ldt.monthNumber.toString().padStart(2, '0')
+        } ${ldt.day.toString().padStart(2, '0')}/${
+            ldt.month.number.toString().padStart(2, '0')
         }"
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         reminder.dueDate
     }
 
@@ -91,20 +146,15 @@ private fun AssignmentReminderCard(
                 horizontalArrangement = Arrangement.spacedBy(AppDimen.p12)
             ) {
                 // Icon docs
-                Box(
-                    modifier = Modifier
+                AppIcon(
+                    drawableRes = Res.drawable.ic_docs_24dp,
+                    boxModifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(iconTint.copy(alpha = 0.12f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_docs_24dp),
-                        contentDescription = null,
-                        tint = iconTint,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+                    iconModifier = Modifier.size(20.dp),
+                    tint = iconTint
+                )
 
                 if (isTablet) {
                     Column(
@@ -133,7 +183,10 @@ private fun AssignmentReminderCard(
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 AppText(
-                                    text = stringResource(Res.string.dashboard_assignment_hours_remaining, hoursLeft.toInt()),
+                                    text = stringResource(
+                                        Res.string.dashboard_assignment_hours_remaining,
+                                        hoursLeft.toInt()
+                                    ),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = badgeTextColor
@@ -146,12 +199,18 @@ private fun AssignmentReminderCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AppText(
-                                text = stringResource(Res.string.dashboard_assignment_class_name, reminder.className),
+                                text = stringResource(
+                                    Res.string.dashboard_assignment_class_name,
+                                    reminder.className
+                                ),
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             AppText(
-                                text = stringResource(Res.string.dashboard_assignment_due_date, formattedTime),
+                                text = stringResource(
+                                    Res.string.dashboard_assignment_due_date,
+                                    formattedTime
+                                ),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -172,7 +231,10 @@ private fun AssignmentReminderCard(
                             overflow = TextOverflow.Ellipsis
                         )
                         AppText(
-                            text = stringResource(Res.string.dashboard_assignment_class_name, reminder.className),
+                            text = stringResource(
+                                Res.string.dashboard_assignment_class_name,
+                                reminder.className
+                            ),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -184,7 +246,10 @@ private fun AssignmentReminderCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AppText(
-                                text = stringResource(Res.string.dashboard_assignment_due_date, formattedTime),
+                                text = stringResource(
+                                    Res.string.dashboard_assignment_due_date,
+                                    formattedTime
+                                ),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -196,7 +261,10 @@ private fun AssignmentReminderCard(
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 AppText(
-                                    text = stringResource(Res.string.dashboard_assignment_hours_remaining, hoursLeft.toInt()),
+                                    text = stringResource(
+                                        Res.string.dashboard_assignment_hours_remaining,
+                                        hoursLeft.toInt()
+                                    ),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = badgeTextColor

@@ -29,6 +29,7 @@ import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.presentation.screen.dashboard.StudentDashboardContent
 import com.example.educationapp.presentation.screen.dashboard.TeacherDashboardContent
 import com.example.educationapp.presentation.screen.main.LocalAppRole
+import com.example.educationapp.presentation.screenmodel.dashboard.DashboardSectionState
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardState
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
@@ -90,7 +91,13 @@ class DashboardTab : Tab {
         if (studentScreenModel != null) {
             val state by studentScreenModel.state.collectAsState()
             LaunchedEffect(state) {
-                if (state !is StudentDashboardState.Loading) {
+                if (!state.isProfileLoading &&
+                    state.schedulesState !is DashboardSectionState.Loading &&
+                    state.assignmentsState !is DashboardSectionState.Loading &&
+                    state.attendanceState !is DashboardSectionState.Loading &&
+                    state.teacherContactsState !is DashboardSectionState.Loading &&
+                    state.coursesState !is DashboardSectionState.Loading
+                ) {
                     isRefreshing = false
                 }
             }

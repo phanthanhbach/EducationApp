@@ -217,6 +217,8 @@
     <string name="lb_dashboard_schedules">Lịch học sắp tới</string>
     <string name="lb_dashboard_assignments">Bài tập sắp đến hạn</string>
     <string name="dashboard_assignments_empty">Không có bài tập nào sắp đến hạn.</string>
+    <string name="dashboard_assignments_empty_title">Đã hoàn thành hết!</string>
+    <string name="dashboard_assignments_empty_desc">Bạn không có bài tập nào cần nộp trong 48 giờ tới. Hãy tiếp tục phát huy nhé!</string>
     <string name="dashboard_attendance_title">Tỷ lệ chuyên cần theo lớp</string>
     <string name="dashboard_attendance_empty">Không có thông tin chuyên cần.</string>
     <string name="dashboard_teacher_contact_title">Liên hệ giáo viên</string>

@@ -1,6 +1,7 @@
 package com.example.educationapp.presentation.screen.dashboard.composable
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.presentation.screenmodel.dashboard.AttendanceByClassUiModel
 import educationapp.shared.generated.resources.*
@@ -40,7 +42,10 @@ fun AttendanceByClassSection(
     attendanceList: List<AttendanceByClassUiModel>,
     modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+    if (attendanceList.isEmpty()) {
+        NoAttendanceView(modifier = modifier)
+    } else {
+        BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val isTablet = maxWidth >= 600.dp
 
         if (isTablet) {
@@ -128,6 +133,40 @@ fun AttendanceByClassSection(
                 }
             }
         }
+    }
+}
+}
+
+@Composable
+private fun NoAttendanceView(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = AppDimen.p16, horizontal = AppDimen.p20),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AppIcon(
+            drawableRes = Res.drawable.ic_event_24dp,
+            boxModifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
+            iconModifier = Modifier.size(24.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(AppDimen.p12))
+
+        AppText(
+            text = stringResource(Res.string.dashboard_attendance_empty),
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            lineHeight = 18.sp,
+            modifier = Modifier.padding(horizontal = AppDimen.p16)
+        )
     }
 }
 
