@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.profile
+package com.example.educationapp.presentation.screen.update_profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -16,6 +15,9 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
 import com.example.educationapp.core.file.rememberImagePickerCropper
+import com.example.educationapp.presentation.screenmodel.EditProfileScreenModel
+import com.example.educationapp.presentation.screenmodel.EditProfileUiState
+import com.example.educationapp.presentation.screenmodel.SaveStatus
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.profile_address
 import educationapp.shared.generated.resources.profile_email

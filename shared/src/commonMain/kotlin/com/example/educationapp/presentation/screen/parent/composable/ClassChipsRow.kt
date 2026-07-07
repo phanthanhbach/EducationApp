@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.parent.component
+package com.example.educationapp.presentation.screen.parent.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

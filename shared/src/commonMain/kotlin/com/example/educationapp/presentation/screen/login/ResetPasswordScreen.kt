@@ -39,8 +39,8 @@ import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
 import com.example.educationapp.core.ui.textfield.PasswordTextField
-import com.example.educationapp.presentation.screenmodel.login.ResetPasswordScreenModel
-import com.example.educationapp.presentation.screenmodel.login.ResetPasswordState
+import com.example.educationapp.presentation.screenmodel.reset_password.ResetPasswordScreenModel
+import com.example.educationapp.presentation.screenmodel.reset_password.ResetPasswordState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.btn_submit
 import educationapp.shared.generated.resources.lbl_confirm_password

@@ -3,6 +3,7 @@ package com.example.educationapp.presentation.screenmodel.invoice
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.Invoice
 import com.example.educationapp.domain.entity.PaymentQr
 import com.example.educationapp.domain.usecase.GetInvoiceByIdUseCase
@@ -15,25 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface ClassInvoicesState {
-    object Loading : ClassInvoicesState
-    data class Success(
-        val invoices: List<Invoice>,
-        val currentPage: Int,
-        val totalPages: Int,
-        val totalElements: Int,
-        val hasNextPage: Boolean
-    ) : ClassInvoicesState
-    data class Error(val message: String) : ClassInvoicesState
-}
-
-sealed interface PaymentQrState {
-    object Idle : PaymentQrState
-    object Loading : PaymentQrState
-    data class Success(val paymentQr: PaymentQr) : PaymentQrState
-    data class Error(val message: String) : PaymentQrState
-    data class PaymentCompleted(val invoice: Invoice) : PaymentQrState
-}
 
 class ClassInvoicesScreenModel(
     private val classId: Int,
@@ -102,7 +84,7 @@ class ClassInvoicesScreenModel(
         screenModelScope.launch {
             when (val result = getPaymentQrUseCase(invoiceId, installmentId)) {
                 is ApiResult.Error -> {
-                    _paymentQrState.value = PaymentQrState.Error(result.message ?: "Không thể tạo mã QR thanh toán.")
+                    _paymentQrState.value = PaymentQrState.Error(result.asUiText())
                 }
                 is ApiResult.Success -> {
                     _paymentQrState.value = PaymentQrState.Success(result.data)
@@ -190,7 +172,7 @@ class ClassInvoicesScreenModel(
         when (result) {
             is ApiResult.Error -> {
                 if (!append) {
-                    _state.value = ClassInvoicesState.Error(result.message ?: "Lỗi tải danh sách hóa đơn.")
+                    _state.value = ClassInvoicesState.Error(result.asUiText())
                 }
             }
             is ApiResult.Success -> {

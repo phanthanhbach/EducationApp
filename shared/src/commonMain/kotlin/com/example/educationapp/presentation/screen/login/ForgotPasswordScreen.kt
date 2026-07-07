@@ -38,8 +38,8 @@ import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
 import com.example.educationapp.core.ui.textfield.EmailTextField
-import com.example.educationapp.presentation.screenmodel.login.ForgotPasswordScreenModel
-import com.example.educationapp.presentation.screenmodel.login.ForgotPasswordState
+import com.example.educationapp.presentation.screenmodel.forgot_password.ForgotPasswordScreenModel
+import com.example.educationapp.presentation.screenmodel.forgot_password.ForgotPasswordState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.btn_send_reset_link
 import educationapp.shared.generated.resources.forgot_password_desc

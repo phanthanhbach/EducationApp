@@ -13,13 +13,6 @@ import kotlinx.coroutines.launch
 import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.util.asUiText
 
-sealed interface ProfileState {
-    object Idle : ProfileState
-    object Loading : ProfileState
-    data class Success(val profile: UserProfile) : ProfileState
-    data class Error(val error: UiText) : ProfileState
-}
-
 class ProfileScreenModel(
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val tokenManager: TokenManager

@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screen.setting
+package com.example.educationapp.presentation.screenmodel.setting
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
@@ -9,24 +9,12 @@ import com.example.educationapp.domain.usecase.LogoutUseCase
 import com.example.educationapp.domain.usecase.ObserveAppPreferencesUseCase
 import com.example.educationapp.domain.usecase.SetAppLanguageUseCase
 import com.example.educationapp.domain.usecase.SetAppThemeModeUseCase
+import com.example.educationapp.presentation.model.SettingUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-sealed interface SettingState {
-    object Idle : SettingState
-    object Loading : SettingState
-    object LoggedOut : SettingState
-    data class Error(val message: String) : SettingState
-}
-
-data class SettingUiState(
-    val themeMode: AppThemeMode = AppThemeMode.SYSTEM,
-    val language: AppLanguage = AppLanguage.ENGLISH,
-    val logoutState: SettingState = SettingState.Idle,
-)
 
 class SettingScreenModel(
     private val logoutUseCase: LogoutUseCase,
@@ -35,8 +23,8 @@ class SettingScreenModel(
     private val setAppLanguageUseCase: SetAppLanguageUseCase,
 ) : ScreenModel {
 
-    private val _uiState = MutableStateFlow(SettingUiState())
-    val uiState: StateFlow<SettingUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(SettingUiModel())
+    val uiState: StateFlow<SettingUiModel> = _uiState.asStateFlow()
 
     init {
         screenModelScope.launch {

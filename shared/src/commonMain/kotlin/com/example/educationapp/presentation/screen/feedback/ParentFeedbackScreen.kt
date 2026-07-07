@@ -124,7 +124,7 @@ private fun ParentFeedbackContent(
                         contentAlignment = Alignment.Center
                     ) {
                         ErrorStateView(
-                            error = UiText.DynamicString(state.message),
+                            error = state.message,
                             onRetry = onRetry
                         )
                     }

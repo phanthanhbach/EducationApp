@@ -39,7 +39,7 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.SessionStatus
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.schedule_session_attendance
 import educationapp.shared.generated.resources.schedule_session_class

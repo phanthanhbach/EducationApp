@@ -15,7 +15,7 @@ import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.schedule_screen_title

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
-import com.example.educationapp.presentation.screenmodel.schedule.ScheduleSessionUiModel
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
 import kotlinx.datetime.LocalDate
 

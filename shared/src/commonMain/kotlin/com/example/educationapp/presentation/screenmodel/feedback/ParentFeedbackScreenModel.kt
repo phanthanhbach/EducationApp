@@ -1,31 +1,17 @@
-package com.example.educationapp.presentation.screenmodel.parent
+package com.example.educationapp.presentation.screenmodel.feedback
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.util.UiText
-import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.usecase.GetStudentClassesUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Job
 
-sealed interface FeedbackClassesState {
-    object Loading : FeedbackClassesState
-    data class Success(
-        val classes: List<SchoolClass>,
-        val currentPage: Int,
-        val totalPages: Int,
-        val totalElements: Int,
-        val hasNextPage: Boolean,
-        val isSearchingOrFiltering: Boolean = false
-    ) : FeedbackClassesState
-    data class Error(val error: UiText) : FeedbackClassesState
-}
-
-class FeedbackScreenModel(
+class ParentFeedbackScreenModel(
     private val getStudentClassesUseCase: GetStudentClassesUseCase
 ) : ScreenModel {
 

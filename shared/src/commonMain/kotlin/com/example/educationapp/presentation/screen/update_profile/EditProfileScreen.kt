@@ -1,6 +1,5 @@
-package com.example.educationapp.presentation.screen.profile
+package com.example.educationapp.presentation.screen.update_profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,11 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
@@ -51,6 +46,9 @@ import educationapp.shared.generated.resources.ic_person_filled_24dp
 import educationapp.shared.generated.resources.profile_change_avatar
 import educationapp.shared.generated.resources.msg_profile_update_success
 import com.example.educationapp.core.ui.toast.LocalToastController
+import com.example.educationapp.presentation.screenmodel.EditProfileScreenModel
+import com.example.educationapp.presentation.screenmodel.EditProfileUiState
+import com.example.educationapp.presentation.screenmodel.SaveStatus
 import org.jetbrains.compose.resources.stringResource
 
 class EditProfileScreen : Screen {

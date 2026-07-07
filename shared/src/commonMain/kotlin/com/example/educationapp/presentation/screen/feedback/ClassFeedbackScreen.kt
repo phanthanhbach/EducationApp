@@ -47,6 +47,7 @@ import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
 import com.example.educationapp.domain.entity.StudentClassFeedback
@@ -190,7 +191,7 @@ private fun FeedbackList(
         state.submitErrorMessage?.let { message ->
             item {
                 AppText(
-                    text = message,
+                    text = message.asString(),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = AppColor.Error,
@@ -389,7 +390,7 @@ private fun StudentFeedbackComment(
 
 @Composable
 private fun FeedbackErrorCard(
-    message: String,
+    message: UiText,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -407,7 +408,7 @@ private fun FeedbackErrorCard(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             AppText(
-                text = message,
+                text = message.asString(),
                 fontSize = 14.sp,
                 color = AppColor.Error
             )

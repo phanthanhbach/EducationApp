@@ -3,6 +3,7 @@ package com.example.educationapp.presentation.screenmodel.parent
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.AttendanceRate
 import com.example.educationapp.domain.entity.SchoolClass
 import com.example.educationapp.domain.usecase.GetAttendanceRateUseCase
@@ -14,18 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface ChildAttendanceRateState {
-    object Loading : ChildAttendanceRateState
-    data class Success(
-        val classes: List<SchoolClass>,
-        val rates: Map<Long, AttendanceRate>,
-        val summaryTotal: Int,
-        val summaryAttended: Int,
-        val summaryAbsent: Int,
-        val summaryRate: Double
-    ) : ChildAttendanceRateState
-    data class Error(val message: String) : ChildAttendanceRateState
-}
 
 class ChildAttendanceRateScreenModel(
     private val studentId: Long,
@@ -48,9 +37,7 @@ class ChildAttendanceRateScreenModel(
             _state.value = ChildAttendanceRateState.Loading
             when (val classesResult = getStudentClassesNoPaginationUseCase(studentId)) {
                 is ApiResult.Error -> {
-                    _state.value = ChildAttendanceRateState.Error(
-                        classesResult.message ?: "Không thể tải danh sách lớp học."
-                    )
+                    _state.value = ChildAttendanceRateState.Error(classesResult.asUiText())
                 }
                 is ApiResult.Success -> {
                     val classes = classesResult.data

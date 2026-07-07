@@ -3,6 +3,7 @@ package com.example.educationapp.presentation.screenmodel.course
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.Course
 import com.example.educationapp.domain.repository.StudentDashboardRepository
 import kotlinx.coroutines.Job
@@ -11,17 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface MyCoursesState {
-    object Loading : MyCoursesState
-    data class Success(
-        val courses: List<Course>,
-        val currentPage: Int,
-        val totalPages: Int,
-        val totalElements: Int,
-        val hasNextPage: Boolean
-    ) : MyCoursesState
-    data class Error(val message: String) : MyCoursesState
-}
 
 class MyCoursesScreenModel(
     private val dashboardRepository: StudentDashboardRepository
@@ -65,7 +55,7 @@ class MyCoursesScreenModel(
             when (result) {
                 is ApiResult.Error -> {
                     if (!append) {
-                        _state.value = MyCoursesState.Error(result.message ?: "Lỗi tải danh sách khóa học.")
+                        _state.value = MyCoursesState.Error(result.asUiText())
                     }
                 }
                 is ApiResult.Success -> {

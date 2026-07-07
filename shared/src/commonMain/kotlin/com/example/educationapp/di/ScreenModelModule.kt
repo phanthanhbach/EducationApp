@@ -1,8 +1,8 @@
 package com.example.educationapp.di
 
-import com.example.educationapp.presentation.screen.setting.SettingScreenModel
-import com.example.educationapp.presentation.screen.setting.ChangePasswordScreenModel
-import com.example.educationapp.presentation.screen.profile.EditProfileScreenModel
+import com.example.educationapp.presentation.screenmodel.setting.SettingScreenModel
+import com.example.educationapp.presentation.screenmodel.ChangePasswordScreenModel
+import com.example.educationapp.presentation.screenmodel.EditProfileScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.StudentClassAssignmentsScreenModel
@@ -13,18 +13,17 @@ import com.example.educationapp.presentation.screenmodel.feedback.ClassFeedbackS
 import com.example.educationapp.presentation.screenmodel.feedback.StudentFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.invoice.ClassInvoicesScreenModel
 import com.example.educationapp.presentation.screenmodel.login.LoginScreenModel
-import com.example.educationapp.presentation.screenmodel.login.ForgotPasswordScreenModel
-import com.example.educationapp.presentation.screenmodel.login.ResetPasswordScreenModel
+import com.example.educationapp.presentation.screenmodel.forgot_password.ForgotPasswordScreenModel
+import com.example.educationapp.presentation.screenmodel.reset_password.ResetPasswordScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ChildAttendanceRateScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ChildScheduleScreenModel
-import com.example.educationapp.presentation.screenmodel.parent.FeedbackScreenModel
-import com.example.educationapp.presentation.screenmodel.parent.MyChildrenScreenModel
+import com.example.educationapp.presentation.screenmodel.feedback.ParentFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.parent.ParentMainScreenModel
-import com.example.educationapp.presentation.screenmodel.parent.PaymentsScreenModel
+import com.example.educationapp.presentation.screenmodel.payment.PaymentsScreenModel
 import com.example.educationapp.presentation.screenmodel.profile.ProfileScreenModel
-import com.example.educationapp.presentation.screenmodel.schedule.AttendanceScreenModel
+import com.example.educationapp.presentation.screenmodel.attendance.AttendanceScreenModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleScreenModel
-import com.example.educationapp.presentation.screenmodel.schedule.SessionDetailScreenModel
+import com.example.educationapp.presentation.screenmodel.session_detail.SessionDetailScreenModel
 import org.koin.dsl.module
 
 val screenModelModule = module {
@@ -45,8 +44,7 @@ val screenModelModule = module {
     factory { ClassAssignmentsScreenModel(get()) }
     factory { ClassFeedbackScreenModel(get(), get()) }
     factory { ParentMainScreenModel(get(), get()) }
-    factory { MyChildrenScreenModel(get(), get(), get(), get(), get()) }
-    factory { FeedbackScreenModel(get()) }
+    factory { ParentFeedbackScreenModel(get()) }
     factory { PaymentsScreenModel(get(), get()) }
     factory { (studentId: Long) ->
         ChildScheduleScreenModel(

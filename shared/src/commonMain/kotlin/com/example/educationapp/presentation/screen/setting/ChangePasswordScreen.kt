@@ -31,6 +31,8 @@ import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
 import com.example.educationapp.core.ui.textfield.PasswordTextField
+import com.example.educationapp.presentation.screenmodel.ChangePasswordScreenModel
+import com.example.educationapp.presentation.screenmodel.ChangePasswordState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.btn_change_password
 import educationapp.shared.generated.resources.lbl_confirm_password
@@ -125,7 +127,7 @@ class ChangePasswordScreen : Screen {
                 if (state is ChangePasswordState.Error) {
                     item {
                         AppText(
-                            text = (state as ChangePasswordState.Error).message,
+                            text = (state as ChangePasswordState.Error).message.asString(),
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyMedium
                         )

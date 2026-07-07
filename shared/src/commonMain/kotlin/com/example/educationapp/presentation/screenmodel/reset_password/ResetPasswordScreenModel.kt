@@ -1,4 +1,4 @@
-package com.example.educationapp.presentation.screenmodel.login
+package com.example.educationapp.presentation.screenmodel.reset_password
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
@@ -10,13 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-sealed interface ResetPasswordState {
-    object Idle : ResetPasswordState
-    object Loading : ResetPasswordState
-    object Success : ResetPasswordState
-    data class Error(val error: UiText) : ResetPasswordState
-}
 
 class ResetPasswordScreenModel(
     private val resetPasswordUseCase: ResetPasswordUseCase

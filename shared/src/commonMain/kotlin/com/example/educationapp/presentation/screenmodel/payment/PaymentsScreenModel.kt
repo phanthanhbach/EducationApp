@@ -1,32 +1,19 @@
-package com.example.educationapp.presentation.screenmodel.parent
+package com.example.educationapp.presentation.screenmodel.payment
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
-import com.example.educationapp.domain.entity.SchoolClass
+import com.example.educationapp.core.util.UiText
+import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.GetStudentClassesUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Job
-
-sealed interface PaymentsTabState {
-    object Loading : PaymentsTabState
-    data class Success(
-        val classes: List<SchoolClass>,
-        val currentPage: Int,
-        val totalPages: Int,
-        val totalElements: Int,
-        val hasNextPage: Boolean,
-        val studentId: Long,
-        val isSearchingOrFiltering: Boolean = false
-    ) : PaymentsTabState
-    data class Error(val message: String) : PaymentsTabState
-}
 
 class PaymentsScreenModel(
     private val getMyProfileUseCase: GetMyProfileUseCase,
@@ -69,9 +56,7 @@ class PaymentsScreenModel(
             if (role == AppRole.STUDENT) {
                 when (val profileResult = getMyProfileUseCase(role)) {
                     is ApiResult.Error -> {
-                        _state.value = PaymentsTabState.Error(
-                            profileResult.message ?: "Không thể lấy thông tin profile."
-                        )
+                        _state.value = PaymentsTabState.Error(profileResult.asUiText())
                     }
                     is ApiResult.Success -> {
                         val profile = profileResult.data
@@ -79,7 +64,7 @@ class PaymentsScreenModel(
                             userId = profile.studentId.toLong()
                             launchFetchClasses(page = 0, append = false)
                         } else {
-                            _state.value = PaymentsTabState.Error("Tài khoản không đúng vai trò học sinh.")
+                            _state.value = PaymentsTabState.Error(UiText.DynamicString("Tài khoản không đúng vai trò học sinh."))
                         }
                     }
                 }
@@ -98,7 +83,7 @@ class PaymentsScreenModel(
                     )
                 }
             } else {
-                _state.value = PaymentsTabState.Error("Vai trò này không được hỗ trợ thanh toán học phí.")
+                _state.value = PaymentsTabState.Error(UiText.DynamicString("Vai trò này không được hỗ trợ thanh toán học phí."))
             }
         }
     }
@@ -161,13 +146,12 @@ class PaymentsScreenModel(
         when (result) {
             is ApiResult.Error -> {
                 if (!append) {
-                    _state.value = PaymentsTabState.Error(result.message ?: "Lỗi tải danh sách lớp.")
+                    _state.value = PaymentsTabState.Error(result.asUiText())
                 }
             }
             is ApiResult.Success -> {
                 val pagination = result.data
                 val newClasses = pagination.content
-                
                 val searchQueryVal = searchQuery.value
                 val filteredNewClasses = if (searchQueryVal.isNotBlank()) {
                     newClasses.filter { schoolClass ->

@@ -51,6 +51,7 @@ import com.example.educationapp.core.ui.rating.AppRatingBar
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
 import com.example.educationapp.domain.entity.StudentClassFeedback
@@ -147,7 +148,7 @@ private fun StudentFeedbackContent(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         AppText(
-                            text = state.message,
+                            text = state.message.asString(),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.error,
                             fontWeight = FontWeight.Medium
@@ -319,7 +320,7 @@ private fun StudentFeedbackContent(
 
                                             if (state.submitError != null) {
                                                 AppText(
-                                                    text = state.submitError,
+                                                    text = state.submitError.asString(),
                                                     fontSize = 12.sp,
                                                     color = MaterialTheme.colorScheme.error
                                                 )

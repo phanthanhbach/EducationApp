@@ -14,11 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface ParentChildrenState {
-    object Loading : ParentChildrenState
-    data class Success(val children: List<UserProfile.Student>) : ParentChildrenState
-    data class Error(val error: UiText) : ParentChildrenState
-}
 
 class ParentMainScreenModel(
     private val getChildrenUseCase: GetChildrenUseCase,
