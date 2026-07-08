@@ -29,18 +29,13 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.clipEntryOf
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherContactUiModel
-import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_call_24dp
-import educationapp.shared.generated.resources.ic_mail_24dp
-import educationapp.shared.generated.resources.teacher_contact_email_copied
-import educationapp.shared.generated.resources.teacher_contact_no_email_app
-import educationapp.shared.generated.resources.teacher_contact_no_phone_app
-import educationapp.shared.generated.resources.teacher_contact_phone_copied
+import educationapp.shared.generated.resources.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -50,26 +45,63 @@ fun TeacherContactSection(
     onShowToast: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimen.p12),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(
-            AppDimen.p1,
-            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimen.p16),
-            verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
+    if (contacts.isEmpty()) {
+        NoTeacherContactsView(modifier = modifier)
+    } else {
+        Card(
+            modifier = modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(AppDimen.p12),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(
+                AppDimen.p1,
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            )
         ) {
-            contacts.forEach { contact ->
-                TeacherContactItem(
-                    contact = contact,
-                    onShowToast = onShowToast
-                )
+            Column(
+                modifier = Modifier.padding(AppDimen.p16),
+                verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
+            ) {
+                contacts.forEach { contact ->
+                    TeacherContactItem(
+                        contact = contact,
+                        onShowToast = onShowToast
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun NoTeacherContactsView(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = AppDimen.p16, horizontal = AppDimen.p20),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AppIcon(
+            drawableRes = Res.drawable.ic_supervisor_account_24dp,
+            boxModifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
+            iconModifier = Modifier.size(24.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(AppDimen.p12))
+
+        AppText(
+            text = stringResource(Res.string.dashboard_teacher_contact_empty),
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            lineHeight = 18.sp,
+            modifier = Modifier.padding(horizontal = AppDimen.p16)
+        )
     }
 }
 

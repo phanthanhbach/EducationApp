@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +22,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -30,7 +30,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,7 +46,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -58,6 +56,7 @@ import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.chip.AppChip
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.sheet.AppBottomSheet
+import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.Course
 import com.example.educationapp.presentation.screenmodel.course.MyCoursesScreenModel
@@ -74,7 +73,6 @@ import educationapp.shared.generated.resources.lb_status_all
 import educationapp.shared.generated.resources.profile_retry
 import educationapp.shared.generated.resources.search_placeholder
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import org.jetbrains.compose.resources.stringResource
 
 class MyCoursesScreen : Screen {
@@ -116,7 +114,8 @@ class MyCoursesScreen : Screen {
                 tempSelectedStatus = selectedStatus
                 showFilterSheet = true
             },
-            onBackClick = { navigator.pop() }
+            onBackClick = { navigator.pop() },
+            modifier = Modifier.background(MaterialTheme.colorScheme.background)
         ) { maxScrollDp, totalHeaderHeightDp, listTopPaddingDp ->
             Box(
                 modifier = Modifier
@@ -134,7 +133,7 @@ class MyCoursesScreen : Screen {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(top = totalHeaderHeightDp)
-                                .padding(16.dp),
+                                .padding(AppDimen.p16),
                             itemCount = 4
                         )
                     }
@@ -149,16 +148,21 @@ class MyCoursesScreen : Screen {
                         ) {
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(AppDimen.p12),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(
+                                        alpha = 0.1f
+                                    )
                                 ),
-                                border = BorderStroke(1.dp, AppColor.Error.copy(alpha = 0.3f))
+                                border = BorderStroke(
+                                    AppDimen.p1,
+                                    AppColor.Error.copy(alpha = 0.3f)
+                                )
                             ) {
                                 Column(
                                     modifier = Modifier.padding(AppDimen.p16),
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                    verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                                 ) {
                                     AppText(
                                         text = currentState.message.asString(),
@@ -191,12 +195,14 @@ class MyCoursesScreen : Screen {
                             ) {
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
+                                    shape = RoundedCornerShape(AppDimen.p12),
                                     colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
+                                            alpha = 0.3f
+                                        )
                                     ),
                                     border = BorderStroke(
-                                        1.dp,
+                                        AppDimen.p1,
                                         MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                                     )
                                 ) {
@@ -219,7 +225,8 @@ class MyCoursesScreen : Screen {
                                 snapshotFlow {
                                     val layoutInfo = lazyListState.layoutInfo
                                     val totalItemsNumber = layoutInfo.totalItemsCount
-                                    val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                                    val lastVisibleItemIndex =
+                                        layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
                                     lastVisibleItemIndex >= totalItemsNumber - 3
                                 }
                                     .distinctUntilChanged()
@@ -239,7 +246,7 @@ class MyCoursesScreen : Screen {
                                     top = listTopPaddingDp,
                                     bottom = AppDimen.p24
                                 ),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                                verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                             ) {
                                 item {
                                     Spacer(modifier = Modifier.height(maxScrollDp))
@@ -258,8 +265,8 @@ class MyCoursesScreen : Screen {
                                             contentAlignment = Alignment.Center
                                         ) {
                                             CircularProgressIndicator(
-                                                modifier = Modifier.size(24.dp),
-                                                strokeWidth = 2.dp,
+                                                modifier = Modifier.size(AppDimen.p24),
+                                                strokeWidth = AppDimen.p2,
                                                 color = AppColor.Primary
                                             )
                                         }
@@ -282,14 +289,14 @@ class MyCoursesScreen : Screen {
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = AppDimen.p24)
-                        .padding(bottom = AppDimen.p24, top = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                        .padding(bottom = AppDimen.p24, top = AppDimen.p8),
+                    verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(AppDimen.p8)
                     ) {
                         statuses.forEach { (statusKey, statusLabel) ->
                             val isSelected = tempSelectedStatus == statusKey
@@ -301,7 +308,7 @@ class MyCoursesScreen : Screen {
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(AppDimen.p8))
 
                     Button(
                         onClick = {
@@ -309,7 +316,7 @@ class MyCoursesScreen : Screen {
                             showFilterSheet = false
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(AppDimen.p8),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         AppText(
@@ -330,10 +337,13 @@ class MyCoursesScreen : Screen {
     ) {
         Card(
             modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(AppDimen.p12),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+            elevation = CardDefaults.cardElevation(defaultElevation = AppDimen.p1),
+            border = BorderStroke(
+                AppDimen.p1,
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+            )
         ) {
             Column(modifier = Modifier.padding(AppDimen.p16)) {
                 Row(
@@ -350,12 +360,12 @@ class MyCoursesScreen : Screen {
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(AppDimen.p8))
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
+                            .clip(RoundedCornerShape(AppDimen.p4))
                             .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .padding(horizontal = AppDimen.p6, vertical = AppDimen.p2)
                     ) {
                         AppText(
                             text = course.level,
@@ -373,7 +383,10 @@ class MyCoursesScreen : Screen {
                 )
                 Spacer(modifier = Modifier.height(AppDimen.p4))
                 AppText(
-                    text = stringResource(Res.string.dashboard_course_total_sessions, course.totalSessions),
+                    text = stringResource(
+                        Res.string.dashboard_course_total_sessions,
+                        course.totalSessions
+                    ),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

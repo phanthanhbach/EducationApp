@@ -36,7 +36,7 @@ import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.StudentAssignment
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_check_circle_24dp
+import educationapp.shared.generated.resources.ic_check_circle_filled_24dp
 import educationapp.shared.generated.resources.ic_docs_24dp
 import educationapp.shared.generated.resources.ic_error_outline_24dp
 import educationapp.shared.generated.resources.ic_open_in_new_24dp
@@ -101,7 +101,7 @@ fun StudentAssignmentCard(
 
     val iconRes = when {
         isWarning -> Res.drawable.ic_error_outline_24dp
-        assignment.submitted -> Res.drawable.ic_check_circle_24dp
+        assignment.submitted -> Res.drawable.ic_check_circle_filled_24dp
         else -> Res.drawable.ic_docs_24dp
     }
 
