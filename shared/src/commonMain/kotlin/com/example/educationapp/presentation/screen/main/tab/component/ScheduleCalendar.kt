@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -54,6 +53,7 @@ import educationapp.shared.generated.resources.calendar_day_6_short
 import educationapp.shared.generated.resources.calendar_day_7_short
 import educationapp.shared.generated.resources.calendar_year_suffix
 import educationapp.shared.generated.resources.ic_arrow_back_ios_new_24dp
+import educationapp.shared.generated.resources.ic_arrow_drop_down_24dp
 import educationapp.shared.generated.resources.ic_arrow_forward_ios_24dp
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
 import kotlinx.datetime.LocalDate
@@ -175,24 +175,24 @@ private fun CalendarControlHeader(
                 .padding(horizontal = AppDimen.p8, vertical = AppDimen.p4)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AppText(
-                    text = monthLabel,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                AppText(
-                    text = "▼",
-                    fontSize = 10.sp,
-                    color = MaterialTheme.colorScheme.primary
+                Column {
+                    AppText(
+                        text = monthLabel,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    AppText(
+                        text = stringResource(Res.string.calendar_year_suffix, selectedDate.year),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                AppIcon(
+                    drawableRes = Res.drawable.ic_arrow_drop_down_24dp,
+                    tint = MaterialTheme.colorScheme.primary,
+                    iconModifier = Modifier.size(AppDimen.p28)
                 )
             }
-            AppText(
-                text = stringResource(Res.string.calendar_year_suffix, selectedDate.year),
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
 
         Row(

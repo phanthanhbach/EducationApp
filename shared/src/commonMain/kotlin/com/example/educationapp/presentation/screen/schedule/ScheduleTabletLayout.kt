@@ -2,7 +2,6 @@ package com.example.educationapp.presentation.screen.schedule
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,10 +28,10 @@ import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.shimmer.skeleton.ScheduleSessionSkeleton
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screen.main.tab.component.ScheduleCalendar
 import com.example.educationapp.presentation.screen.schedule.composable.ClassSessionCard
 import com.example.educationapp.presentation.screen.schedule.composable.EmptyScheduleView
-import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.schedule_btn_today
@@ -45,7 +44,7 @@ import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CommonScheduleTabletLayout(
+fun ScheduleTabletLayout(
     role: AppRole,
     selectedDate: LocalDate,
     isMonthExpanded: Boolean,
@@ -60,14 +59,12 @@ fun CommonScheduleTabletLayout(
     modifier: Modifier = Modifier
 ) {
 
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val isLandscapePhone = maxHeight < 420.dp
-
+    Box(modifier = modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = AppDimen.p16),
-            horizontalArrangement = Arrangement.spacedBy(if (isLandscapePhone) AppDimen.p12 else AppDimen.p24)
+            horizontalArrangement = Arrangement.spacedBy(AppDimen.p24)
         ) {
             // Left Column: Interactive Calendar
             Column(
@@ -140,7 +137,7 @@ fun CommonScheduleTabletLayout(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(if (isLandscapePhone) AppDimen.p8 else AppDimen.p12))
+                Spacer(modifier = Modifier.height(AppDimen.p12))
 
                 when (schedulesState) {
                     is ScheduleState.Loading -> {

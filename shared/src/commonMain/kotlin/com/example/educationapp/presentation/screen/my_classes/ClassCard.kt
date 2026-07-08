@@ -33,7 +33,6 @@ import com.example.educationapp.core.ui.button.AppOutlinedButton
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.SchoolClass
-import com.example.educationapp.domain.enums.ClassStatus
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_assignment_filled_24dp
 import educationapp.shared.generated.resources.ic_book_24dp
@@ -54,22 +53,13 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ClassCard(
     schoolClass: SchoolClass,
+    statusText: String,
+    statusColor: Color,
     onAssignmentsClick: (() -> Unit)? = null,
     onFeedbacksClick: (() -> Unit)? = null,
     onInvoiceClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val statusEnum = ClassStatus.fromString(schoolClass.status)
-    val statusColor = when (statusEnum) {
-        ClassStatus.UPCOMING -> Color(0xFF2196F3) // Professional Blue
-        ClassStatus.ONGOING -> Color(0xFF4CAF50)  // Success Green
-        ClassStatus.COMPLETED -> Color(0xFF9E9E9E) // Grey
-        ClassStatus.CANCELLED -> Color(0xFFF44336) // Red
-        null -> AppColor.Primary
-    }
-
-    val statusText = statusEnum?.let { stringResource(it.labelRes) } ?: schoolClass.status
-
     val formattedStartDate = formatDate(schoolClass.startDate)
     val formattedEndDate = formatDate(schoolClass.endDate)
 

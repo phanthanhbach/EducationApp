@@ -5,19 +5,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.Row
-import com.example.educationapp.core.ui.shimmer.ShimmerBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import com.example.educationapp.presentation.screen.parent.composable.ClassChipsRow
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,12 +27,13 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.ui.layout.AppTopBar
+import com.example.educationapp.core.ui.shimmer.ShimmerBox
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
-import com.example.educationapp.presentation.screen.schedule.CommonScheduleMobileLayout
-import com.example.educationapp.presentation.screen.schedule.CommonScheduleTabletLayout
+import com.example.educationapp.presentation.screen.parent.composable.ClassChipsRow
+import com.example.educationapp.presentation.screen.schedule.ScheduleMobileLayout
+import com.example.educationapp.presentation.screen.schedule.ScheduleTabletLayout
 import com.example.educationapp.presentation.screenmodel.parent.ChildClassesState
 import com.example.educationapp.presentation.screenmodel.parent.ChildScheduleScreenModel
 import org.koin.core.parameter.parametersOf
@@ -153,7 +152,7 @@ class ChildScheduleScreen(
                         val isTablet = maxWidth >= 600.dp
 
                         if (isTablet) {
-                            CommonScheduleTabletLayout(
+                            ScheduleTabletLayout(
                                 role = AppRole.STUDENT,
                                 selectedDate = selectedDate,
                                 isMonthExpanded = isMonthExpanded,
@@ -169,7 +168,7 @@ class ChildScheduleScreen(
                                 onRetry = { screenModel.retryLoadSchedules() }
                             )
                         } else {
-                            CommonScheduleMobileLayout(
+                            ScheduleMobileLayout(
                                 role = AppRole.STUDENT,
                                 selectedDate = selectedDate,
                                 isMonthExpanded = isMonthExpanded,

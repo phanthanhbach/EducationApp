@@ -57,14 +57,12 @@ import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
 import com.example.educationapp.domain.enums.ClassStatus
+import com.example.educationapp.domain.enums.StudentClassStatus
 import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_sort_24dp
-import educationapp.shared.generated.resources.lb_status_active
 import educationapp.shared.generated.resources.lb_status_all
-import educationapp.shared.generated.resources.lb_status_completed
-import educationapp.shared.generated.resources.lb_status_dropped
 import educationapp.shared.generated.resources.my_classes_empty
 import educationapp.shared.generated.resources.my_classes_no_homework_desc
 import educationapp.shared.generated.resources.my_classes_other_assignment_title
@@ -146,11 +144,10 @@ private fun ClassesContent(
         }
     } else {
         listOf(
-            null to stringResource(Res.string.lb_status_all),
-            "ACTIVE" to stringResource(Res.string.lb_status_active),
-            "COMPLETED" to stringResource(Res.string.lb_status_completed),
-            "DROPPED" to stringResource(Res.string.lb_status_dropped)
-        )
+            null to stringResource(Res.string.lb_status_all)
+        ) + StudentClassStatus.entries.map { status ->
+            status.name to stringResource(status.labelRes)
+        }
     }
 
     val lazyListState = rememberLazyListState()
@@ -276,8 +273,11 @@ private fun ClassesContent(
                             }
 
                             itemsIndexed(state.classes) { index, schoolClass ->
+                                val (statusText, statusColor) = resolveClassStatus(schoolClass.status, role)
                                 ClassCard(
                                     schoolClass = schoolClass,
+                                    statusText = statusText,
+                                    statusColor = statusColor,
                                     onAssignmentsClick = {
                                         onAssignmentsClick(schoolClass.id, schoolClass.name)
                                     },
