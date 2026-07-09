@@ -25,11 +25,11 @@ import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.shimmer.skeleton.ScheduleSessionSkeleton
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.AppRole
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
 import com.example.educationapp.presentation.screen.main.tab.component.ScheduleCalendar
 import com.example.educationapp.presentation.screen.schedule.composable.ClassSessionCard
 import com.example.educationapp.presentation.screen.schedule.composable.EmptyScheduleView
-import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.schedule.ScheduleState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.schedule_btn_today
@@ -42,7 +42,7 @@ import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CommonScheduleMobileLayout(
+fun ScheduleMobileLayout(
     role: AppRole,
     selectedDate: LocalDate,
     isMonthExpanded: Boolean,

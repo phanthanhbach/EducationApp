@@ -95,7 +95,7 @@ fun YearMonthPickerDialog(
             tonalElevation = 8.dp
         ) {
             Column(
-                modifier = Modifier.padding(AppDimen.p20)
+                modifier = Modifier.padding(AppDimen.p16)
             ) {
                 AppText(
                     text = stringResource(Res.string.calendar_dialog_title),
@@ -106,225 +106,107 @@ fun YearMonthPickerDialog(
 
                 Spacer(modifier = Modifier.height(AppDimen.p16))
 
-                if (isLandscape) {
-                    // Side-by-side selectors row
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(AppDimen.p16),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Left column: Year selector & action buttons
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(AppDimen.p16),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = AppDimen.p4),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AppIcon(
+                        drawableRes = Res.drawable.ic_arrow_back_ios_new_24dp,
+                        tint = MaterialTheme.colorScheme.primary,
+                        iconModifier = Modifier.size(18.dp),
+                        onClick = { chosenYear-- }
+                    )
+
+                    AppText(
+                        text = stringResource(Res.string.calendar_year_suffix, chosenYear),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    AppIcon(
+                        drawableRes = Res.drawable.ic_arrow_forward_ios_24dp,
+                        tint = MaterialTheme.colorScheme.primary,
+                        iconModifier = Modifier.size(18.dp),
+                        onClick = { chosenYear++ }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(AppDimen.p20))
+
+                val rowCount = if (isLandscape) 3 else 4
+                val colCount = if (isLandscape) 4 else 3
+                val spacing = if (isLandscape) AppDimen.p8 else AppDimen.p12
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(AppDimen.p8)
+                ) {
+                    for (row in 0 until rowCount) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(spacing)
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                AppIcon(
-                                    drawableRes = Res.drawable.ic_arrow_back_ios_new_24dp,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    iconModifier = Modifier.size(16.dp),
-                                    onClick = { chosenYear-- }
-                                )
+                            for (col in 0 until colCount) {
+                                val monthIndex = row * colCount + col
+                                val monthNum = monthIndex + 1
+                                val isSelected = monthNum == chosenMonth
+                                val monthName = monthNamesShort[monthIndex]
 
-                                Spacer(modifier = Modifier.width(AppDimen.p16))
-
-                                AppText(
-                                    text = stringResource(
-                                        Res.string.calendar_year_suffix,
-                                        chosenYear
-                                    ),
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-
-                                Spacer(modifier = Modifier.width(AppDimen.p16))
-
-                                AppIcon(
-                                    drawableRes = Res.drawable.ic_arrow_forward_ios_24dp,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    iconModifier = Modifier.size(16.dp),
-                                    onClick = { chosenYear++ }
-                                )
-                            }
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    AppDimen.p12,
-                                    Alignment.CenterHorizontally
-                                ),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                AppTextButton(
-                                    text = stringResource(Res.string.btn_cancel),
-                                    onClick = onDismiss
-                                )
-
-                                AppButton(
-                                    text = stringResource(Res.string.btn_confirm),
-                                    onClick = { onConfirm(chosenYear, chosenMonth) },
-                                    shape = RoundedCornerShape(AppDimen.p100),
-                                    modifier = Modifier.height(38.dp),
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                            }
-                        }
-
-                        // Right column: Month selector only
-                        Column(
-                            modifier = Modifier.weight(1.3f)
-                        ) {
-                            for (row in 0 until 3) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(AppDimen.p8)
-                                ) {
-                                    for (col in 0 until 4) {
-                                        val monthIndex = row * 4 + col
-                                        val monthNum = monthIndex + 1
-                                        val isSelected = monthNum == chosenMonth
-                                        val monthName = monthNamesShort[monthIndex]
-
-                                        Box(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .clip(RoundedCornerShape(AppDimen.p100))
-                                                .background(
-                                                    if (isSelected) {
-                                                        MaterialTheme.colorScheme.primary.copy(
-                                                            alpha = 0.15f
-                                                        )
-                                                    } else {
-                                                        MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                            alpha = 0.4f
-                                                        )
-                                                    }
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(AppDimen.p100))
+                                        .background(
+                                            if (isSelected) {
+                                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                            } else {
+                                                MaterialTheme.colorScheme.surfaceVariant.copy(
+                                                    alpha = 0.4f
                                                 )
-                                                .clickable { chosenMonth = monthNum }
-                                                .padding(vertical = AppDimen.p12),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            AppText(
-                                                text = monthName,
-                                                style = MaterialTheme.typography.titleSmall.copy(
-                                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
-                                                ),
-                                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                                            )
-                                        }
-                                    }
-                                }
-                                if (row < 2) {
-                                    Spacer(modifier = Modifier.height(AppDimen.p8))
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = AppDimen.p4),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AppIcon(
-                            drawableRes = Res.drawable.ic_arrow_back_ios_new_24dp,
-                            tint = MaterialTheme.colorScheme.primary,
-                            iconModifier = Modifier.size(18.dp),
-                            onClick = { chosenYear-- }
-                        )
-
-                        AppText(
-                            text = stringResource(Res.string.calendar_year_suffix, chosenYear),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-
-                        AppIcon(
-                            drawableRes = Res.drawable.ic_arrow_forward_ios_24dp,
-                            tint = MaterialTheme.colorScheme.primary,
-                            iconModifier = Modifier.size(18.dp),
-                            onClick = { chosenYear++ }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(AppDimen.p20))
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(AppDimen.p8)
-                    ) {
-                        for (row in 0 until 4) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(AppDimen.p12)
-                            ) {
-                                for (col in 0 until 3) {
-                                    val monthIndex = row * 3 + col
-                                    val monthNum = monthIndex + 1
-                                    val isSelected = monthNum == chosenMonth
-                                    val monthName = monthNamesShort[monthIndex]
-
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .clip(RoundedCornerShape(AppDimen.p100))
-                                            .background(
-                                                if (isSelected) {
-                                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                                                } else {
-                                                    MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                        alpha = 0.4f
-                                                    )
-                                                }
-                                            )
-                                            .clickable { chosenMonth = monthNum }
-                                            .padding(vertical = AppDimen.p12),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        AppText(
-                                            text = monthName,
-                                            style = MaterialTheme.typography.titleSmall.copy(
-                                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
-                                            ),
-                                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                            }
                                         )
-                                    }
+                                        .clickable { chosenMonth = monthNum }
+                                        .padding(vertical = AppDimen.p12),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AppText(
+                                        text = monthName,
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
+                                        ),
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                    )
                                 }
                             }
                         }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(AppDimen.p24))
+                Spacer(modifier = Modifier.height(AppDimen.p20))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AppTextButton(
-                            text = stringResource(Res.string.btn_cancel),
-                            onClick = onDismiss
-                        )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AppTextButton(
+                        text = stringResource(Res.string.btn_cancel),
+                        onClick = onDismiss
+                    )
 
-                        Spacer(modifier = Modifier.width(AppDimen.p8))
+                    Spacer(modifier = Modifier.width(AppDimen.p8))
 
-                        AppButton(
-                            text = stringResource(Res.string.btn_confirm),
-                            onClick = { onConfirm(chosenYear, chosenMonth) },
-                            shape = RoundedCornerShape(AppDimen.p100),
-                            modifier = Modifier.height(38.dp),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                    }
+                    AppButton(
+                        text = stringResource(Res.string.btn_confirm),
+                        onClick = { onConfirm(chosenYear, chosenMonth) },
+                        shape = RoundedCornerShape(AppDimen.p100),
+                        modifier = Modifier.height(38.dp),
+                        style = MaterialTheme.typography.titleSmall
+                    )
                 }
             }
         }

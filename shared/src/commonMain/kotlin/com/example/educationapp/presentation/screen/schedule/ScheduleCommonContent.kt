@@ -71,7 +71,7 @@ fun ScheduleCommonContent(
             val isTablet = maxWidth >= 600.dp
 
             if (isTablet) {
-                CommonScheduleTabletLayout(
+                ScheduleTabletLayout(
                     role = role,
                     selectedDate = selectedDate,
                     isMonthExpanded = isMonthExpanded,
@@ -85,7 +85,7 @@ fun ScheduleCommonContent(
                     onRetry = onRetry
                 )
             } else {
-                CommonScheduleMobileLayout(
+                ScheduleMobileLayout(
                     role = role,
                     selectedDate = selectedDate,
                     isMonthExpanded = isMonthExpanded,

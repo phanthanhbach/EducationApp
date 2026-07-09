@@ -153,13 +153,20 @@ class PaymentsScreenModel(
                 val pagination = result.data
                 val newClasses = pagination.content
                 val searchQueryVal = searchQuery.value
-                val filteredNewClasses = if (searchQueryVal.isNotBlank()) {
-                    newClasses.filter { schoolClass ->
+                val statusVal = _selectedStatus.value
+                val filteredNewClasses = newClasses.filter { schoolClass ->
+                    val matchesStatus = if (statusVal != null) {
+                        schoolClass.status.equals(statusVal, ignoreCase = true)
+                    } else {
+                        true
+                    }
+                    val matchesSearch = if (searchQueryVal.isNotBlank()) {
                         schoolClass.name.contains(searchQueryVal, ignoreCase = true) ||
                                 schoolClass.courseName.contains(searchQueryVal, ignoreCase = true)
+                    } else {
+                        true
                     }
-                } else {
-                    newClasses
+                    matchesStatus && matchesSearch
                 }
 
                 val currentClasses = if (append && _state.value is PaymentsTabState.Success) {
