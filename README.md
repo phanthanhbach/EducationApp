@@ -37,9 +37,9 @@ The project shares UI components, state management, networking, data persistence
 
 Dưới đây là một số hình ảnh giao diện thực tế của ứng dụng trên cả hai nền tảng:
 
-| Màn hình đăng nhập | Trang chủ (Học sinh) | Thời khóa biểu |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/login.png" width="220" alt="Login Screen"/> | <img src="docs/screenshots/student_dashboard.png" width="220" alt="Student Dashboard"/> | <img src="docs/screenshots/schedule.png" width="220" alt="Schedule Screen"/> |
+| Màn hình đăng nhập |                                  Trang chủ (Học sinh)                                  |                                   Thời khóa biểu                                    |
+| :---: |:--------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------:|
+| <img src="docs/screenshots/login.png" width="220" alt="Login Screen"/> | <img src="docs/screenshots/dashboard_tablet.png" width="220" alt="Student Dashboard"/> | <img src="docs/screenshots/schedule_tablet.png" width="220" alt="Schedule Screen"/> |
 
 | Danh sách lớp học | Nhận xét / Góp ý | Hóa đơn & Học phí |
 | :---: | :---: | :---: |

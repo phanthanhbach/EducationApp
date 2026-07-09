@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,8 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.modifier.GlassBox
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
+import dev.chrisbanes.haze.HazeState
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.calendar_day_1_short
 import educationapp.shared.generated.resources.calendar_day_2_short
@@ -60,6 +59,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 import org.jetbrains.compose.resources.stringResource
 
+
 /**
  * A beautiful, adaptive calendar component for KMP.
  * Handles week view strip, month view grid (dynamic rows), and month/year selection.
@@ -72,20 +72,18 @@ fun ScheduleCalendar(
     isMonthExpanded: Boolean,
     onToggleExpand: () -> Unit,
     modifier: Modifier = Modifier,
-    isLandscape: Boolean = false
+    isLandscape: Boolean = false,
+    hazeState: HazeState? = null
 ) {
     val today = remember { CalendarHelper.getCurrentDate() }
     var showYearMonthPicker by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = modifier
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(AppDimen.p16),
-                clip = false
-            ),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(AppDimen.p16)
+    GlassBox(
+        modifier = modifier,
+        shape = RoundedCornerShape(AppDimen.p16),
+        blurRadius = AppDimen.p16,
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+        hazeState = hazeState
     ) {
         Column(
             modifier = Modifier.padding(AppDimen.p16)

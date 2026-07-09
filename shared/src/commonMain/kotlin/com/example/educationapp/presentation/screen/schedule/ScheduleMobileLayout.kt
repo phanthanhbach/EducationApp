@@ -154,7 +154,9 @@ fun ScheduleMobileLayout(
                 if (filteredSchedules.isEmpty()) {
                     EmptyScheduleView(
                         role = role,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
                 } else {
                     LazyColumn(

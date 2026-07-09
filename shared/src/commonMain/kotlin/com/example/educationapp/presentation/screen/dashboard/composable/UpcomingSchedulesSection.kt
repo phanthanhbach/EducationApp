@@ -1,6 +1,5 @@
 package com.example.educationapp.presentation.screen.dashboard.composable
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -24,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.modifier.GlassBox
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.CalendarHelper
 import com.example.educationapp.domain.enums.AppRole
@@ -126,15 +124,10 @@ private fun NoClassesTodayCard(
     onViewScheduleClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    GlassBox(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimen.p16),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(
-            AppDimen.p1,
-            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = AppDimen.p1)
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
     ) {
         Column(
             modifier = Modifier
