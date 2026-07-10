@@ -1,5 +1,6 @@
 package com.example.educationapp.core.ui.modifier
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.compose.ui.viewinterop.UIKitView
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import com.example.educationapp.core.util.liquidGlass
 import kotlinx.cinterop.ExperimentalForeignApi
+import dev.chrisbanes.haze.HazeState
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -25,6 +27,9 @@ actual fun PlatformGlassContainer(
     blurRadius: Dp,
     color: Color,
     borderAlpha: Float,
+    hazeState: HazeState?,
+    borderColor: Color?,
+    shadowColor: Color?,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(modifier = modifier) {
@@ -46,9 +51,20 @@ actual fun PlatformGlassContainer(
                 .liquidGlass(
                     shape = shape,
                     blurRadius = 0.dp, // Đã có native blur nên set 0
-                    color = color.copy(alpha = 0.1f), // Làm nhẹ màu lại
-                    borderAlpha = borderAlpha
+                    color = color, // Sử dụng màu được truyền vào trực tiếp
+                    borderAlpha = if (borderColor != null) 0f else borderAlpha // Tắt viền trắng nếu có viền trạng thái riêng
                 )
+                .let {
+                    if (borderColor != null) {
+                        it.border(
+                            width = 1.dp,
+                            color = borderColor.copy(alpha = borderAlpha),
+                            shape = shape
+                        )
+                    } else {
+                        it
+                    }
+                }
         )
         
         content()

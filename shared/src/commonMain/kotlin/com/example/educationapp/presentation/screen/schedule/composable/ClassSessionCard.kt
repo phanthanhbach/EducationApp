@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,17 +60,23 @@ fun ClassSessionCard(
 ) {
     val now = remember { Clock.System.now() }
     val status = session.getStatus(now)
-    val indicatorColor = when (status) {
-        SessionStatus.COMPLETED -> AppColor.Success.copy(alpha = 0.8f)
-        SessionStatus.ONGOING -> AppColor.Primary.copy(alpha = 0.8f)
-        SessionStatus.UPCOMING -> MaterialTheme.colorScheme.outline.copy(alpha = 0.8f)
+    val accentColor = when (status) {
+        SessionStatus.COMPLETED -> AppColor.Success
+        SessionStatus.ONGOING -> AppColor.Primary
+        SessionStatus.UPCOMING -> MaterialTheme.colorScheme.outlineVariant
+    }
+
+    // Tự động tinh chỉnh màu nền và viền dựa theo trạng thái lớp học
+    val cardBgColor = when (status) {
+        SessionStatus.ONGOING -> MaterialTheme.colorScheme.primary.copy(alpha = 0.03f)
+        else -> MaterialTheme.colorScheme.surface
     }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 2.dp,
+                elevation = if (status == SessionStatus.ONGOING) 3.dp else 1.dp,
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))
@@ -81,19 +88,28 @@ fun ClassSessionCard(
                 }
             },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = indicatorColor)
+        colors = CardDefaults.cardColors(containerColor = cardBgColor),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = AppDimen.p6)
-                .clip(RoundedCornerShape(topStart = AppDimen.p12, bottomStart = AppDimen.p12))
-                .background(MaterialTheme.colorScheme.surface)
+                .padding(horizontal = AppDimen.p16, vertical = AppDimen.p12),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
+            // Thanh chỉ thị màu dạng Viên thuốc nổi (Floating Pill Indicator) mỏng, bo góc mềm mại
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(AppDimen.p16)
+                    .width(4.dp)
+                    .height(48.dp) // Chiều cao vừa vặn ở giữa
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(accentColor)
+            )
+
+            Spacer(modifier = Modifier.width(AppDimen.p16))
+
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -102,8 +118,7 @@ fun ClassSessionCard(
                 ) {
                     AppText(
                         text = session.subjectName,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -119,8 +134,7 @@ fun ClassSessionCard(
 
                 AppText(
                     text = stringResource(Res.string.schedule_session_class, session.className),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
@@ -249,3 +263,4 @@ fun SessionStatusBadge(
         }
     }
 }
+

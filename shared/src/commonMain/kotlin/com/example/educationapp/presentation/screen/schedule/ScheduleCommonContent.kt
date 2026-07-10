@@ -1,6 +1,7 @@
 package com.example.educationapp.presentation.screen.schedule
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import educationapp.shared.generated.resources.schedule_screen_title_student
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
+
 @Composable
 fun ScheduleCommonContent(
     role: AppRole,
@@ -39,65 +41,69 @@ fun ScheduleCommonContent(
 ) {
     val today = remember { CalendarHelper.getCurrentDate() }
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        val titleRes = if (role == AppRole.TEACHER) {
-            Res.string.schedule_screen_title
-        } else {
-            Res.string.schedule_screen_title_student
-        }
-
-        AppTopBar(
-            titleContent = {
-                AppText(
-                    text = stringResource(titleRes),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            isTitleCentered = false
-        )
-
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            val isTablet = maxWidth >= 600.dp
-
-            if (isTablet) {
-                ScheduleTabletLayout(
-                    role = role,
-                    selectedDate = selectedDate,
-                    isMonthExpanded = isMonthExpanded,
-                    schedulesState = schedulesState,
-                    filteredSchedules = filteredSchedules,
-                    highlightDates = highlightDates,
-                    today = today,
-                    onDateSelected = onDateSelected,
-                    onToggleExpand = onToggleExpand,
-                    onSessionClick = onSessionClick,
-                    onRetry = onRetry
-                )
+            val titleRes = if (role == AppRole.TEACHER) {
+                Res.string.schedule_screen_title
             } else {
-                ScheduleMobileLayout(
-                    role = role,
-                    selectedDate = selectedDate,
-                    isMonthExpanded = isMonthExpanded,
-                    schedulesState = schedulesState,
-                    filteredSchedules = filteredSchedules,
-                    highlightDates = highlightDates,
-                    today = today,
-                    onDateSelected = onDateSelected,
-                    onToggleExpand = onToggleExpand,
-                    onSessionClick = onSessionClick,
-                    onRetry = onRetry
-                )
+                Res.string.schedule_screen_title_student
+            }
+
+            AppTopBar(
+                titleContent = {
+                    AppText(
+                        text = stringResource(titleRes),
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
+                containerColor = MaterialTheme.colorScheme.surface,
+                isTitleCentered = false
+            )
+
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+                val isTablet = maxWidth >= 600.dp
+
+                if (isTablet) {
+                    ScheduleTabletLayout(
+                        role = role,
+                        selectedDate = selectedDate,
+                        isMonthExpanded = isMonthExpanded,
+                        schedulesState = schedulesState,
+                        filteredSchedules = filteredSchedules,
+                        highlightDates = highlightDates,
+                        today = today,
+                        onDateSelected = onDateSelected,
+                        onToggleExpand = onToggleExpand,
+                        onSessionClick = onSessionClick,
+                        onRetry = onRetry
+                    )
+                } else {
+                    ScheduleMobileLayout(
+                        role = role,
+                        selectedDate = selectedDate,
+                        isMonthExpanded = isMonthExpanded,
+                        schedulesState = schedulesState,
+                        filteredSchedules = filteredSchedules,
+                        highlightDates = highlightDates,
+                        today = today,
+                        onDateSelected = onDateSelected,
+                        onToggleExpand = onToggleExpand,
+                        onSessionClick = onSessionClick,
+                        onRetry = onRetry
+                    )
+                }
             }
         }
     }

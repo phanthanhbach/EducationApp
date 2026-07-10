@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.icon.AppIcon
+import com.example.educationapp.core.ui.modifier.GlassBox
 import com.example.educationapp.core.ui.text.AppText
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.blur.HazeColorEffect
@@ -54,7 +56,6 @@ import dev.chrisbanes.haze.hazeEffect
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_arrow_back_24dp
 import educationapp.shared.generated.resources.ic_menu_24dp
-import org.jetbrains.compose.resources.painterResource
 
 /**
  * Expandable vertical navigation rail for tablet and landscape layouts.
@@ -237,42 +238,26 @@ private fun MenuToggleButton(
     hazeState: HazeState? = null,
     onClick: () -> Unit
 ) {
-    Box(
+    val drawableRes = if (isExpanded) {
+        Res.drawable.ic_arrow_back_24dp
+    } else {
+        Res.drawable.ic_menu_24dp
+    }
+
+    GlassBox(
         modifier = Modifier
             .size(buttonSize)
-            .clip(CircleShape)
-            .let {
-                if (hazeState != null) {
-                    it.hazeEffect(state = hazeState) {
-                        blurEffect {
-                            blurRadius = AppDimen.p16
-                            colorEffects = listOf(
-                                HazeColorEffect.tint(containerColor.copy(alpha = 0.45f))
-                            )
-                        }
-                    }
-                } else {
-                    it.background(containerColor)
-                }
-            }
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            ),
-        contentAlignment = Alignment.Center
+            .clip(CircleShape),
+        shape = CircleShape,
+        containerColor = containerColor.copy(alpha = 0.5f),
+        hazeState = hazeState
     ) {
-        Icon(
-            painter = painterResource(
-                if (isExpanded) {
-                    Res.drawable.ic_arrow_back_24dp
-                } else {
-                    Res.drawable.ic_menu_24dp
-                }
-            ),
-            contentDescription = if (isExpanded) "Collapse navigation" else "Expand navigation",
+        AppIcon(
+            drawableRes = drawableRes,
             tint = tint,
-            modifier = Modifier.size(AppDimen.p24)
+            onClick = onClick,
+            iconModifier = Modifier.size(AppDimen.p24),
+            boxModifier = Modifier.size(buttonSize)
         )
     }
 }
