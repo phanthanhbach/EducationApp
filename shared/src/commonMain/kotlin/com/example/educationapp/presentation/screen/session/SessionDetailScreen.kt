@@ -17,8 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -28,11 +26,11 @@ import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.ui.toast.LocalToastController
+import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screen.attendance.AttendanceScreen
 import com.example.educationapp.presentation.screen.session.composable.CheckInInteractionSection
 import com.example.educationapp.presentation.screen.session.composable.SessionHeaderCard
 import com.example.educationapp.presentation.screen.session.composable.SessionInfoSection
-import com.example.educationapp.presentation.model.ScheduleSessionUiModel
 import com.example.educationapp.presentation.screenmodel.session_detail.SessionDetailScreenModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.session_checkin_status_title
@@ -84,7 +82,7 @@ class SessionDetailScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(AppDimen.p24),
+                                .padding(horizontal = AppDimen.p24),
                             horizontalArrangement = Arrangement.spacedBy(AppDimen.p24)
                         ) {
                             Column(
@@ -93,9 +91,10 @@ class SessionDetailScreen(
                                     .verticalScroll(rememberScrollState()),
                                 verticalArrangement = Arrangement.spacedBy(AppDimen.p20)
                             ) {
+                                Spacer(modifier = Modifier.height(AppDimen.p4))
                                 SessionHeaderCard(session = session)
                                 SessionInfoSection(session = session)
-                                Spacer(modifier = Modifier.height(AppDimen.p12))
+                                Spacer(modifier = Modifier.height(AppDimen.p4))
                             }
 
                             Column(
@@ -104,12 +103,11 @@ class SessionDetailScreen(
                                     .verticalScroll(rememberScrollState()),
                                 verticalArrangement = Arrangement.spacedBy(AppDimen.p20)
                             ) {
+                                Spacer(modifier = Modifier.height(AppDimen.p4))
                                 AppText(
                                     text = stringResource(Res.string.session_checkin_status_title),
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.headlineSmall,
                                     color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.padding(horizontal = AppDimen.p4)
                                 )
 
                                 CheckInInteractionSection(
@@ -140,7 +138,7 @@ class SessionDetailScreen(
                                         screenModel.loadCheckInStatus(session)
                                     }
                                 )
-                                Spacer(modifier = Modifier.height(AppDimen.p12))
+                                Spacer(modifier = Modifier.height(AppDimen.p4))
                             }
                         }
                     } else {
@@ -149,9 +147,10 @@ class SessionDetailScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .verticalScroll(scrollState)
-                                .padding(AppDimen.p16),
+                                .padding(horizontal = AppDimen.p16),
                             verticalArrangement = Arrangement.spacedBy(AppDimen.p16)
                         ) {
+                            Spacer(modifier = Modifier.height(AppDimen.zero))
                             SessionHeaderCard(session = session)
                             SessionInfoSection(session = session)
                             CheckInInteractionSection(
@@ -189,6 +188,4 @@ class SessionDetailScreen(
             }
         }
     }
-
-
 }
