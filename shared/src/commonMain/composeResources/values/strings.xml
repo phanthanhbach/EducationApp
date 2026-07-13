@@ -379,4 +379,7 @@
     <string name="attendance_no_reason">No reason provided</string>
     <string name="attendance_reason_placeholder">Enter reason for late/excused/absent...</string>
     <string name="btn_save_attendance">SAVE ATTENDANCE</string>
+    <string name="app_version_format">Version %1$s</string>
+    <string name="app_description_line1">An educational platform connecting Teachers, Parents, and Students.</string>
+    <string name="app_description_line2">Manage classes, track schedules, monitor progress, and stay engaged — all in one place.</string>
 </resources>

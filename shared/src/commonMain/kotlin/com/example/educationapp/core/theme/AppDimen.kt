@@ -34,6 +34,7 @@ object AppDimen {
     val p150 = 150.dp
     val p200 = 200.dp
     val p400 = 400.dp
+    val p480 = 480.dp
     val tabletWidth = 600.dp
 
     val s10 = 10.sp

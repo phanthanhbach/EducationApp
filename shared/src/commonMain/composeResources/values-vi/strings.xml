@@ -379,4 +379,7 @@
     <string name="attendance_no_reason">Không có lý do</string>
     <string name="attendance_reason_placeholder">Nhập lý do vắng/phép/trễ...</string>
     <string name="btn_save_attendance">LƯU ĐIỂM DANH</string>
+    <string name="app_version_format">Phiên bản %1$s</string>
+    <string name="app_description_line1">Nền tảng giáo dục kết nối Giáo viên, Phụ huynh và Học viên.</string>
+    <string name="app_description_line2">Quản lý lớp học, theo dõi lịch trình, giám sát tiến độ và tương tác — tất cả trong một ứng dụng.</string>
 </resources>
