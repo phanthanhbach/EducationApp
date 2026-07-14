@@ -43,6 +43,7 @@ import androidx.compose.ui.zIndex
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.core.ui.textfield.SearchTextField
 import org.jetbrains.compose.resources.DrawableResource
 import kotlin.math.roundToInt
@@ -185,6 +186,7 @@ fun SearchTopBarLayout(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
                     .onSizeChanged { sectionAHeightPx = it.height.toFloat() }
                     .graphicsLayer {
                         alpha = 1f - collapseProgress
@@ -217,11 +219,14 @@ fun SearchTopBarLayout(
                     .fillMaxWidth()
                     .onSizeChanged { searchRowHeightPx = it.height.toFloat() }
             ) {
+                val isTablet = LocalIsTablet.current
+                val searchPaddingHorizontal = if (isTablet) AppDimen.p24 else 16.dp
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = AppDimen.p16, vertical = AppDimen.p8),
+                        .padding(horizontal = searchPaddingHorizontal, vertical = AppDimen.p8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     SearchTextField(

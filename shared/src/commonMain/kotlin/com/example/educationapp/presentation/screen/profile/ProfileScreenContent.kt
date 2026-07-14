@@ -278,11 +278,6 @@ private fun CollapsingProfileIdentity(
                     color = MaterialTheme.colorScheme.surface,
                     shape = CircleShape
                 ),
-            textStyle = TextStyle(
-                fontSize = lerpDp(24.dp, 14.dp, collapseProgress).value.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
         )
 
         Column(

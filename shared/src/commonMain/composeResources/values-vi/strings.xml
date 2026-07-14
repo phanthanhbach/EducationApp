@@ -382,4 +382,31 @@
     <string name="app_version_format">Phiên bản %1$s</string>
     <string name="app_description_line1">Nền tảng giáo dục kết nối Giáo viên, Phụ huynh và Học viên.</string>
     <string name="app_description_line2">Quản lý lớp học, theo dõi lịch trình, giám sát tiến độ và tương tác — tất cả trong một ứng dụng.</string>
+    
+    <!-- Parent Child Portal -->
+    <string name="parent_student_code_format">Mã học sinh: %1$s</string>
+    <string name="parent_student_code_id_format">Mã học sinh: #%1$s</string>
+    <string name="parent_learning_utilities">Tiện ích học tập</string>
+    <string name="parent_child_schedule_title">Lịch học của con</string>
+    <string name="parent_child_schedule_desc">Xem lịch học chi tiết các ngày trong tuần</string>
+    <string name="parent_child_attendance_title">Tỉ lệ tham gia buổi học</string>
+    <string name="parent_child_attendance_desc">Theo dõi chuyên cần và số buổi nghỉ học</string>
+    <string name="parent_student_list_title">Danh sách học sinh</string>
+    
+    <!-- Parent Attendance Rate -->
+    <string name="parent_attendance_rate_title_format">Tỉ lệ chuyên cần - %1$s</string>
+    <string name="parent_attendance_empty_classes">Con chưa tham gia lớp học nào.</string>
+    <string name="parent_attendance_summary_title">Tổng kết chuyên cần</string>
+    <string name="parent_attendance_summary_total_format">Tổng số buổi học: %1$d</string>
+    <string name="parent_attendance_summary_attended_format">Đã điểm danh: %1$d</string>
+    <string name="parent_attendance_summary_absent_format">Vắng mặt: %1$d</string>
+    <string name="parent_attendance_rate_label">Tỉ lệ</string>
+    <string name="parent_attendance_class_course_format">Môn học: %1$s</string>
+    <string name="parent_attendance_class_teacher_format">Giáo viên: %1$s</string>
+    <string name="parent_attendance_detail_total_sessions_format">Số buổi lớp học: %1$d</string>
+    <string name="parent_attendance_detail_attended">Đã đi học:</string>
+    <string name="parent_attendance_detail_attended_sessions_format">%1$d buổi</string>
+    <string name="parent_attendance_detail_absent">Vắng mặt:</string>
+    <string name="parent_attendance_detail_absent_sessions_format">%1$d buổi</string>
+    <string name="parent_attendance_class_no_data">Không có dữ liệu tỉ lệ chuyên cần cho lớp học này.</string>
 </resources>

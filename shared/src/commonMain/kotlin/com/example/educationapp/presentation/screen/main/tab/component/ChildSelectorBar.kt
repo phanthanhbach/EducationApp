@@ -6,18 +6,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -29,15 +26,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
-import com.example.educationapp.core.ui.icon.AppIcon
-import com.example.educationapp.core.ui.image.AppImage
-import com.example.educationapp.core.ui.image.CoreMediaSource
+import com.example.educationapp.core.ui.avatar.AppAvatar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.presentation.screen.dashboard.composable.SectionHeader
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_person_filled_24dp
-import org.jetbrains.compose.resources.painterResource
+import educationapp.shared.generated.resources.parent_student_list_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ChildSelectorBar(
@@ -46,20 +42,21 @@ fun ChildSelectorBar(
     onChildSelected: (UserProfile.Student) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(
+    val isTablet = LocalIsTablet.current
+    val horizontalPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
     ) {
-        val isTablet = maxWidth >= 600.dp
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AppDimen.p16)
+                .padding(horizontal = horizontalPadding)
         ) {
             SectionHeader(
-                title = "Danh sách học sinh",
+                title = stringResource(Res.string.parent_student_list_title),
             )
 
             LazyRow(
@@ -101,54 +98,21 @@ private fun ChildChip(
         MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
     }
 
-    val avatarSize = if (isTablet) 44.dp else 36.dp
-    val textPadding = if (isTablet) 12.dp else 8.dp
-
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(AppDimen.p45))
             .background(containerColor)
-            .border(1.dp, borderColor, RoundedCornerShape(16.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(AppDimen.p45))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = textPadding),
+            .padding(horizontal = 12.dp, vertical = AppDimen.p8),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        if (!child.img.isNullOrBlank()) {
-            Box(
-                modifier = Modifier
-                    .size(avatarSize)
-                    .clip(CircleShape)
-                    .background(
-                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                AppImage(
-                    source = CoreMediaSource.Url(child.img),
-                    modifier = Modifier.fillMaxSize(),
-                    placeholder = painterResource(Res.drawable.ic_person_filled_24dp),
-                    error = painterResource(Res.drawable.ic_person_filled_24dp)
-                )
-            }
-        } else {
-            Box(
-                modifier = Modifier
-                    .size(avatarSize)
-                    .background(
-                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                AppIcon(
-                    drawableRes = Res.drawable.ic_person_filled_24dp,
-                    tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    iconModifier = Modifier.size(avatarSize * 0.5f)
-                )
-            }
-        }
+        AppAvatar(
+            name = child.fullName,
+            imageUrl = child.img,
+            modifier = Modifier.size(AppDimen.p36)
+        )
 
         Column(
             verticalArrangement = Arrangement.Center

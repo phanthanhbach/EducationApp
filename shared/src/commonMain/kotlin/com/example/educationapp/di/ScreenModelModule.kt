@@ -56,7 +56,7 @@ val screenModelModule = module {
     factory { (studentId: Long) ->
         ChildAttendanceRateScreenModel(
             studentId = studentId,
-            getStudentClassesNoPaginationUseCase = get(),
+            getStudentClassesUseCase = get(),
             getAttendanceRateUseCase = get()
         )
     }

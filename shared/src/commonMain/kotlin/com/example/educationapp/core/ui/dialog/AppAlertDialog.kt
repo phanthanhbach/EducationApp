@@ -7,12 +7,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.button.AppButton
 import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.text.AppText
+import com.example.educationapp.core.util.liquidGlass
+import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 
 /**
  * A standard, high-quality Alert Dialog component for warnings, confirmations, and actions.
@@ -28,6 +30,8 @@ fun AppAlertDialog(
     modifier: Modifier = Modifier,
     isConfirmDestructive: Boolean = false
 ) {
+    val sharedHazeState = LocalSharedHazeState.current
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -49,8 +53,8 @@ fun AppAlertDialog(
             AppButton(
                 text = confirmText,
                 onClick = onConfirm,
-                modifier = Modifier.height(40.dp),
-                shape = RoundedCornerShape(AppDimen.p16),
+                modifier = Modifier.height(AppDimen.p40),
+                shape = RoundedCornerShape(AppDimen.p45),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (isConfirmDestructive) {
                         MaterialTheme.colorScheme.error
@@ -68,7 +72,7 @@ fun AppAlertDialog(
         },
         dismissButton = {
             AppTextButton(
-                modifier = Modifier.height(40.dp),
+                modifier = Modifier.height(AppDimen.p40),
                 text = dismissText,
                 onClick = onDismiss,
                 colors = ButtonDefaults.textButtonColors(
@@ -76,6 +80,11 @@ fun AppAlertDialog(
                 )
             )
         },
-        modifier = modifier
+        containerColor = Color.Transparent,
+        modifier = modifier.liquidGlass(
+            shape = RoundedCornerShape(AppDimen.p28),
+            hazeState = sharedHazeState,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+        )
     )
 }

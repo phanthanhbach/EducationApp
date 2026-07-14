@@ -33,17 +33,17 @@ The project shares UI components, state management, networking, data persistence
 
 ---
 
-## 📱 Screenshots / Giao diện ứng dụng
+## 📱 Screenshots
 
-Dưới đây là một số hình ảnh giao diện thực tế của ứng dụng trên cả hai nền tảng:
+Below are some screenshots of the application running on both platforms:
 
-| Màn hình đăng nhập |                                  Trang chủ (Học sinh)                                  |                                   Thời khóa biểu                                    |
-| :---: |:--------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------:|
-| <img src="docs/screenshots/login.png" width="220" alt="Login Screen"/> | <img src="docs/screenshots/dashboard_tablet.png" width="220" alt="Student Dashboard"/> | <img src="docs/screenshots/schedule_tablet.png" width="220" alt="Schedule Screen"/> |
+|                                  Login Screen                                  |                                  Dashboard (Student)                                   |                                     Schedule / Timetable                                      |
+|:------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|
+| <img src="docs/screenshots/signin_tablet.png" width="220" alt="Login Screen"/> | <img src="docs/screenshots/dashboard_tablet.png" width="220" alt="Student Dashboard"/> |      <img src="docs/screenshots/schedule_tablet.png" width="220" alt="Schedule Screen"/>      |
 
-| Danh sách lớp học | Nhận xét / Góp ý | Hóa đơn & Học phí |
-| :---: | :---: | :---: |
-| <img src="docs/screenshots/classes.png" width="220" alt="Classes List"/> | <img src="docs/screenshots/feedback.png" width="220" alt="Feedback & Comments"/> | <img src="docs/screenshots/payments.png" width="220" alt="Payments & Invoices"/> |
+|                                  Classes List                                  |                                  Feedback & Comments                                   |                                      Payments & Invoices                                      |
+|:------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|
+|    <img src="docs/screenshots/classes.png" width="220" alt="Classes List"/>    |    <img src="docs/screenshots/feedback.png" width="220" alt="Feedback & Comments"/>    |       <img src="docs/screenshots/payments.png" width="220" alt="Payments & Invoices"/>        |
 
 ---
 
@@ -92,12 +92,12 @@ This application employs a clean architecture with clear separation of concerns 
 
 You can build, run, and test the project using the Gradle wrapper (`gradlew` on Unix/macOS or `gradlew.bat` on Windows):
 
-| Task / Command | Description |
-|---|---|
-| `.\gradlew.bat build` | Runs compilation and validation checks for all targets |
-| `.\gradlew.bat :androidApp:assembleDebug` | Compiles and builds the debug Android APK |
-| `.\gradlew.bat :shared:allTests` | Runs all common and platform-specific tests |
-| `.\gradlew.bat :shared:androidHostTest` | Runs Android-specific unit tests |
+| Task / Command                            | Description                                            |
+|-------------------------------------------|--------------------------------------------------------|
+| `.\gradlew.bat build`                     | Runs compilation and validation checks for all targets |
+| `.\gradlew.bat :androidApp:assembleDebug` | Compiles and builds the debug Android APK              |
+| `.\gradlew.bat :shared:allTests`          | Runs all common and platform-specific tests            |
+| `.\gradlew.bat :shared:androidHostTest`   | Runs Android-specific unit tests                       |
 
 ### Running the Apps
 

@@ -78,7 +78,7 @@ fun AppButton(
             ?: MaterialTheme.colorScheme.onPrimary).copy(alpha = 0.5f)
     )
 
-    val hasCustomShadow = elevation > AppDimen.zero
+    val hasCustomShadow = elevation > AppDimen.zero && enabled && !isLoading
 
     val currentBgColor = if (colors != null) {
         if (enabled && !isLoading) colors.containerColor else colors.disabledContainerColor

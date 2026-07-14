@@ -110,8 +110,8 @@ class MainScreen(private val role: AppRole) : Screen {
                         )
                     }
 
-                    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                        val isTablet = maxWidth >= 600.dp
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        val isTablet = LocalIsTablet.current
                         var isNavigationRailExpanded by rememberSaveable { mutableStateOf(false) }
                         val layoutDirection = LocalLayoutDirection.current
 
@@ -133,38 +133,102 @@ class MainScreen(private val role: AppRole) : Screen {
                                 }
                             }
                         ) { innerPadding ->
-                            if (isTablet) {
-                                // Tablet / landscape layout.
-                                // The navigation rail background extends edge-to-edge
-                                // (behind the status bar and left system inset) while
-                                // its interactive content stays within the safe area.
-                                // Tab content is padded for top (except ProfileTab),
-                                // end and bottom system insets.
-                                val systemInsets = WindowInsets.systemBars.asPaddingValues()
-                                val topInset = systemInsets.calculateTopPadding()
-                                val endInset = systemInsets.calculateEndPadding(layoutDirection)
-                                val bottomInset = systemInsets.calculateBottomPadding()
-                                val startInset = systemInsets.calculateStartPadding(layoutDirection)
-                                val isBleedingTab =
-                                    tabNavigator.current is ProfileTab || tabNavigator.current is ClassesTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
+                                if (isTablet) {
+                                    // Tablet / landscape layout.
+                                    // The navigation rail background extends edge-to-edge
+                                    // (behind the status bar and left system inset) while
+                                    // its interactive content stays within the safe area.
+                                    // Tab content is padded for top (except ProfileTab),
+                                    // end and bottom system insets.
+                                    val systemInsets = WindowInsets.systemBars.asPaddingValues()
+                                    val topInset = systemInsets.calculateTopPadding()
+                                    val endInset = systemInsets.calculateEndPadding(layoutDirection)
+                                    val bottomInset = systemInsets.calculateBottomPadding()
+                                    val startInset = systemInsets.calculateStartPadding(layoutDirection)
+                                    val isBleedingTab =
+                                        tabNavigator.current is ProfileTab || tabNavigator.current is ClassesTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
 
-                                val tabContentPadding = PaddingValues(
-                                    start = 76.dp + startInset, // space for the collapsed rail + left safe area
-                                    top = if (isBleedingTab) 0.dp else topInset,
-                                    end = endInset,
-                                    bottom = bottomInset
-                                )
+                                    val tabContentPadding = PaddingValues(
+                                        start = 76.dp + startInset, // space for the collapsed rail + left safe area
+                                        top = if (isBleedingTab) 0.dp else topInset,
+                                        end = endInset,
+                                        bottom = bottomInset
+                                    )
 
-                                Box(
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    // Tab content
+                                    Box(
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {
+                                        // Tab content
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(MaterialTheme.colorScheme.background)
+                                                .hazeSource(state = sharedHazeState)
+                                                .padding(tabContentPadding)
+                                        ) {
+                                            Crossfade(
+                                                targetState = tabNavigator.current,
+                                                animationSpec = tween(durationMillis = 220)
+                                            ) { tab ->
+                                                tab.Content()
+                                            }
+                                        }
+
+                                        // Scrim when rail is expanded
+                                        if (isNavigationRailExpanded) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(start = 76.dp + startInset)
+                                                    .zIndex(0.5f)
+                                                    .background(Color.Black.copy(alpha = 0.02f))
+                                                    .clickable(
+                                                        interactionSource = remember { MutableInteractionSource() },
+                                                        indication = null
+                                                    ) {
+                                                        isNavigationRailExpanded = false
+                                                    }
+                                            )
+                                        }
+
+                                        // Navigation rail – full-bleed, handles its own insets
+                                        VerticalNavigationRail(
+                                            items = navItems,
+                                            selectedIndex = selectedIndex,
+                                            onItemSelected = { index ->
+                                                tabNavigator.current = tabs[index]
+                                            },
+                                            isExpanded = isNavigationRailExpanded,
+                                            onExpandedChange = { isNavigationRailExpanded = it },
+                                            barColor = MaterialTheme.colorScheme.surfaceContainer,
+                                            hazeState = sharedHazeState,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterStart)
+                                                .zIndex(1f)
+                                                .fillMaxHeight()
+                                        )
+                                    }
+                                } else {
+                                    // Mobile layout
+                                    val isBleedingTab =
+                                        tabNavigator.current is ProfileTab || tabNavigator.current is ClassesTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
+                                    val contentPadding = if (isBleedingTab) {
+                                        PaddingValues(
+                                            start = innerPadding.calculateStartPadding(layoutDirection),
+                                            top = 0.dp,
+                                            end = innerPadding.calculateEndPadding(layoutDirection),
+                                            bottom = 0.dp
+                                        )
+                                    } else {
+                                        innerPadding
+                                    }
+
                                     Box(
                                         modifier = Modifier
                                             .fillMaxSize()
                                             .background(MaterialTheme.colorScheme.background)
                                             .hazeSource(state = sharedHazeState)
-                                            .padding(tabContentPadding)
+                                            .padding(contentPadding)
                                     ) {
                                         Crossfade(
                                             targetState = tabNavigator.current,
@@ -172,70 +236,6 @@ class MainScreen(private val role: AppRole) : Screen {
                                         ) { tab ->
                                             tab.Content()
                                         }
-                                    }
-
-                                    // Scrim when rail is expanded
-                                    if (isNavigationRailExpanded) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(start = 76.dp + startInset)
-                                                .zIndex(0.5f)
-                                                .background(Color.Black.copy(alpha = 0.02f))
-                                                .clickable(
-                                                    interactionSource = remember { MutableInteractionSource() },
-                                                    indication = null
-                                                ) {
-                                                    isNavigationRailExpanded = false
-                                                }
-                                        )
-                                    }
-
-                                    // Navigation rail – full-bleed, handles its own insets
-                                    VerticalNavigationRail(
-                                        items = navItems,
-                                        selectedIndex = selectedIndex,
-                                        onItemSelected = { index ->
-                                            tabNavigator.current = tabs[index]
-                                        },
-                                        isExpanded = isNavigationRailExpanded,
-                                        onExpandedChange = { isNavigationRailExpanded = it },
-                                        barColor = MaterialTheme.colorScheme.surfaceContainer,
-                                        hazeState = sharedHazeState,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterStart)
-                                            .zIndex(1f)
-                                            .fillMaxHeight()
-                                    )
-                                }
-                            } else {
-                                // Mobile layout
-                                val isBleedingTab =
-                                    tabNavigator.current is ProfileTab || tabNavigator.current is ClassesTab || tabNavigator.current is ScheduleTab || tabNavigator.current is DashboardTab || tabNavigator.current is MyChildrenTab || tabNavigator.current is FeedbackTab || tabNavigator.current is PaymentsTab
-                                val contentPadding = if (isBleedingTab) {
-                                    PaddingValues(
-                                        start = innerPadding.calculateStartPadding(layoutDirection),
-                                        top = 0.dp,
-                                        end = innerPadding.calculateEndPadding(layoutDirection),
-                                        bottom = 0.dp
-                                    )
-                                } else {
-                                    innerPadding
-                                }
-
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(MaterialTheme.colorScheme.background)
-                                        .hazeSource(state = sharedHazeState)
-                                        .padding(contentPadding)
-                                ) {
-                                    Crossfade(
-                                        targetState = tabNavigator.current,
-                                        animationSpec = tween(durationMillis = 220)
-                                    ) { tab ->
-                                        tab.Content()
-                                    }
                                 }
                             }
                         }
