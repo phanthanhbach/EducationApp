@@ -44,11 +44,11 @@ actual fun PlatformGlassContainer(
     content: @Composable BoxScope.() -> Unit
 ) {
     // Xác định bán kính bo góc của shape để vẽ bóng đổ mềm ăn khớp
+    val density = LocalDensity.current
     val cornerRadius = if (shape is RoundedCornerShape) {
-        shape.topStart.toPx(
-            Size.Zero,
-            LocalDensity.current
-        ).dp
+        with(density) {
+            shape.topStart.toPx(Size.Zero, this).toDp()
+        }
     } else {
         16.dp
     }

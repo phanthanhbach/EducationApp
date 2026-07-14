@@ -19,3 +19,6 @@ val LocalParentMainScreenModel = compositionLocalOf<ParentMainScreenModel> {
 val LocalSharedHazeState = staticCompositionLocalOf<HazeState?> { null }
 
 val LocalBottomBarHeight = staticCompositionLocalOf<Dp> { 0.dp }
+
+val LocalIsTablet = staticCompositionLocalOf { false }
+

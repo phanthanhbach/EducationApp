@@ -2,9 +2,8 @@ package com.example.educationapp.core.ui.avatar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.ui.image.AppImage
 import com.example.educationapp.core.ui.image.CoreMediaSource
@@ -30,8 +31,8 @@ fun AppAvatar(
     source: CoreMediaSource,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = TextStyle(
-        fontSize = 13.sp,
-        fontWeight = FontWeight.Bold,
+        fontSize = TextUnit.Unspecified,
+        fontWeight = FontWeight.Medium,
         color = Color.White
     ),
     onClick: (() -> Unit)? = null
@@ -61,13 +62,19 @@ fun AppAvatar(
         }
         val bgColor = bgColors[colorHash % bgColors.size]
 
-        Box(
+        BoxWithConstraints(
             modifier = combinedModifier.background(bgColor),
             contentAlignment = Alignment.Center
         ) {
+            val resolvedFontSize = if (textStyle.fontSize.isSpecified) {
+                textStyle.fontSize
+            } else {
+                (maxWidth.value * 0.35f).sp
+            }
+
             AppText(
                 text = initials,
-                style = textStyle
+                style = textStyle.copy(fontSize = resolvedFontSize)
             )
         }
     } else {
@@ -86,7 +93,7 @@ fun AppAvatar(
     imageUrl: String?,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = TextStyle(
-        fontSize = 13.sp,
+        fontSize = TextUnit.Unspecified,
         fontWeight = FontWeight.Bold,
         color = Color.White
     ),

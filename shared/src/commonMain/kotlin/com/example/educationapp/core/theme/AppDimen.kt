@@ -28,6 +28,7 @@ object AppDimen {
     val p50 = 50.dp
     val p56 = 56.dp
     val p64 = 64.dp
+    val p80 = 80.dp
     val p90 = 90.dp
     val p100 = 100.dp
     val p120 = 120.dp

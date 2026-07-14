@@ -43,6 +43,7 @@ import dev.chrisbanes.haze.blur.blurEffect
 import dev.chrisbanes.haze.hazeEffect
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_arrow_back_24dp
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
 
 /**
  * A highly reusable, premium Top App Bar layout built on top of ThreeSectionRow.
@@ -185,9 +186,10 @@ fun AppTopBar(
         Column(
             modifier = Modifier.statusBarsPadding()
         ) {
-            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                val isTablet = maxWidth >= AppDimen.tabletWidth
-                val horizontalPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
+            val isTablet = LocalIsTablet.current
+            val horizontalPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
+
+            Box(modifier = Modifier.fillMaxWidth()) {
 
                 ThreeSectionRow(
                     modifier = Modifier

@@ -382,4 +382,31 @@
     <string name="app_version_format">Version %1$s</string>
     <string name="app_description_line1">An educational platform connecting Teachers, Parents, and Students.</string>
     <string name="app_description_line2">Manage classes, track schedules, monitor progress, and stay engaged — all in one place.</string>
+    
+    <!-- Parent Child Portal -->
+    <string name="parent_student_code_format">Student Code: %1$s</string>
+    <string name="parent_student_code_id_format">Student Code: #%1$s</string>
+    <string name="parent_learning_utilities">Learning Utilities</string>
+    <string name="parent_child_schedule_title">Child's Schedule</string>
+    <string name="parent_child_schedule_desc">View class calendar and study plan</string>
+    <string name="parent_child_attendance_title">Attendance Rate</string>
+    <string name="parent_child_attendance_desc">Track attendance history and study presence</string>
+    <string name="parent_student_list_title">Student List</string>
+    
+    <!-- Parent Attendance Rate -->
+    <string name="parent_attendance_rate_title_format">Attendance Rate - %1$s</string>
+    <string name="parent_attendance_empty_classes">Child has not joined any classes yet.</string>
+    <string name="parent_attendance_summary_title">Attendance Summary</string>
+    <string name="parent_attendance_summary_total_format">Total Sessions: %1$d</string>
+    <string name="parent_attendance_summary_attended_format">Attended: %1$d</string>
+    <string name="parent_attendance_summary_absent_format">Absent: %1$d</string>
+    <string name="parent_attendance_rate_label">Rate</string>
+    <string name="parent_attendance_class_course_format">Course: %1$s</string>
+    <string name="parent_attendance_class_teacher_format">Teacher: %1$s</string>
+    <string name="parent_attendance_detail_total_sessions_format">Class Sessions: %1$d</string>
+    <string name="parent_attendance_detail_attended">Attended:</string>
+    <string name="parent_attendance_detail_attended_sessions_format">%1$d sessions</string>
+    <string name="parent_attendance_detail_absent">Absent:</string>
+    <string name="parent_attendance_detail_absent_sessions_format">%1$d sessions</string>
+    <string name="parent_attendance_class_no_data">No attendance rate data available for this class.</string>
 </resources>

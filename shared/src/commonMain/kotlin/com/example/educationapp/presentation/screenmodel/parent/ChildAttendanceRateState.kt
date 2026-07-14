@@ -12,7 +12,12 @@ sealed interface ChildAttendanceRateState {
         val summaryTotal: Int,
         val summaryAttended: Int,
         val summaryAbsent: Int,
-        val summaryRate: Double
+        val summaryRate: Double,
+        val currentPage: Int = 0,
+        val totalPages: Int = 1,
+        val hasNextPage: Boolean = false,
+        val isLoadingMore: Boolean = false
     ) : ChildAttendanceRateState
+
     data class Error(val message: UiText) : ChildAttendanceRateState
 }

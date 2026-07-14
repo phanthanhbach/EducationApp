@@ -248,7 +248,8 @@ class LoginScreen : Screen {
                 text = stringResource(Res.string.login_button),
                 onClick = onLoginClick,
                 modifier = Modifier.fillMaxWidth(),
-                isLoading = state is LoginState.Loading
+                isLoading = state is LoginState.Loading,
+                elevation = AppDimen.p3
             )
         }
     }

@@ -33,6 +33,7 @@ import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.presentation.screen.main.LocalAppRole
 import com.example.educationapp.presentation.screen.main.LocalParentMainScreenModel
 import com.example.educationapp.presentation.screen.main.tab.component.ChildSelectorBar
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screen.parent.ChildDetailCard
 import com.example.educationapp.presentation.screenmodel.parent.ParentChildrenState
 import educationapp.shared.generated.resources.Res
@@ -112,6 +113,9 @@ class MyChildrenTab : Tab {
             isRefreshing = isRefreshing,
             onRefresh = onRefresh
         ) { paddingValues ->
+            val isTablet = LocalIsTablet.current
+            val horizontalPadding = if (isTablet) 24.dp else 16.dp
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -123,14 +127,14 @@ class MyChildrenTab : Tab {
                         ListCardSkeleton(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
+                                .padding(horizontalPadding),
                             itemCount = 4
                         )
                     }
 
                     is ParentChildrenState.Error -> {
                         Box(
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(horizontalPadding),
                             contentAlignment = Alignment.Center
                         ) {
                             AppText(

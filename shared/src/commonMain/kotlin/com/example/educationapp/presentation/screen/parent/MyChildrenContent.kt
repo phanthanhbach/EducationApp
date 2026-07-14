@@ -1,6 +1,5 @@
 package com.example.educationapp.presentation.screen.parent
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -27,34 +24,56 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.avatar.AppAvatar
+import com.example.educationapp.core.ui.layout.LocalTopBarHazeState
+import com.example.educationapp.core.ui.modifier.GlassBox
 import com.example.educationapp.core.ui.row.OptionRow
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.StudentStatus
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
+import com.example.educationapp.presentation.screen.parent.child_attendance.ChildAttendanceRateScreen
 import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.gender_female
+import educationapp.shared.generated.resources.gender_male
 import educationapp.shared.generated.resources.ic_calendar_month_filled_24dp
 import educationapp.shared.generated.resources.ic_event_24dp
+import educationapp.shared.generated.resources.parent_child_attendance_desc
+import educationapp.shared.generated.resources.parent_child_attendance_title
+import educationapp.shared.generated.resources.parent_child_schedule_desc
+import educationapp.shared.generated.resources.parent_child_schedule_title
+import educationapp.shared.generated.resources.parent_learning_utilities
+import educationapp.shared.generated.resources.parent_student_code_format
+import educationapp.shared.generated.resources.parent_student_code_id_format
+import educationapp.shared.generated.resources.profile_address
+import educationapp.shared.generated.resources.profile_current_level
+import educationapp.shared.generated.resources.profile_dob
+import educationapp.shared.generated.resources.profile_gender
+import educationapp.shared.generated.resources.profile_not_available
+import educationapp.shared.generated.resources.profile_status
+import educationapp.shared.generated.resources.student_status_active
+import educationapp.shared.generated.resources.student_status_graduated
+import educationapp.shared.generated.resources.student_status_inactive
+import educationapp.shared.generated.resources.student_status_suspended
+import org.jetbrains.compose.resources.stringResource
+
 
 @Composable
 fun ChildDetailCard(
     child: UserProfile.Student,
     modifier: Modifier = Modifier
 ) {
-    // Child Info Card with actions inside
-    Card(
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-        ),
+    val isTablet = LocalIsTablet.current
+    val horizontalPadding = if (isTablet) 24.dp else 16.dp
+
+    // Child Info Card with actions inside, styled with premium GlassBox
+    GlassBox(
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.4f),
+        hazeState = LocalTopBarHazeState.current,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = AppDimen.p16)
+            .padding(horizontal = horizontalPadding),
+        shape = RoundedCornerShape(24.dp),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -97,9 +116,9 @@ fun ChildDetailCard(
                         )
 
                         val studentCodeText = if (!child.studentCode.isNullOrBlank()) {
-                            "Mã học sinh: ${child.studentCode}"
+                            stringResource(Res.string.parent_student_code_format, child.studentCode)
                         } else {
-                            "Mã học sinh: #${child.studentId}"
+                            stringResource(Res.string.parent_student_code_id_format, child.studentId.toString())
                         }
                         AppText(
                             text = studentCodeText,
@@ -125,14 +144,14 @@ fun ChildDetailCard(
                     StudentStatus.GRADUATED -> Color(0xFF1565C0)
                 }
                 val statusText = when (studentStatus) {
-                    StudentStatus.ACTIVE -> "Đang học (Active)"
-                    StudentStatus.INACTIVE -> "Nghỉ học (Inactive)"
-                    StudentStatus.SUSPENDED -> "Bảo lưu (Suspended)"
-                    StudentStatus.GRADUATED -> "Tốt nghiệp (Graduated)"
+                    StudentStatus.ACTIVE -> stringResource(Res.string.student_status_active)
+                    StudentStatus.INACTIVE -> stringResource(Res.string.student_status_inactive)
+                    StudentStatus.SUSPENDED -> stringResource(Res.string.student_status_suspended)
+                    StudentStatus.GRADUATED -> stringResource(Res.string.student_status_graduated)
                 }
 
                 DetailRow(
-                    label = "Trạng thái",
+                    label = stringResource(Res.string.profile_status),
                     valueContent = {
                         Box(
                             modifier = Modifier
@@ -152,7 +171,7 @@ fun ChildDetailCard(
 
                 if (!child.currentLevel.isNullOrBlank()) {
                     DetailRow(
-                        label = "Trình độ hiện tại",
+                        label = stringResource(Res.string.profile_current_level),
                         value = child.currentLevel
                     )
                 }
@@ -167,9 +186,15 @@ fun ChildDetailCard(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    DetailRow(label = "Ngày sinh", value = child.dateOfBirth ?: "N/A")
-                    DetailRow(label = "Giới tính", value = child.gender ?: "N/A")
-                    DetailRow(label = "Địa chỉ", value = child.address ?: "N/A")
+                    val notAvailableText = stringResource(Res.string.profile_not_available)
+                    val genderText = when (child.gender?.lowercase()) {
+                        "male" -> stringResource(Res.string.gender_male)
+                        "female" -> stringResource(Res.string.gender_female)
+                        else -> child.gender ?: notAvailableText
+                    }
+                    DetailRow(label = stringResource(Res.string.profile_dob), value = child.dateOfBirth ?: notAvailableText)
+                    DetailRow(label = stringResource(Res.string.profile_gender), value = genderText)
+                    DetailRow(label = stringResource(Res.string.profile_address), value = child.address ?: notAvailableText)
                 }
             }
 
@@ -179,7 +204,7 @@ fun ChildDetailCard(
                     .fillMaxWidth()
             ) {
                 AppText(
-                    text = "Tiện ích học tập",
+                    text = stringResource(Res.string.parent_learning_utilities),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -189,8 +214,8 @@ fun ChildDetailCard(
                 // Action: Schedule
                 val parentNavigator = LocalNavigator.currentOrThrow.parent
                 OptionRow(
-                    title = "Lịch học của con",
-                    description = "Xem lịch học chi tiết các ngày trong tuần",
+                    title = stringResource(Res.string.parent_child_schedule_title),
+                    description = stringResource(Res.string.parent_child_schedule_desc),
                     iconRes = Res.drawable.ic_calendar_month_filled_24dp,
                     iconBgColor = MaterialTheme.colorScheme.primaryContainer,
                     iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -206,8 +231,8 @@ fun ChildDetailCard(
 
                 // Action: Attendance Rate
                 OptionRow(
-                    title = "Tỉ lệ tham gia buổi học",
-                    description = "Theo dõi chuyên cần và số buổi nghỉ học",
+                    title = stringResource(Res.string.parent_child_attendance_title),
+                    description = stringResource(Res.string.parent_child_attendance_desc),
                     iconRes = Res.drawable.ic_event_24dp,
                     iconBgColor = MaterialTheme.colorScheme.secondaryContainer,
                     iconTint = MaterialTheme.colorScheme.onSecondaryContainer,
