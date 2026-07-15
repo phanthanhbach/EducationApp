@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,6 +53,9 @@ import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.ic_settings_24dp
 import educationapp.shared.generated.resources.profile_cover
 import educationapp.shared.generated.resources.profile_parent
+import educationapp.shared.generated.resources.status_active
+import educationapp.shared.generated.resources.status_inactive
+import educationapp.shared.generated.resources.status_on_leave
 import educationapp.shared.generated.resources.title_about_me
 import educationapp.shared.generated.resources.title_contact
 import org.jetbrains.compose.resources.painterResource
@@ -361,9 +363,9 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
                 TeacherStatus.ON_LEAVE -> Color(0xFFB06000)
             }
             val text = when (teacherStatus) {
-                TeacherStatus.ACTIVE -> "Hoạt động"
-                TeacherStatus.INACTIVE -> "Ngưng hoạt động"
-                TeacherStatus.ON_LEAVE -> "Nghỉ phép"
+                TeacherStatus.ACTIVE -> stringResource(Res.string.status_active)
+                TeacherStatus.INACTIVE -> stringResource(Res.string.status_inactive)
+                TeacherStatus.ON_LEAVE -> stringResource(Res.string.status_on_leave)
             }
             Triple(bgColor, txtColor, text)
         }
@@ -381,8 +383,8 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
                 else -> MaterialTheme.colorScheme.onPrimaryContainer
             }
             val text = when (uppercaseStatus) {
-                "ACTIVE" -> "Hoạt động"
-                "INACTIVE" -> "Ngưng hoạt động"
+                "ACTIVE" -> stringResource(Res.string.status_active)
+                "INACTIVE" -> stringResource(Res.string.status_inactive)
                 else -> status
             }
             Triple(bgColor, txtColor, text)

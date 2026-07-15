@@ -141,6 +141,7 @@
     <string name="assignment_submitted_count">Đã nộp: %1$d</string>
     <string name="assignment_not_submitted_count">Chưa nộp: %1$d</string>
     <string name="assignment_empty">Chưa có bài tập cho lớp %1$s.</string>
+    <string name="assignment_attachment">Đính kèm</string>
     <string name="class_feedback_title">Feedback lớp học</string>
     <string name="class_feedback_empty">Chưa có học sinh trong lớp %1$s.</string>
     <string name="class_feedback_field_label">Feedback của giáo viên</string>
@@ -409,4 +410,9 @@
     <string name="parent_attendance_detail_absent">Vắng mặt:</string>
     <string name="parent_attendance_detail_absent_sessions_format">%1$d buổi</string>
     <string name="parent_attendance_class_no_data">Không có dữ liệu tỉ lệ chuyên cần cho lớp học này.</string>
+
+    <!-- General Statuses -->
+    <string name="status_active">Hoạt động</string>
+    <string name="status_inactive">Ngưng hoạt động</string>
+    <string name="status_on_leave">Nghỉ phép</string>
 </resources>
