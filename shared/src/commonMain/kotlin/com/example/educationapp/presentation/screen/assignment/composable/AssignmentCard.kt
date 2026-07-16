@@ -2,7 +2,6 @@ package com.example.educationapp.presentation.screen.assignment.composable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,28 +19,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.badge.AppBadge
+import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.Assignment
 import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.assignment_active
+import educationapp.shared.generated.resources.assignment_brief_btn
 import educationapp.shared.generated.resources.assignment_due_date
 import educationapp.shared.generated.resources.assignment_final_exam
 import educationapp.shared.generated.resources.assignment_inactive
 import educationapp.shared.generated.resources.assignment_not_submitted_count
 import educationapp.shared.generated.resources.assignment_submitted_count
 import educationapp.shared.generated.resources.ic_check_circle_filled_24dp
-import educationapp.shared.generated.resources.ic_docs_24dp
 import educationapp.shared.generated.resources.ic_error_outline_24dp
+import educationapp.shared.generated.resources.ic_open_in_new_24dp
 import educationapp.shared.generated.resources.ic_schedule_24dp
 import org.jetbrains.compose.resources.stringResource
 
@@ -53,6 +53,7 @@ fun AssignmentCard(
     modifier: Modifier = Modifier
 ) {
     val isTablet = LocalIsTablet.current
+    val uriHandler = LocalUriHandler.current
 
     Card(
         modifier = modifier
@@ -131,9 +132,32 @@ fun AssignmentCard(
                 )
             }
 
-            // File Attachment Card (directly below description)
+            // File Attachment Link (directly below description)
             if (!assignment.fileAttachment.isNullOrBlank()) {
-                AttachmentCard(url = assignment.fileAttachment)
+                AppTextButton(
+                    text = stringResource(Res.string.assignment_brief_btn),
+                    onClick = {
+                        try {
+                            val url = if (assignment.fileAttachment.startsWith("http://") ||
+                                assignment.fileAttachment.startsWith("https://")
+                            ) {
+                                assignment.fileAttachment
+                            } else {
+                                "http://${assignment.fileAttachment}"
+                            }
+                            uriHandler.openUri(url)
+                        } catch (_: Exception) {
+                            // Swallow silently
+                        }
+                    },
+                    leadingIcon = {
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_open_in_new_24dp,
+                            tint = MaterialTheme.colorScheme.primary,
+                            iconModifier = Modifier.size(16.dp)
+                        )
+                    }
+                )
             }
 
             // Subtle divider line
@@ -256,61 +280,6 @@ private fun CountsRow(assignment: Assignment, modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    }
-}
-
-@Composable
-private fun AttachmentCard(
-    url: String,
-    modifier: Modifier = Modifier
-) {
-    val uriHandler = LocalUriHandler.current
-
-    Row(
-        modifier = modifier
-            .widthIn(max = AppDimen.p400)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(AppDimen.p8))
-            .clickable {
-                try {
-                    uriHandler.openUri(url)
-                } catch (_: Exception) {
-                }
-            }
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f))
-            .border(
-                BorderStroke(
-                    AppDimen.p1,
-                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                ), RoundedCornerShape(AppDimen.p8)
-            )
-            .padding(horizontal = AppDimen.p12, vertical = AppDimen.p8),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppDimen.p8)
-    ) {
-        AppIcon(
-            drawableRes = Res.drawable.ic_docs_24dp,
-            tint = AppColor.Primary,
-            iconModifier = Modifier.size(AppDimen.p20)
-        )
-        AppText(
-            text = getFileName(url),
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-private fun getFileName(url: String): String {
-    return try {
-        val decoded = url.substringBefore('?').substringAfterLast('/')
-        if (decoded.isBlank()) "Attachment" else decoded.replace("%20", " ").replace("+", " ")
-    } catch (_: Exception) {
-        "Attachment"
     }
 }
 

@@ -432,4 +432,7 @@
 
     <!-- Navigation & Exit -->
     <string name="press_back_again_to_exit">Go back again to exit</string>
+
+    <!-- Assignment status -->
+    <string name="assignment_not_graded">Not graded</string>
 </resources>

@@ -432,4 +432,7 @@
 
     <!-- Navigation & Exit -->
     <string name="press_back_again_to_exit">Quay lại lần nữa để thoát</string>
+
+    <!-- Assignment status -->
+    <string name="assignment_not_graded">Chưa chấm điểm</string>
 </resources>
