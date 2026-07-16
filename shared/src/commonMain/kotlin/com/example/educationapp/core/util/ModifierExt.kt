@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-
 import dev.chrisbanes.haze.HazeState
 
 /**

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.badge.AppBadge
 import com.example.educationapp.core.ui.button.AppButton
 import com.example.educationapp.core.ui.button.AppOutlinedButton
 import com.example.educationapp.core.ui.icon.AppIcon
@@ -96,19 +97,10 @@ fun ClassCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(statusColor.copy(alpha = 0.15f))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    AppText(
-                        text = statusText,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = statusColor
-                    )
-                }
+                AppBadge(
+                    text = statusText,
+                    color = statusColor
+                )
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

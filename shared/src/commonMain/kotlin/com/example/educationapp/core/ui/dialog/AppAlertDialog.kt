@@ -84,7 +84,8 @@ fun AppAlertDialog(
         modifier = modifier.liquidGlass(
             shape = RoundedCornerShape(AppDimen.p28),
             hazeState = sharedHazeState,
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+            blurRadius = AppDimen.p32,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
         )
     )
 }

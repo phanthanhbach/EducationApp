@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.badge.AppBadge
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.SessionStatus
 import com.example.educationapp.presentation.model.ScheduleSessionUiModel
@@ -197,7 +198,7 @@ fun ClassSessionCard(
 }
 
 @Composable
-fun SessionStatusBadge(
+private fun SessionStatusBadge(
     status: SessionStatus,
     modifier: Modifier = Modifier
 ) {
@@ -207,35 +208,17 @@ fun SessionStatusBadge(
         SessionStatus.UPCOMING -> stringResource(Res.string.schedule_status_upcoming)
     }
 
-    val (badgeColor, textColor) = when (status) {
-        SessionStatus.COMPLETED -> Pair(
-            AppColor.Success.copy(alpha = 0.15f),
-            AppColor.Success
-        )
-
-        SessionStatus.ONGOING -> Pair(
-            AppColor.Primary.copy(alpha = 0.15f),
-            AppColor.Primary
-        )
-
-        SessionStatus.UPCOMING -> Pair(
-            MaterialTheme.colorScheme.surfaceVariant,
-            MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    val textColor = when (status) {
+        SessionStatus.COMPLETED -> AppColor.Success
+        SessionStatus.ONGOING -> AppColor.Primary
+        SessionStatus.UPCOMING -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(badgeColor)
-            .padding(horizontal = AppDimen.p8, vertical = AppDimen.p4),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            if (status == SessionStatus.ONGOING) {
+    AppBadge(
+        text = badgeText,
+        color = textColor,
+        leadingContent = if (status == SessionStatus.ONGOING) {
+            {
                 val infiniteTransition = rememberInfiniteTransition()
                 val pulseAlpha by infiniteTransition.animateFloat(
                     initialValue = 0.2f,
@@ -253,14 +236,10 @@ fun SessionStatusBadge(
                         .zIndex(1f)
                 )
             }
-
-            AppText(
-                text = badgeText,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = textColor
-            )
-        }
-    }
+        } else {
+            null
+        },
+        modifier = modifier
+    )
 }
 

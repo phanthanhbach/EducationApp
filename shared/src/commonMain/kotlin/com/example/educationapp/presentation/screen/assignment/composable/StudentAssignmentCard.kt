@@ -30,27 +30,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.badge.AppBadge
 import com.example.educationapp.core.ui.button.AppButton
 import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.StudentAssignment
 import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.assignment_brief_btn
+import educationapp.shared.generated.resources.assignment_due
+import educationapp.shared.generated.resources.assignment_final_exam_badge
+import educationapp.shared.generated.resources.assignment_not_submitted
+import educationapp.shared.generated.resources.assignment_overdue
+import educationapp.shared.generated.resources.assignment_score
+import educationapp.shared.generated.resources.assignment_submit_btn
+import educationapp.shared.generated.resources.assignment_submitted
+import educationapp.shared.generated.resources.assignment_submitting_btn
+import educationapp.shared.generated.resources.assignment_view_submission_btn
 import educationapp.shared.generated.resources.ic_check_circle_filled_24dp
 import educationapp.shared.generated.resources.ic_docs_24dp
 import educationapp.shared.generated.resources.ic_error_outline_24dp
 import educationapp.shared.generated.resources.ic_open_in_new_24dp
 import educationapp.shared.generated.resources.ic_upload_24dp
-import educationapp.shared.generated.resources.assignment_due
-import educationapp.shared.generated.resources.assignment_overdue
-import educationapp.shared.generated.resources.assignment_submitted
-import educationapp.shared.generated.resources.assignment_not_submitted
-import educationapp.shared.generated.resources.assignment_final_exam_badge
-import educationapp.shared.generated.resources.assignment_score
-import educationapp.shared.generated.resources.assignment_brief_btn
-import educationapp.shared.generated.resources.assignment_submit_btn
-import educationapp.shared.generated.resources.assignment_submitting_btn
-import educationapp.shared.generated.resources.assignment_view_submission_btn
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -164,7 +165,10 @@ fun StudentAssignmentCard(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     AppText(
-                        text = stringResource(Res.string.assignment_due, formatAssignmentDate(assignment.dueDate)),
+                        text = stringResource(
+                            Res.string.assignment_due,
+                            formatAssignmentDate(assignment.dueDate)
+                        ),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -185,7 +189,7 @@ fun StudentAssignmentCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Status Badge
-                    StatusBadge(
+                    AppBadge(
                         text = if (assignment.submitted) {
                             stringResource(Res.string.assignment_submitted)
                         } else {
@@ -196,7 +200,7 @@ fun StudentAssignmentCard(
 
                     // Final Exam Badge
                     if (assignment.finalExam) {
-                        StatusBadge(
+                        AppBadge(
                             text = stringResource(Res.string.assignment_final_exam_badge),
                             color = Color(0xFF7E57C2) // Purple color
                         )
@@ -204,8 +208,11 @@ fun StudentAssignmentCard(
 
                     // Score Badge
                     if (assignment.score != null) {
-                        StatusBadge(
-                            text = stringResource(Res.string.assignment_score, assignment.score.toString()),
+                        AppBadge(
+                            text = stringResource(
+                                Res.string.assignment_score,
+                                assignment.score.toString()
+                            ),
                             color = AppColor.Primary
                         )
                     }
@@ -293,7 +300,7 @@ fun StudentAssignmentCard(
                                         "http://${assignment.fileAttachment}"
                                     }
                                     uriHandler.openUri(url)
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     // Swallow silently
                                 }
                             },
@@ -312,27 +319,6 @@ fun StudentAssignmentCard(
     }
 }
 
-@Composable
-private fun StatusBadge(
-    text: String,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(color.copy(alpha = 0.14f))
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        AppText(
-            text = text,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = color,
-            maxLines = 1
-        )
-    }
-}
 
 private fun formatAssignmentDate(dateStr: String): String {
     if (dateStr.isBlank()) return "--/--/----"
@@ -348,7 +334,7 @@ private fun formatAssignmentDate(dateStr: String): String {
 
         val timePart = parts.getOrNull(1)?.take(5)
         if (!timePart.isNullOrBlank()) "$formattedDate $timePart" else formattedDate
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         dateStr
     }
 }

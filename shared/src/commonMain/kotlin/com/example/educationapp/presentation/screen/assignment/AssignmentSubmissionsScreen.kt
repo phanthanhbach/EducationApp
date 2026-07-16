@@ -2,6 +2,7 @@ package com.example.educationapp.presentation.screen.assignment
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,63 +22,55 @@ import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
-import com.example.educationapp.domain.entity.Assignment
-import com.example.educationapp.presentation.screen.assignment.composable.AssignmentsList
-import com.example.educationapp.presentation.screen.assignment.composable.EmptyAssignmentsCard
+import com.example.educationapp.presentation.screen.assignment.composable.SubmissionFilterBar
+import com.example.educationapp.presentation.screen.assignment.composable.SubmissionsList
 import com.example.educationapp.presentation.screen.main.LocalIsTablet
-import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
-import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsState
-import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.tab_assignment
-import org.jetbrains.compose.resources.stringResource
+import com.example.educationapp.presentation.screenmodel.assignment.AssignmentSubmissionsScreenModel
+import com.example.educationapp.presentation.screenmodel.assignment.AssignmentSubmissionsState
 
-class ClassAssignmentsScreen(
+class AssignmentSubmissionsScreen(
+    private val assignmentId: Int,
     private val classId: Int,
-    private val className: String
+    private val assignmentTitle: String
 ) : Screen {
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val screenModel = koinScreenModel<ClassAssignmentsScreenModel>()
+        val screenModel = koinScreenModel<AssignmentSubmissionsScreenModel>()
         val state by screenModel.state.collectAsState()
         val isRefreshing by screenModel.isRefreshing.collectAsState()
+        val selectedFilter by screenModel.submittedFilter.collectAsState()
 
-        LaunchedEffect(classId) {
-            screenModel.loadAssignments(classId)
+        LaunchedEffect(assignmentId, classId) {
+            screenModel.loadSubmissions(assignmentId, classId)
         }
 
-        ClassAssignmentsContent(
-            className = className,
+        AssignmentSubmissionsContent(
+            assignmentTitle = assignmentTitle,
             state = state,
+            selectedFilter = selectedFilter,
             isRefreshing = isRefreshing,
-            onRefresh = { screenModel.refreshData() },
+            onFilterSelected = { screenModel.setFilter(it) },
             onBackClick = { navigator.pop() },
             onRetry = { screenModel.retry() },
             onLoadNextPage = { screenModel.loadNextPage() },
-            onAssignmentClick = { assignment ->
-                navigator.push(
-                    AssignmentSubmissionsScreen(
-                        assignmentId = assignment.id,
-                        classId = assignment.classId,
-                        assignmentTitle = assignment.title
-                    )
-                )
-            }
+            onRefresh = { screenModel.refreshData() }
         )
     }
 }
 
 @Composable
-private fun ClassAssignmentsContent(
-    className: String,
-    state: ClassAssignmentsState,
+private fun AssignmentSubmissionsContent(
+    assignmentTitle: String,
+    state: AssignmentSubmissionsState,
+    selectedFilter: Boolean,
     isRefreshing: Boolean,
-    onRefresh: () -> Unit,
+    onFilterSelected: (Boolean) -> Unit,
     onBackClick: () -> Unit,
     onRetry: () -> Unit,
     onLoadNextPage: () -> Unit,
-    onAssignmentClick: (Assignment) -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isTablet = LocalIsTablet.current
@@ -87,7 +80,7 @@ private fun ClassAssignmentsContent(
         modifier = modifier,
         topBar = {
             AppTopBar(
-                title = stringResource(Res.string.tab_assignment),
+                title = assignmentTitle,
                 onBackClick = onBackClick
             )
         },
@@ -95,49 +88,52 @@ private fun ClassAssignmentsContent(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            when (state) {
-                is ClassAssignmentsState.Loading -> {
-                    AssignmentCardSkeleton(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(screenPadding),
-                        itemCount = 3
-                    )
-                }
+            // Filter Bar
+            SubmissionFilterBar(
+                selectedFilter = selectedFilter,
+                onFilterSelected = onFilterSelected
+            )
 
-                is ClassAssignmentsState.Error -> {
-                    ErrorStateView(
-                        error = state.message,
-                        onRetry = onRetry,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(screenPadding)
-                    )
-                }
+            // Main Content Area
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                when (state) {
+                    is AssignmentSubmissionsState.Loading -> {
+                        AssignmentCardSkeleton(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(screenPadding),
+                            itemCount = 4
+                        )
+                    }
 
-                is ClassAssignmentsState.Success -> {
-                    if (state.assignments.isEmpty()) {
-                        EmptyAssignmentsCard(
-                            className = className,
+                    is AssignmentSubmissionsState.Error -> {
+                        ErrorStateView(
+                            error = state.message,
+                            onRetry = onRetry,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(screenPadding)
                         )
-                    } else {
-                        AssignmentsList(
+                    }
+
+                    is AssignmentSubmissionsState.Success -> {
+                        SubmissionsList(
                             state = state,
                             onLoadNextPage = onLoadNextPage,
-                            onAssignmentClick = onAssignmentClick,
                             contentPadding = PaddingValues(
                                 start = screenPadding,
                                 end = screenPadding,
-                                top = AppDimen.p12,
+                                top = AppDimen.p8,
                                 bottom = AppDimen.p24
                             )
                         )

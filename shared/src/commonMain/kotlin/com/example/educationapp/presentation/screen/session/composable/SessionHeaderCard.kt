@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.badge.AppBadge
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.enums.SessionStatus
 import com.example.educationapp.presentation.model.ScheduleSessionUiModel
@@ -97,38 +98,30 @@ fun SessionHeaderCard(
 
 @Composable
 private fun SessionStatusBadge(status: SessionStatus) {
-    val (text, badgeBg, textColor) = when (status) {
+    val (text, textColor, badgeBg) = when (status) {
         SessionStatus.COMPLETED -> Triple(
             stringResource(Res.string.session_status_completed),
-            Color(0xFFE8F5E9),
-            Color(0xFF2E7D32)
+            Color(0xFF2E7D32),
+            Color(0xFFE8F5E9)
         )
 
         SessionStatus.ONGOING -> Triple(
             stringResource(Res.string.session_status_ongoing),
-            Color(0xFFFFF3E0),
-            Color(0xFFE65100)
+            Color(0xFFE65100),
+            Color(0xFFFFF3E0)
         )
 
         SessionStatus.UPCOMING -> Triple(
             stringResource(Res.string.session_status_upcoming),
-            Color(0xFFECEFF1),
-            Color(0xFF37474F)
+            Color(0xFF37474F),
+            Color(0xFFECEFF1)
         )
     }
 
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(badgeBg)
-            .padding(horizontal = AppDimen.p8, vertical = AppDimen.p4),
-        contentAlignment = Alignment.Center
-    ) {
-        AppText(
-            text = text,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            color = textColor
-        )
-    }
+    AppBadge(
+        text = text,
+        color = textColor,
+        backgroundColor = badgeBg,
+        borderColor = null
+    )
 }
