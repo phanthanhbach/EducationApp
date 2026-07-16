@@ -272,6 +272,20 @@
     <string name="assignment_dialog_submit_title">Submit Assignment</string>
     <string name="assignment_dialog_submit_desc">Select file for "%1$s" and double check before submitting.</string>
 
+    <!-- Assignment Submissions Strings -->
+    <string name="submission_filter_all">All</string>
+    <string name="submission_filter_submitted">Submitted</string>
+    <string name="submission_filter_not_submitted">Not Submitted</string>
+    <string name="submission_status_graded">Graded</string>
+    <string name="submission_status_submitted">Submitted</string>
+    <string name="submission_status_not_submitted">Not Submitted</string>
+    <string name="submission_score">Score: %1$s</string>
+    <string name="submission_submitted_at">Submitted: %1$s</string>
+    <string name="submission_grade_btn">Grade</string>
+    <string name="submission_empty">No submissions found.</string>
+    <string name="submission_view_file">View file</string>
+
+
     <!-- Teacher Dashboard & Check-ins -->
     <string name="dashboard_upcoming_teaching_schedules">Upcoming Teaching Schedule</string>
     <string name="dashboard_teaching_checkin_history">Teaching Attendance History</string>

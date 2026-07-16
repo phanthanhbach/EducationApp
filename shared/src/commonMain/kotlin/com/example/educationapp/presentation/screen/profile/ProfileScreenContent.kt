@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
 import com.example.educationapp.core.ui.avatar.AppAvatar
+import com.example.educationapp.core.ui.badge.AppBadge
 import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.image.CoreMediaSource
@@ -305,19 +306,10 @@ private fun CollapsingProfileIdentity(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (!profileCode.isNullOrBlank()) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(50.dp))
-                                .background(Color(0xFFE8EAF6))
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        ) {
-                            AppText(
-                                text = profileCode,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF3F51B5)
-                            )
-                        }
+                        AppBadge(
+                            text = profileCode,
+                            color = Color(0xFF3F51B5)
+                        )
                     }
 
                     if (!profileStatus.isNullOrBlank()) {
@@ -331,15 +323,9 @@ private fun CollapsingProfileIdentity(
 
 @Composable
 private fun StatusBadge(status: String, profile: UserProfile?) {
-    val (backgroundColor, textColor, label) = when (profile) {
+    val (textColor, label) = when (profile) {
         is UserProfile.Student -> {
             val studentStatus = StudentStatus.fromString(status)
-            val bgColor = when (studentStatus) {
-                StudentStatus.ACTIVE -> Color(0xFFE6F4EA)
-                StudentStatus.INACTIVE -> Color(0xFFFCE8E6)
-                StudentStatus.SUSPENDED -> Color(0xFFFEF7E0)
-                StudentStatus.GRADUATED -> Color(0xFFE8F0FE)
-            }
             val txtColor = when (studentStatus) {
                 StudentStatus.ACTIVE -> Color(0xFF137333)
                 StudentStatus.INACTIVE -> Color(0xFFC5221F)
@@ -347,16 +333,11 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
                 StudentStatus.GRADUATED -> Color(0xFF1A73E8)
             }
             val text = stringResource(studentStatus.labelRes)
-            Triple(bgColor, txtColor, text)
+            Pair(txtColor, text)
         }
 
         is UserProfile.Teacher -> {
             val teacherStatus = TeacherStatus.fromString(status)
-            val bgColor = when (teacherStatus) {
-                TeacherStatus.ACTIVE -> Color(0xFFE6F4EA)
-                TeacherStatus.INACTIVE -> Color(0xFFFCE8E6)
-                TeacherStatus.ON_LEAVE -> Color(0xFFFEF7E0)
-            }
             val txtColor = when (teacherStatus) {
                 TeacherStatus.ACTIVE -> Color(0xFF137333)
                 TeacherStatus.INACTIVE -> Color(0xFFC5221F)
@@ -367,43 +348,29 @@ private fun StatusBadge(status: String, profile: UserProfile?) {
                 TeacherStatus.INACTIVE -> stringResource(Res.string.status_inactive)
                 TeacherStatus.ON_LEAVE -> stringResource(Res.string.status_on_leave)
             }
-            Triple(bgColor, txtColor, text)
+            Pair(txtColor, text)
         }
 
         else -> {
             val uppercaseStatus = status.uppercase()
-            val bgColor = when (uppercaseStatus) {
-                "ACTIVE" -> Color(0xFFE6F4EA)
-                "INACTIVE" -> Color(0xFFFCE8E6)
-                else -> MaterialTheme.colorScheme.primaryContainer
-            }
             val txtColor = when (uppercaseStatus) {
                 "ACTIVE" -> Color(0xFF137333)
                 "INACTIVE" -> Color(0xFFC5221F)
-                else -> MaterialTheme.colorScheme.onPrimaryContainer
+                else -> MaterialTheme.colorScheme.primary
             }
             val text = when (uppercaseStatus) {
                 "ACTIVE" -> stringResource(Res.string.status_active)
                 "INACTIVE" -> stringResource(Res.string.status_inactive)
                 else -> status
             }
-            Triple(bgColor, txtColor, text)
+            Pair(txtColor, text)
         }
     }
 
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(50.dp))
-            .background(backgroundColor)
-            .padding(horizontal = 8.dp, vertical = 2.dp)
-    ) {
-        AppText(
-            text = label,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = textColor
-        )
-    }
+    AppBadge(
+        text = label,
+        color = textColor
+    )
 }
 
 // ── Subtitle helper ─────────────────────────────────────────────────────

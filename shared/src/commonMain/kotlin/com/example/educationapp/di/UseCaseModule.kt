@@ -5,6 +5,7 @@ import com.example.educationapp.domain.usecase.SetAppLanguageUseCase
 import com.example.educationapp.domain.usecase.SetAppThemeModeUseCase
 import com.example.educationapp.domain.usecase.GetChildrenUseCase
 import com.example.educationapp.domain.usecase.FilterAssignmentsUseCase
+import com.example.educationapp.domain.usecase.FilterAssignmentSubmissionsUseCase
 import com.example.educationapp.domain.usecase.GetClassFeedbacksUseCase
 import com.example.educationapp.domain.usecase.GetMyProfileUseCase
 import com.example.educationapp.domain.usecase.GetMySchedulesUseCase
@@ -55,6 +56,7 @@ val useCaseModule = module {
     single { SubmitAssignmentUseCase(get()) }
     single { LogoutUseCase(get()) }
     single { FilterAssignmentsUseCase(get()) }
+    single { FilterAssignmentSubmissionsUseCase(get()) }
     single { GetClassFeedbacksUseCase(get()) }
     single { GetMyProfileUseCase(get()) }
     single { GetMySchedulesUseCase(get()) }

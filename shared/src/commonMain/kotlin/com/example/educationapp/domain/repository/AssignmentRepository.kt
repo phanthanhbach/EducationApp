@@ -6,6 +6,7 @@ import com.example.educationapp.core.file.UploadFile
 import com.example.educationapp.domain.entity.Assignment
 import com.example.educationapp.domain.entity.AssignmentSubmission
 import com.example.educationapp.domain.entity.StudentAssignment
+import com.example.educationapp.domain.entity.SubmissionDetail
 
 interface AssignmentRepository {
     suspend fun filterAssignments(
@@ -27,4 +28,12 @@ interface AssignmentRepository {
         studentId: Int,
         file: UploadFile
     ): ApiResult<AssignmentSubmission>
+
+    suspend fun filterSubmissions(
+        assignmentId: Int,
+        classId: Int,
+        submitted: Boolean? = null,
+        page: Int,
+        size: Int
+    ): ApiResult<PaginationResponse<SubmissionDetail>>
 }

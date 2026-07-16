@@ -4,6 +4,7 @@ import com.example.educationapp.presentation.screenmodel.setting.SettingScreenMo
 import com.example.educationapp.presentation.screenmodel.ChangePasswordScreenModel
 import com.example.educationapp.presentation.screenmodel.EditProfileScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentTabScreenModel
+import com.example.educationapp.presentation.screenmodel.assignment.AssignmentSubmissionsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.StudentClassAssignmentsScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
@@ -42,6 +43,7 @@ val screenModelModule = module {
     factory { MyCoursesScreenModel(get()) }
     factory { AssignmentTabScreenModel(get(), get(), get()) }
     factory { ClassAssignmentsScreenModel(get()) }
+    factory { AssignmentSubmissionsScreenModel(get()) }
     factory { ClassFeedbackScreenModel(get(), get()) }
     factory { ParentMainScreenModel(get(), get()) }
     factory { ParentFeedbackScreenModel(get()) }

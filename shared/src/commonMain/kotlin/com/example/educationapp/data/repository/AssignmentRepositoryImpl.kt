@@ -1,19 +1,21 @@
 package com.example.educationapp.data.repository
 
+import com.example.educationapp.core.file.UploadFile
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.network.BaseResponse
 import com.example.educationapp.core.network.PaginationResponse
 import com.example.educationapp.core.network.safeApiCall
-import com.example.educationapp.core.file.UploadFile
 import com.example.educationapp.data.dto.request.SubmitAssignmentRequest
-import com.example.educationapp.data.dto.response.AssignmentSubmissionDTO
 import com.example.educationapp.data.dto.response.AssignmentDTO
+import com.example.educationapp.data.dto.response.AssignmentSubmissionDTO
 import com.example.educationapp.data.dto.response.StudentAssignmentDTO
+import com.example.educationapp.data.dto.response.SubmissionFilterDTO
 import com.example.educationapp.data.dto.response.toDomainEntity
 import com.example.educationapp.data.endpoint.AssignmentEndpoint
 import com.example.educationapp.domain.entity.Assignment
 import com.example.educationapp.domain.entity.AssignmentSubmission
 import com.example.educationapp.domain.entity.StudentAssignment
+import com.example.educationapp.domain.entity.SubmissionDetail
 import com.example.educationapp.domain.repository.AssignmentRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -23,12 +25,10 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentDisposition
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class AssignmentRepositoryImpl(
@@ -114,7 +114,10 @@ class AssignmentRepositoryImpl(
                                 key = "data",
                                 value = data,
                                 headers = Headers.build {
-                                    append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                                    append(
+                                        HttpHeaders.ContentType,
+                                        ContentType.Application.Json.toString()
+                                    )
                                 }
                             )
                             append(
@@ -127,7 +130,8 @@ class AssignmentRepositoryImpl(
                                     )
                                     append(
                                         HttpHeaders.ContentType,
-                                        (file.mimeType ?: ContentType.Application.OctetStream.toString())
+                                        (file.mimeType
+                                            ?: ContentType.Application.OctetStream.toString())
                                     )
                                 }
                             )
@@ -137,6 +141,36 @@ class AssignmentRepositoryImpl(
             }.body<BaseResponse<AssignmentSubmissionDTO>>()
 
             response.data.toDomainEntity()
+        }
+    }
+
+    override suspend fun filterSubmissions(
+        assignmentId: Int,
+        classId: Int,
+        submitted: Boolean?,
+        page: Int,
+        size: Int
+    ): ApiResult<PaginationResponse<SubmissionDetail>> {
+        return safeApiCall {
+            val response = httpClient.get(AssignmentEndpoint.submissionsFilter(assignmentId)) {
+                parameter("classId", classId)
+                if (submitted != null) {
+                    parameter("submitted", submitted)
+                }
+                parameter("page", page)
+                parameter("size", size)
+            }.body<BaseResponse<PaginationResponse<SubmissionFilterDTO>>>()
+
+            val paginatedData = response.data
+            PaginationResponse(
+                content = paginatedData.content.map { it.toDomainEntity() },
+                number = paginatedData.number,
+                size = paginatedData.size,
+                totalElements = paginatedData.totalElements,
+                totalPages = paginatedData.totalPages,
+                last = paginatedData.last,
+                first = paginatedData.first
+            )
         }
     }
 }

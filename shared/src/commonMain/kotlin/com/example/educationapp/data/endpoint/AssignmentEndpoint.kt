@@ -6,4 +6,5 @@ object AssignmentEndpoint {
     const val MY_FILTER = "assignments/me/filter"
 
     fun submit(assignmentId: Int): String = "assignments/$assignmentId/submit"
+    fun submissionsFilter(assignmentId: Int): String = "assignments/$assignmentId/submissions/filter"
 }

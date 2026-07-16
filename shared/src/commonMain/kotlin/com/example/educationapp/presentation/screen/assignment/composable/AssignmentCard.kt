@@ -28,9 +28,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.ui.badge.AppBadge
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.Assignment
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.assignment_active
 import educationapp.shared.generated.resources.assignment_due_date
@@ -41,6 +43,7 @@ import educationapp.shared.generated.resources.assignment_submitted_count
 import educationapp.shared.generated.resources.ic_check_circle_filled_24dp
 import educationapp.shared.generated.resources.ic_docs_24dp
 import educationapp.shared.generated.resources.ic_error_outline_24dp
+import educationapp.shared.generated.resources.ic_schedule_24dp
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -49,6 +52,8 @@ fun AssignmentCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isTablet = LocalIsTablet.current
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -68,41 +73,49 @@ fun AssignmentCard(
                 .padding(AppDimen.p16),
             verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
         ) {
-            // Header Row (Title and Status Badges)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                AppText(
-                    text = assignment.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-
+            // Header: Responsive Title and Status Badges
+            if (isTablet) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(AppDimen.p6),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
                 ) {
-                    StatusBadge(
-                        text = stringResource(
-                            if (assignment.active) {
-                                Res.string.assignment_active
-                            } else {
-                                Res.string.assignment_inactive
-                            }
-                        ),
-                        color = if (assignment.active) AppColor.Success else MaterialTheme.colorScheme.onSurfaceVariant
+                    AppText(
+                        text = assignment.title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
-                    if (assignment.finalExam) {
-                        StatusBadge(
-                            text = stringResource(Res.string.assignment_final_exam),
-                            color = AppColor.Primary
-                        )
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(AppDimen.p6),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = AppDimen.p12)
+                    ) {
+                        StatusBadgesContent(assignment)
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(AppDimen.p6)
+                ) {
+                    AppText(
+                        text = assignment.title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(AppDimen.p6),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        StatusBadgesContent(assignment)
                     }
                 }
             }
@@ -131,66 +144,23 @@ fun AssignmentCard(
                     .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             )
 
-            // Bottom Metadata Row (Due date & Counts side by side)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Due date
-                AppText(
-                    text = stringResource(
-                        Res.string.assignment_due_date,
-                        formatAssignmentDate(assignment.dueDate)
-                    ),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // Counts
+            // Bottom Metadata: Responsive Due Date and Counts
+            if (isTablet) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(AppDimen.p16),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(AppDimen.p4),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AppIcon(
-                            drawableRes = Res.drawable.ic_check_circle_filled_24dp,
-                            tint = AppColor.Success,
-                            iconModifier = Modifier.size(AppDimen.p16)
-                        )
-                        AppText(
-                            text = stringResource(
-                                Res.string.assignment_submitted_count,
-                                assignment.submittedCount
-                            ),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(AppDimen.p4),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AppIcon(
-                            drawableRes = Res.drawable.ic_error_outline_24dp,
-                            tint = AppColor.Warning,
-                            iconModifier = Modifier.size(AppDimen.p16)
-                        )
-                        AppText(
-                            text = stringResource(
-                                Res.string.assignment_not_submitted_count,
-                                assignment.notSubmittedCount
-                            ),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    DueDateContent(assignment.dueDate)
+                    CountsRow(assignment)
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(AppDimen.p8)
+                ) {
+                    DueDateContent(assignment.dueDate)
+                    CountsRow(assignment)
                 }
             }
         }
@@ -198,29 +168,94 @@ fun AssignmentCard(
 }
 
 @Composable
-private fun StatusBadge(
-    text: String,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(AppDimen.p100))
-            .background(color.copy(alpha = 0.08f))
-            .border(
-                BorderStroke(AppDimen.p1, color.copy(alpha = 0.24f)),
-                RoundedCornerShape(AppDimen.p100)
-            )
-            .padding(horizontal = AppDimen.p10, vertical = AppDimen.p4),
-        contentAlignment = Alignment.Center
-    ) {
-        AppText(
-            text = text,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = color,
-            maxLines = 1
+private fun StatusBadgesContent(assignment: Assignment) {
+    AppBadge(
+        text = stringResource(
+            if (assignment.active) {
+                Res.string.assignment_active
+            } else {
+                Res.string.assignment_inactive
+            }
+        ),
+        color = if (assignment.active) AppColor.Success else MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    if (assignment.finalExam) {
+        AppBadge(
+            text = stringResource(Res.string.assignment_final_exam),
+            color = AppColor.Primary
         )
+    }
+}
+
+@Composable
+private fun DueDateContent(dueDate: String, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(AppDimen.p6),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AppIcon(
+            drawableRes = Res.drawable.ic_schedule_24dp,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            iconModifier = Modifier.size(AppDimen.p16)
+        )
+        AppText(
+            text = stringResource(
+                Res.string.assignment_due_date,
+                formatAssignmentDate(dueDate)
+            ),
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun CountsRow(assignment: Assignment, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(AppDimen.p16),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(AppDimen.p4),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AppIcon(
+                drawableRes = Res.drawable.ic_check_circle_filled_24dp,
+                tint = AppColor.Success,
+                iconModifier = Modifier.size(AppDimen.p16)
+            )
+            AppText(
+                text = stringResource(
+                    Res.string.assignment_submitted_count,
+                    assignment.submittedCount
+                ),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(AppDimen.p4),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AppIcon(
+                drawableRes = Res.drawable.ic_error_outline_24dp,
+                tint = AppColor.Warning,
+                iconModifier = Modifier.size(AppDimen.p16)
+            )
+            AppText(
+                text = stringResource(
+                    Res.string.assignment_not_submitted_count,
+                    assignment.notSubmittedCount
+                ),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
