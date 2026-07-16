@@ -429,4 +429,7 @@
     <string name="status_active">Hoạt động</string>
     <string name="status_inactive">Ngưng hoạt động</string>
     <string name="status_on_leave">Nghỉ phép</string>
+
+    <!-- Navigation & Exit -->
+    <string name="press_back_again_to_exit">Quay lại lần nữa để thoát</string>
 </resources>

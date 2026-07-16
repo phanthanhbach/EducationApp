@@ -429,4 +429,7 @@
     <string name="status_active">Active</string>
     <string name="status_inactive">Inactive</string>
     <string name="status_on_leave">On Leave</string>
+
+    <!-- Navigation & Exit -->
+    <string name="press_back_again_to_exit">Go back again to exit</string>
 </resources>
