@@ -24,7 +24,9 @@ import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import com.example.educationapp.data.dto.request.GradeSubmissionRequest
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -171,6 +173,23 @@ class AssignmentRepositoryImpl(
                 last = paginatedData.last,
                 first = paginatedData.first
             )
+        }
+    }
+
+    override suspend fun gradeSubmission(
+        classId: Int,
+        studentId: Int,
+        assignmentId: Int,
+        score: Double,
+        comment: String
+    ): ApiResult<AssignmentSubmission> {
+        return safeApiCall {
+            val response = httpClient.put(AssignmentEndpoint.gradeSubmission(classId, studentId, assignmentId)) {
+                contentType(ContentType.Application.Json)
+                setBody(GradeSubmissionRequest(score = score, comment = comment))
+            }.body<BaseResponse<AssignmentSubmissionDTO>>()
+            
+            response.data.toDomainEntity()
         }
     }
 }

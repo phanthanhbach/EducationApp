@@ -43,7 +43,7 @@ val screenModelModule = module {
     factory { MyCoursesScreenModel(get()) }
     factory { AssignmentTabScreenModel(get(), get(), get()) }
     factory { ClassAssignmentsScreenModel(get()) }
-    factory { AssignmentSubmissionsScreenModel(get()) }
+    factory { AssignmentSubmissionsScreenModel(get(), get()) }
     factory { ClassFeedbackScreenModel(get(), get()) }
     factory { ParentMainScreenModel(get(), get()) }
     factory { ParentFeedbackScreenModel(get()) }

@@ -6,6 +6,7 @@ import com.example.educationapp.core.file.UploadFile
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.util.asUiText
 import com.example.educationapp.domain.entity.StudentAssignment
+import com.example.educationapp.domain.enums.AssignmentFilter
 import com.example.educationapp.domain.usecase.GetMyAssignmentsFilteredUseCase
 import com.example.educationapp.domain.usecase.SubmitAssignmentUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,14 +20,15 @@ class StudentClassAssignmentsScreenModel(
     private val submitAssignmentUseCase: SubmitAssignmentUseCase
 ) : ScreenModel {
 
-    private val _state = MutableStateFlow<StudentClassAssignmentsState>(StudentClassAssignmentsState.Loading)
+    private val _state =
+        MutableStateFlow<StudentClassAssignmentsState>(StudentClassAssignmentsState.Loading)
     val state: StateFlow<StudentClassAssignmentsState> = _state.asStateFlow()
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
-    private val _submittedFilter = MutableStateFlow(false)
-    val submittedFilter: StateFlow<Boolean> = _submittedFilter.asStateFlow()
+    private val _submittedFilter = MutableStateFlow(AssignmentFilter.SUBMITTED)
+    val submittedFilter: StateFlow<AssignmentFilter> = _submittedFilter.asStateFlow()
 
     private val _submittingAssignmentIds = MutableStateFlow<Set<Int>>(emptySet())
     val submittingAssignmentIds: StateFlow<Set<Int>> = _submittingAssignmentIds.asStateFlow()
@@ -38,28 +40,32 @@ class StudentClassAssignmentsScreenModel(
         if (this.classId == classId) return
         this.classId = classId
         screenModelScope.launch {
-            loadAssignments(submitted = _submittedFilter.value, append = false)
+            loadAssignments(submitted = _submittedFilter.value.toBoolean(), append = false)
         }
     }
 
-    fun setSubmittedFilter(submitted: Boolean) {
-        if (_submittedFilter.value == submitted) return
-        _submittedFilter.value = submitted
+    fun setSubmittedFilter(filter: AssignmentFilter) {
+        if (_submittedFilter.value == filter) return
+        _submittedFilter.value = filter
         screenModelScope.launch {
-            loadAssignments(submitted = submitted, append = false)
+            loadAssignments(submitted = filter.toBoolean(), append = false)
         }
     }
 
     fun retry() {
         screenModelScope.launch {
-            loadAssignments(submitted = _submittedFilter.value, append = false)
+            loadAssignments(submitted = _submittedFilter.value.toBoolean(), append = false)
         }
     }
 
     fun refreshData() {
         _isRefreshing.value = true
         screenModelScope.launch {
-            loadAssignments(submitted = _submittedFilter.value, append = false, silent = true)
+            loadAssignments(
+                submitted = _submittedFilter.value.toBoolean(),
+                append = false,
+                silent = true
+            )
             _isRefreshing.value = false
         }
     }
@@ -69,7 +75,11 @@ class StudentClassAssignmentsScreenModel(
         if (currentState is StudentClassAssignmentsState.Success && currentState.hasNextPage && !isLoadingNextPage) {
             val nextPage = currentState.currentPage + 1
             screenModelScope.launch {
-                loadAssignments(submitted = _submittedFilter.value, append = true, page = nextPage)
+                loadAssignments(
+                    submitted = _submittedFilter.value.toBoolean(),
+                    append = true,
+                    page = nextPage
+                )
             }
         }
     }
@@ -82,7 +92,7 @@ class StudentClassAssignmentsScreenModel(
         if (assignment.assignmentId in _submittingAssignmentIds.value) return
 
         screenModelScope.launch {
-            _submittingAssignmentIds.value = _submittingAssignmentIds.value + assignment.assignmentId
+            _submittingAssignmentIds.value += assignment.assignmentId
 
             when (
                 val result = submitAssignmentUseCase(
@@ -95,17 +105,23 @@ class StudentClassAssignmentsScreenModel(
                 is ApiResult.Error -> {
                     onResult(false, result.message ?: "Không thể nộp bài.")
                 }
+
                 is ApiResult.Success -> {
                     onResult(true, "Đã nộp bài ${result.data.assignmentTitle}.")
-                    loadAssignments(submitted = _submittedFilter.value, append = false)
+                    loadAssignments(submitted = _submittedFilter.value.toBoolean(), append = false)
                 }
             }
 
-            _submittingAssignmentIds.value = _submittingAssignmentIds.value - assignment.assignmentId
+            _submittingAssignmentIds.value -= assignment.assignmentId
         }
     }
 
-    private suspend fun loadAssignments(submitted: Boolean, append: Boolean, page: Int = 0, silent: Boolean = false) {
+    private suspend fun loadAssignments(
+        submitted: Boolean,
+        append: Boolean,
+        page: Int = 0,
+        silent: Boolean = false
+    ) {
         val currentClassId = classId ?: return
         if (append) {
             isLoadingNextPage = true
@@ -119,13 +135,15 @@ class StudentClassAssignmentsScreenModel(
                     _state.value = StudentClassAssignmentsState.Error(result.asUiText())
                 }
             }
+
             is ApiResult.Success -> {
                 val pagination = result.data
-                val currentList = if (append && _state.value is StudentClassAssignmentsState.Success) {
-                    (_state.value as StudentClassAssignmentsState.Success).assignments + pagination.content
-                } else {
-                    pagination.content
-                }
+                val currentList =
+                    if (append && _state.value is StudentClassAssignmentsState.Success) {
+                        (_state.value as StudentClassAssignmentsState.Success).assignments + pagination.content
+                    } else {
+                        pagination.content
+                    }
 
                 _state.value = StudentClassAssignmentsState.Success(
                     assignments = currentList,

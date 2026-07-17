@@ -274,8 +274,6 @@
 
     <!-- Assignment Submissions Strings -->
     <string name="submission_filter_all">Tất cả</string>
-    <string name="submission_filter_submitted">Đã nộp</string>
-    <string name="submission_filter_not_submitted">Chưa nộp</string>
     <string name="submission_status_graded">Đã chấm</string>
     <string name="submission_status_submitted">Đã nộp</string>
     <string name="submission_status_not_submitted">Chưa nộp</string>
@@ -284,6 +282,15 @@
     <string name="submission_grade_btn">Chấm điểm</string>
     <string name="submission_empty">Không tìm thấy bài nộp nào.</string>
     <string name="submission_view_file">Xem file</string>
+    <string name="grade_sheet_title">Chấm điểm bài nộp</string>
+    <string name="grade_sheet_score_label">Điểm số (0 - 10)</string>
+    <string name="grade_sheet_score_placeholder">VD: 9.5</string>
+    <string name="grade_sheet_comment_label">Nhận xét của giáo viên (Tùy chọn)</string>
+    <string name="grade_sheet_comment_placeholder">Nhập nhận xét đánh giá...</string>
+    <string name="grade_sheet_submit_btn">LƯU ĐIỂM SỐ</string>
+    <string name="grade_sheet_score_invalid">Điểm số phải nằm trong khoảng từ 0.0 đến 10.0</string>
+    <string name="grade_sheet_score_empty">Vui lòng nhập điểm số</string>
+    <string name="submission_teacher_comment_label">Nhận xét: %1$s</string>
 
 
     <!-- Teacher Dashboard & Check-ins -->

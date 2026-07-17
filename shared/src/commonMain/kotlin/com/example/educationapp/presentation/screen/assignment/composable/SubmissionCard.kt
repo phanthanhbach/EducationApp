@@ -2,8 +2,6 @@ package com.example.educationapp.presentation.screen.assignment.composable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
@@ -34,7 +31,6 @@ import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.SubmissionDetail
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.ic_docs_24dp
 import educationapp.shared.generated.resources.ic_open_in_new_24dp
 import educationapp.shared.generated.resources.submission_grade_btn
 import educationapp.shared.generated.resources.submission_score
@@ -42,12 +38,14 @@ import educationapp.shared.generated.resources.submission_status_graded
 import educationapp.shared.generated.resources.submission_status_not_submitted
 import educationapp.shared.generated.resources.submission_status_submitted
 import educationapp.shared.generated.resources.submission_submitted_at
+import educationapp.shared.generated.resources.submission_teacher_comment_label
 import educationapp.shared.generated.resources.submission_view_file
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SubmissionCard(
     submission: SubmissionDetail,
+    onGradeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isGraded = submission.submitted && submission.score != null
@@ -162,6 +160,26 @@ fun SubmissionCard(
                 }
             }
 
+            // Teacher Comment Section (shown only if isGraded and comment exists)
+            if (isGraded && !submission.teacherComment.isNullOrBlank()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppDimen.p16)
+                        .padding(bottom = AppDimen.p12),
+                    verticalArrangement = Arrangement.spacedBy(AppDimen.p4)
+                ) {
+                    AppText(
+                        text = stringResource(
+                            Res.string.submission_teacher_comment_label,
+                            submission.teacherComment
+                        ),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
             // Divider separating top info section and bottom badge/action section
             Box(
                 modifier = Modifier
@@ -218,16 +236,14 @@ fun SubmissionCard(
                 if (!isGraded) {
                     AppTextButton(
                         text = stringResource(Res.string.submission_grade_btn),
-                        onClick = {},
-                        enabled = false // Grade action deferred to future task
+                        onClick = onGradeClick,
+                        enabled = true
                     )
                 }
             }
         }
     }
 }
-
-
 
 
 private fun getInitials(name: String): String {
@@ -247,7 +263,6 @@ private fun getInitials(name: String): String {
         else -> "?"
     }
 }
-
 
 
 private fun formatSubmissionDate(dateStr: String): String {

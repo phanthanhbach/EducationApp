@@ -18,7 +18,8 @@ data class SubmissionFilterDTO(
     val submissionStatus: String? = null,
     val fileAttachment: String? = null,
     val submittedAt: String? = null,
-    val score: Double? = null
+    val score: Double? = null,
+    val teacherComment: String? = null
 )
 
 fun SubmissionFilterDTO.toDomainEntity() = SubmissionDetail(
@@ -35,5 +36,6 @@ fun SubmissionFilterDTO.toDomainEntity() = SubmissionDetail(
     submissionStatus = submissionStatus,
     fileAttachment = fileAttachment,
     submittedAt = submittedAt,
-    score = score
+    score = score,
+    teacherComment = teacherComment
 )

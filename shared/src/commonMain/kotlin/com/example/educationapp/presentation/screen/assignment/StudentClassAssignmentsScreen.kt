@@ -1,17 +1,10 @@
 package com.example.educationapp.presentation.screen.assignment
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,10 +31,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -50,30 +42,27 @@ import com.example.educationapp.core.file.UploadFile
 import com.example.educationapp.core.file.rememberUploadFilePicker
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
-import com.example.educationapp.core.ui.chip.AppChip
 import com.example.educationapp.core.ui.layout.AppScaffold
-import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.LocalTopBarHazeState
+import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.core.ui.upload.UploadReviewDialog
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.StudentAssignment
 import com.example.educationapp.presentation.screen.assignment.composable.StudentAssignmentCard
+import com.example.educationapp.presentation.screen.assignment.composable.SubmissionFilterBar
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screenmodel.assignment.StudentClassAssignmentsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.StudentClassAssignmentsState
 import educationapp.shared.generated.resources.Res
-import educationapp.shared.generated.resources.profile_retry
-import educationapp.shared.generated.resources.assignment_submitted
-import educationapp.shared.generated.resources.assignment_not_submitted
-import educationapp.shared.generated.resources.assignment_dialog_submit_title
 import educationapp.shared.generated.resources.assignment_dialog_submit_desc
+import educationapp.shared.generated.resources.assignment_dialog_submit_title
 import educationapp.shared.generated.resources.assignment_empty
-import kotlinx.coroutines.delay
+import educationapp.shared.generated.resources.profile_retry
 import kotlinx.coroutines.flow.filter
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Duration.Companion.milliseconds
 
 class StudentClassAssignmentsScreen(
     private val classId: Int,
@@ -88,6 +77,9 @@ class StudentClassAssignmentsScreen(
         val submittedFilter by screenModel.submittedFilter.collectAsState()
         val submittingAssignmentIds by screenModel.submittingAssignmentIds.collectAsState()
         val isRefreshing by screenModel.isRefreshing.collectAsState()
+
+        val isTablet = LocalIsTablet.current
+        val screenPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
 
         val toastController = LocalToastController.current
         var uploadAssignment by remember { mutableStateOf<StudentAssignment?>(null) }
@@ -121,24 +113,11 @@ class StudentClassAssignmentsScreen(
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     // Filter Row
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = AppDimen.p16, vertical = AppDimen.p8),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        AppChip(
-                            text = stringResource(Res.string.assignment_not_submitted),
-                            selected = !submittedFilter,
-                            onClick = { screenModel.setSubmittedFilter(false) }
-                        )
-                        AppChip(
-                            text = stringResource(Res.string.assignment_submitted),
-                            selected = submittedFilter,
-                            onClick = { screenModel.setSubmittedFilter(true) }
-                        )
-                    }
+                    SubmissionFilterBar(
+                        selectedFilter = submittedFilter,
+                        onFilterSelected = { screenModel.setSubmittedFilter(it) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     // Content
                     Box(
@@ -151,7 +130,7 @@ class StudentClassAssignmentsScreen(
                                 AssignmentCardSkeleton(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(16.dp),
+                                        .padding(screenPadding),
                                     itemCount = 3
                                 )
                             }
@@ -162,7 +141,7 @@ class StudentClassAssignmentsScreen(
                                     onRetry = { screenModel.retry() },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(AppDimen.p16)
+                                        .padding(screenPadding)
                                 )
                             }
 
@@ -172,12 +151,13 @@ class StudentClassAssignmentsScreen(
                                         className = className,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(AppDimen.p16)
+                                            .padding(screenPadding)
                                     )
                                 } else {
                                     StudentAssignmentsList(
                                         state = currentState,
                                         submittingAssignmentIds = submittingAssignmentIds,
+                                        horizontalPadding = screenPadding,
                                         onLoadNextPage = { screenModel.loadNextPage() },
                                         onSubmitAssignmentClick = { assignment ->
                                             uploadAssignment = assignment
@@ -194,7 +174,10 @@ class StudentClassAssignmentsScreen(
                     val isSubmitting = assignment.assignmentId in submittingAssignmentIds
                     UploadReviewDialog(
                         title = stringResource(Res.string.assignment_dialog_submit_title),
-                        description = stringResource(Res.string.assignment_dialog_submit_desc, assignment.title),
+                        description = stringResource(
+                            Res.string.assignment_dialog_submit_desc,
+                            assignment.title
+                        ),
                         selectedFile = selectedUploadFile,
                         isSubmitting = isSubmitting,
                         onChooseFile = { uploadFilePicker.launch() },
@@ -223,6 +206,7 @@ class StudentClassAssignmentsScreen(
 private fun StudentAssignmentsList(
     state: StudentClassAssignmentsState.Success,
     submittingAssignmentIds: Set<Int>,
+    horizontalPadding: Dp,
     onLoadNextPage: () -> Unit,
     onSubmitAssignmentClick: (StudentAssignment) -> Unit
 ) {
@@ -243,8 +227,8 @@ private fun StudentAssignmentsList(
         state = lazyListState,
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
-            start = AppDimen.p16,
-            end = AppDimen.p16,
+            start = horizontalPadding,
+            end = horizontalPadding,
             top = AppDimen.p8,
             bottom = AppDimen.p24
         ),

@@ -36,4 +36,12 @@ interface AssignmentRepository {
         page: Int,
         size: Int
     ): ApiResult<PaginationResponse<SubmissionDetail>>
+
+    suspend fun gradeSubmission(
+        classId: Int,
+        studentId: Int,
+        assignmentId: Int,
+        score: Double,
+        comment: String
+    ): ApiResult<AssignmentSubmission>
 }
