@@ -14,5 +14,6 @@ data class SubmissionDetail(
     val submissionStatus: String?,
     val fileAttachment: String?,
     val submittedAt: String?,
-    val score: Double?
+    val score: Double?,
+    val teacherComment: String?
 )

@@ -25,6 +25,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.educationapp.core.ui.toast.LocalToastController
+import com.example.educationapp.core.util.AppBackHandler
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.press_back_again_to_exit
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +58,20 @@ class MainScreen(private val role: AppRole) : Screen {
 
     @Composable
     override fun Content() {
+        val toastController = LocalToastController.current
+        val coroutineScope = rememberCoroutineScope()
+        var backPressedOnce by remember { mutableStateOf(false) }
+        val exitToastMessage = stringResource(Res.string.press_back_again_to_exit)
+
+        AppBackHandler(enabled = !backPressedOnce) {
+            backPressedOnce = true
+            toastController.show(exitToastMessage)
+            coroutineScope.launch {
+                delay(2000)
+                backPressedOnce = false
+            }
+        }
+
         val sharedHazeState = remember { HazeState() }
         val tabs = remember(role) {
             when (role) {

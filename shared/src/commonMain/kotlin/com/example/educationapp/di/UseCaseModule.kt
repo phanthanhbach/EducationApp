@@ -33,6 +33,7 @@ import com.example.educationapp.domain.usecase.GetPaymentQrUseCase
 import com.example.educationapp.domain.usecase.GetInvoiceByIdUseCase
 import com.example.educationapp.domain.usecase.GetMyAssignmentsFilteredUseCase
 import com.example.educationapp.domain.usecase.SubmitAssignmentUseCase
+import com.example.educationapp.domain.usecase.GradeSubmissionUseCase
 import com.example.educationapp.domain.usecase.UpdateStudentProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateTeacherProfileUseCase
 import com.example.educationapp.domain.usecase.UpdateParentProfileUseCase
@@ -54,6 +55,7 @@ val useCaseModule = module {
     single { GetInvoiceByIdUseCase(get()) }
     single { GetMyAssignmentsFilteredUseCase(get()) }
     single { SubmitAssignmentUseCase(get()) }
+    single { GradeSubmissionUseCase(get()) }
     single { LogoutUseCase(get()) }
     single { FilterAssignmentsUseCase(get()) }
     single { FilterAssignmentSubmissionsUseCase(get()) }

@@ -2,6 +2,7 @@ package com.example.educationapp.presentation.screen.assignment.composable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -36,10 +38,12 @@ import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.StudentAssignment
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.assignment_brief_btn
 import educationapp.shared.generated.resources.assignment_due
 import educationapp.shared.generated.resources.assignment_final_exam_badge
+import educationapp.shared.generated.resources.assignment_not_graded
 import educationapp.shared.generated.resources.assignment_not_submitted
 import educationapp.shared.generated.resources.assignment_overdue
 import educationapp.shared.generated.resources.assignment_score
@@ -51,6 +55,7 @@ import educationapp.shared.generated.resources.ic_check_circle_filled_24dp
 import educationapp.shared.generated.resources.ic_docs_24dp
 import educationapp.shared.generated.resources.ic_error_outline_24dp
 import educationapp.shared.generated.resources.ic_open_in_new_24dp
+import educationapp.shared.generated.resources.ic_schedule_24dp
 import educationapp.shared.generated.resources.ic_upload_24dp
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
@@ -68,7 +73,7 @@ fun StudentAssignmentCard(
         try {
             val dueInstant = Instant.parse(assignment.dueDate)
             dueInstant < Clock.System.now()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -113,124 +118,101 @@ fun StudentAssignmentCard(
         border = BorderStroke(1.dp, borderStrokeColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(AppDimen.p16),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.Top
+        val isTablet = LocalIsTablet.current
+
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Icon status indicator
-            Box(
+            // Top Info Row
+            Row(
                 modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(iconBgColor),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(
+                        start = AppDimen.p16,
+                        end = AppDimen.p16,
+                        top = AppDimen.p16,
+                        bottom = AppDimen.p12
+                    ),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.Top
             ) {
-                AppIcon(
-                    drawableRes = iconRes,
-                    tint = iconColor,
-                    iconModifier = Modifier.size(24.dp)
-                )
-            }
-
-            // Description column
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                AppText(
-                    text = assignment.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                if (!assignment.description.isNullOrBlank()) {
-                    AppText(
-                        text = assignment.description,
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
+                // Icon status indicator
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(iconBgColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AppIcon(
+                        drawableRes = iconRes,
+                        tint = iconColor,
+                        iconModifier = Modifier.size(24.dp)
                     )
                 }
 
-                // Due date
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                // Description column
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    AppText(
-                        text = stringResource(
-                            Res.string.assignment_due,
-                            formatAssignmentDate(assignment.dueDate)
-                        ),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    // Responsive Title and Badges
+                    if (isTablet) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AppText(
+                                text = assignment.title,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            BadgesRow(
+                                submitted = assignment.submitted,
+                                finalExam = assignment.finalExam
+                            )
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(AppDimen.p6)
+                        ) {
+                            AppText(
+                                text = assignment.title,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            BadgesRow(
+                                submitted = assignment.submitted,
+                                finalExam = assignment.finalExam
+                            )
+                        }
+                    }
 
-                    if (isWarning) {
+                    if (!assignment.description.isNullOrBlank()) {
                         AppText(
-                            text = stringResource(Res.string.assignment_overdue),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFD32F2F)
-                        )
-                    }
-                }
-
-                // Badges Row
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Status Badge
-                    AppBadge(
-                        text = if (assignment.submitted) {
-                            stringResource(Res.string.assignment_submitted)
-                        } else {
-                            stringResource(Res.string.assignment_not_submitted)
-                        },
-                        color = if (assignment.submitted) AppColor.Success else AppColor.Warning
-                    )
-
-                    // Final Exam Badge
-                    if (assignment.finalExam) {
-                        AppBadge(
-                            text = stringResource(Res.string.assignment_final_exam_badge),
-                            color = Color(0xFF7E57C2) // Purple color
+                            text = assignment.description,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    // Score Badge
-                    if (assignment.score != null) {
-                        AppBadge(
-                            text = stringResource(
-                                Res.string.assignment_score,
-                                assignment.score.toString()
-                            ),
-                            color = AppColor.Primary
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Actions row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
                     // Assignment brief Link
-                    AppTextButton(
-                        text = stringResource(Res.string.assignment_brief_btn),
-                        onClick = {
-                            if (!assignment.assignmentFileAttachment.isNullOrBlank()) {
+                    if (!assignment.assignmentFileAttachment.isNullOrBlank()) {
+                        AppTextButton(
+                            text = stringResource(Res.string.assignment_brief_btn),
+                            onClick = {
                                 try {
                                     val url =
                                         if (assignment.assignmentFileAttachment.startsWith("http://") ||
@@ -241,22 +223,114 @@ fun StudentAssignmentCard(
                                             "http://${assignment.assignmentFileAttachment}"
                                         }
                                     uriHandler.openUri(url)
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     // Swallow error silently
                                 }
+                            },
+                            leadingIcon = {
+                                AppIcon(
+                                    drawableRes = Res.drawable.ic_open_in_new_24dp,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    iconModifier = Modifier.size(16.dp)
+                                )
                             }
-                        },
-                        leadingIcon = {
-                            AppIcon(
-                                drawableRes = Res.drawable.ic_open_in_new_24dp,
-                                tint = MaterialTheme.colorScheme.primary,
-                                iconModifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    // Due date
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        AppIcon(
+                            drawableRes = Res.drawable.ic_schedule_24dp,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            iconModifier = Modifier.size(16.dp)
+                        )
+                        AppText(
+                            text = stringResource(
+                                Res.string.assignment_due,
+                                formatAssignmentDate(assignment.dueDate)
+                            ),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        if (isWarning) {
+                            AppText(
+                                text = stringResource(Res.string.assignment_overdue),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFD32F2F)
                             )
                         }
-                    )
+                    }
+                }
+            }
 
-                    // Submit or View Submission button
-                    if (!assignment.submitted) {
+            // Divider line
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(AppDimen.p1)
+                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+            )
+
+            // Actions and Score Section
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = AppDimen.p16,
+                        vertical = AppDimen.p8
+                    )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (assignment.submitted) {
+                        // View submission button on the left
+                        if (!assignment.fileAttachment.isNullOrBlank()) {
+                            AppTextButton(
+                                text = stringResource(Res.string.assignment_view_submission_btn),
+                                onClick = {
+                                    try {
+                                        val url =
+                                            if (assignment.fileAttachment.startsWith("http://") ||
+                                                assignment.fileAttachment.startsWith("https://")
+                                            ) {
+                                                assignment.fileAttachment
+                                            } else {
+                                                "http://${assignment.fileAttachment}"
+                                            }
+                                        uriHandler.openUri(url)
+                                    } catch (_: Exception) {
+                                        // Swallow silently
+                                    }
+                                },
+                                leadingIcon = {
+                                    AppIcon(
+                                        drawableRes = Res.drawable.ic_open_in_new_24dp,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        iconModifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        // Score or Not graded on the right
+                        if (assignment.score != null) {
+                            ScoreView(assignment.score)
+                        } else {
+                            NotGradedView()
+                        }
+                    } else {
+                        // Submit button on the right
+                        Spacer(modifier = Modifier.weight(1f))
+
                         AppButton(
                             text = if (isSubmitting) {
                                 stringResource(Res.string.assignment_submitting_btn)
@@ -279,38 +353,14 @@ fun StudentAssignmentCard(
                             },
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier
+                                .padding(vertical = AppDimen.p8)
                                 .height(38.dp)
                                 .background(
                                     brush = Brush.horizontalGradient(
-                                        colors = listOf(Color(0xFFE65100), Color(0xFFC2185B))
+                                        colors = listOf(AppColor.Primary, AppColor.Secondary)
                                     ),
                                     shape = RoundedCornerShape(8.dp)
                                 )
-                        )
-                    } else if (!assignment.fileAttachment.isNullOrBlank()) {
-                        AppTextButton(
-                            text = stringResource(Res.string.assignment_view_submission_btn),
-                            onClick = {
-                                try {
-                                    val url = if (assignment.fileAttachment.startsWith("http://") ||
-                                        assignment.fileAttachment.startsWith("https://")
-                                    ) {
-                                        assignment.fileAttachment
-                                    } else {
-                                        "http://${assignment.fileAttachment}"
-                                    }
-                                    uriHandler.openUri(url)
-                                } catch (_: Exception) {
-                                    // Swallow silently
-                                }
-                            },
-                            leadingIcon = {
-                                AppIcon(
-                                    drawableRes = Res.drawable.ic_open_in_new_24dp,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    iconModifier = Modifier.size(16.dp)
-                                )
-                            }
                         )
                     }
                 }
@@ -336,5 +386,87 @@ private fun formatAssignmentDate(dateStr: String): String {
         if (!timePart.isNullOrBlank()) "$formattedDate $timePart" else formattedDate
     } catch (_: Exception) {
         dateStr
+    }
+}
+
+@Composable
+private fun BadgesRow(
+    submitted: Boolean,
+    finalExam: Boolean
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AppBadge(
+            text = if (submitted) {
+                stringResource(Res.string.assignment_submitted)
+            } else {
+                stringResource(Res.string.assignment_not_submitted)
+            },
+            color = if (submitted) AppColor.Success else AppColor.Warning
+        )
+
+        if (finalExam) {
+            AppBadge(
+                text = stringResource(Res.string.assignment_final_exam_badge),
+                color = Color(0xFF7E57C2)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ScoreView(score: Double) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = Modifier
+            .background(AppColor.Primary.copy(alpha = 0.08f), RoundedCornerShape(8.dp))
+            .border(1.dp, AppColor.Primary.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        AppIcon(
+            drawableRes = Res.drawable.ic_check_circle_filled_24dp,
+            tint = AppColor.Primary,
+            iconModifier = Modifier.size(16.dp)
+        )
+        AppText(
+            text = stringResource(Res.string.assignment_score, score.toString()),
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold,
+            color = AppColor.Primary
+        )
+    }
+}
+
+@Composable
+private fun NotGradedView() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = Modifier
+            .background(
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                RoundedCornerShape(8.dp)
+            )
+            .border(
+                1.dp,
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        AppIcon(
+            drawableRes = Res.drawable.ic_schedule_24dp,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            iconModifier = Modifier.size(16.dp)
+        )
+        AppText(
+            text = stringResource(Res.string.assignment_not_graded),
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }

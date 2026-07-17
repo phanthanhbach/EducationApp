@@ -9,7 +9,7 @@ class EducationApp : Application() {
     override fun onCreate() {
         super.onCreate()
         val baseUrl = if (BuildConfig.DEBUG) {
-            "http://10.68.125.218:8085/api/v1/"
+            "http://10.68.125.220:8085/api/v1/"
         } else {
             "http://cnxvn.ddns.net:9000/api/v1/"
         }

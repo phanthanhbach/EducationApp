@@ -7,4 +7,6 @@ object AssignmentEndpoint {
 
     fun submit(assignmentId: Int): String = "assignments/$assignmentId/submit"
     fun submissionsFilter(assignmentId: Int): String = "assignments/$assignmentId/submissions/filter"
+    fun gradeSubmission(classId: Int, studentId: Int, assignmentId: Int): String =
+        "assignments/submissions/$classId/$studentId/$assignmentId/grade"
 }

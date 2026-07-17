@@ -27,6 +27,10 @@ import com.example.educationapp.presentation.screen.assignment.composable.Submis
 import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentSubmissionsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentSubmissionsState
+import com.example.educationapp.presentation.screenmodel.assignment.GradeDialogState
+import com.example.educationapp.presentation.screen.assignment.composable.GradeSubmissionSheet
+import com.example.educationapp.domain.entity.SubmissionDetail
+import com.example.educationapp.domain.enums.AssignmentFilter
 
 class AssignmentSubmissionsScreen(
     private val assignmentId: Int,
@@ -41,6 +45,7 @@ class AssignmentSubmissionsScreen(
         val state by screenModel.state.collectAsState()
         val isRefreshing by screenModel.isRefreshing.collectAsState()
         val selectedFilter by screenModel.submittedFilter.collectAsState()
+        val gradeState by screenModel.gradeState.collectAsState()
 
         LaunchedEffect(assignmentId, classId) {
             screenModel.loadSubmissions(assignmentId, classId)
@@ -55,8 +60,21 @@ class AssignmentSubmissionsScreen(
             onBackClick = { navigator.pop() },
             onRetry = { screenModel.retry() },
             onLoadNextPage = { screenModel.loadNextPage() },
-            onRefresh = { screenModel.refreshData() }
+            onRefresh = { screenModel.refreshData() },
+            onGradeClick = { screenModel.showGradeDialog(it) }
         )
+
+        (gradeState as? GradeDialogState.Visible)?.let { visibleState ->
+            GradeSubmissionSheet(
+                submission = visibleState.submission,
+                isLoading = visibleState.isLoading,
+                errorMessage = visibleState.errorMessage?.asString(),
+                onDismissRequest = { screenModel.dismissGradeDialog() },
+                onGradeSubmit = { score, comment ->
+                    screenModel.gradeSubmission(score, comment)
+                }
+            )
+        }
     }
 }
 
@@ -64,13 +82,14 @@ class AssignmentSubmissionsScreen(
 private fun AssignmentSubmissionsContent(
     assignmentTitle: String,
     state: AssignmentSubmissionsState,
-    selectedFilter: Boolean,
+    selectedFilter: AssignmentFilter,
     isRefreshing: Boolean,
-    onFilterSelected: (Boolean) -> Unit,
+    onFilterSelected: (AssignmentFilter) -> Unit,
     onBackClick: () -> Unit,
     onRetry: () -> Unit,
     onLoadNextPage: () -> Unit,
     onRefresh: () -> Unit,
+    onGradeClick: (SubmissionDetail) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isTablet = LocalIsTablet.current
@@ -130,6 +149,7 @@ private fun AssignmentSubmissionsContent(
                         SubmissionsList(
                             state = state,
                             onLoadNextPage = onLoadNextPage,
+                            onGradeClick = onGradeClick,
                             contentPadding = PaddingValues(
                                 start = screenPadding,
                                 end = screenPadding,
