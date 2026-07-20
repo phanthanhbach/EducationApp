@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.MaterialTheme
@@ -192,12 +191,15 @@ class MainScreen(private val role: AppRole) : Screen {
                                                             )
                                                             .hazeSource(state = sharedHazeState)
                                                             .padding(tabContentPadding)
-                                                            .consumeWindowInsets(WindowInsets.systemBars)
                                     ) {
-                                        Crossfade(
-                                                targetState = tabNavigator.current,
-                                                animationSpec = tween(durationMillis = 220)
-                                        ) { tab -> tab.Content() }
+                                        CompositionLocalProvider(
+                                            com.example.educationapp.core.ui.layout.LocalAppScaffoldApplyInsets provides false
+                                        ) {
+                                            Crossfade(
+                                                    targetState = tabNavigator.current,
+                                                    animationSpec = tween(durationMillis = 220)
+                                            ) { tab -> tab.Content() }
+                                        }
                                     }
 
                                     // Scrim when rail is expanded

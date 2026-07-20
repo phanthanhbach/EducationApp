@@ -38,6 +38,9 @@ import dev.chrisbanes.haze.hazeSource
 /** CompositionLocal to expose the local HazeState used for AppScaffold's content blur. */
 val LocalTopBarHazeState = staticCompositionLocalOf<HazeState?> { null }
 
+/** CompositionLocal to control whether AppScaffold should apply dynamic horizontal safe area system insets. */
+val LocalAppScaffoldApplyInsets = staticCompositionLocalOf { true }
+
 /**
  * A premium, unified scaffold for the application. Integrates optional Top Bar measuring, Haze
  * backdrop blur, and custom-positioned Pull-to-Refresh. Provides paddingValues to content so it
@@ -64,10 +67,11 @@ fun AppScaffold(
     val bottomNavigationBarPadding =
             WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
+    val applyInsets = LocalAppScaffoldApplyInsets.current
     val layoutDirection = LocalLayoutDirection.current
     val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
-    val startInset = systemBarsPadding.calculateStartPadding(layoutDirection)
-    val endInset = systemBarsPadding.calculateEndPadding(layoutDirection)
+    val startInset = if (applyInsets) systemBarsPadding.calculateStartPadding(layoutDirection) else 0.dp
+    val endInset = if (applyInsets) systemBarsPadding.calculateEndPadding(layoutDirection) else 0.dp
 
     val paddingValues =
             remember(topBarHeightDp, bottomNavigationBarPadding, bottomBarHeight, startInset, endInset) {
