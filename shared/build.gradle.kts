@@ -11,18 +11,17 @@ plugins {
 }
 
 kotlin {
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
+    listOf(iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "Shared"
             isStatic = true
         }
         iosTarget.binaries.configureEach {
             disableNativeCache(
-                version = org.jetbrains.kotlin.gradle.plugin.mpp.DisableCacheInKotlinVersion.`2_4_0`,
-                reason = "Resolve Xcode 16 and Skiko linking bugs"
+                    version =
+                            org.jetbrains.kotlin.gradle.plugin.mpp.DisableCacheInKotlinVersion
+                                    .`2_4_0`,
+                    reason = "Resolve Xcode 16 and Skiko linking bugs"
             )
         }
         iosTarget.compilations.configureEach {
@@ -33,23 +32,17 @@ kotlin {
             }
         }
     }
-    
+
     androidLibrary {
-       namespace = "com.example.educationapp.shared"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
-    
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
+        namespace = "com.example.educationapp.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions { jvmTarget = JvmTarget.JVM_11 }
+        androidResources { enable = true }
+        withHostTest { isIncludeAndroidResources = true }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -112,15 +105,9 @@ kotlin {
             implementation(libs.haze.blur)
         }
 
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
+        iosMain.dependencies { implementation(libs.ktor.client.darwin) }
+        commonTest.dependencies { implementation(libs.kotlin.test) }
     }
 }
 
-dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
-}
+dependencies { androidRuntimeClasspath(libs.compose.uiTooling) }

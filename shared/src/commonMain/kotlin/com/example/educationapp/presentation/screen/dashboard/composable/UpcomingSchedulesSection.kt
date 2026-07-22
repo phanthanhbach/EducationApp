@@ -127,7 +127,7 @@ private fun NoClassesTodayCard(
     GlassBox(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimen.p16),
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.65f)
     ) {
         Column(
             modifier = Modifier
