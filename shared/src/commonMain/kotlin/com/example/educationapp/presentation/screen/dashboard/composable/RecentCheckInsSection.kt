@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.DateTimeFormatter
 import com.example.educationapp.domain.entity.TeacherCheckInResult
@@ -53,7 +54,7 @@ fun RecentCheckInsSection(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
-            .padding(AppDimen.p16),
+            .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
         verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
     ) {
         // Section Header

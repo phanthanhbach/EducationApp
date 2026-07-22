@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.avatar.AppAvatar
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
@@ -43,7 +44,6 @@ fun ChildSelectorBar(
     modifier: Modifier = Modifier
 ) {
     val isTablet = LocalIsTablet.current
-    val horizontalPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
 
     Box(
         modifier = modifier
@@ -53,7 +53,7 @@ fun ChildSelectorBar(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalPadding)
+                .padding(horizontal = AppDimen.screenPadding)
         ) {
             SectionHeader(
                 title = stringResource(Res.string.parent_student_list_title),

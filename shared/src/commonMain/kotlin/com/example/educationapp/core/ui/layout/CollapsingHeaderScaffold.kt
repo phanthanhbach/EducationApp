@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -65,8 +66,8 @@ fun CollapsingHeaderScaffold(
     // can pass 0.dp if they want a flat sheet.
     sheetCornerRadius: Dp = AppDimen.p24,
     contentPadding: PaddingValues = PaddingValues(
-        start = AppDimen.p16,
-        end = AppDimen.p16,
+        start = AppDimen.screenPadding,
+        end = AppDimen.screenPadding,
         bottom = 24.dp
     ),
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(AppDimen.p16),

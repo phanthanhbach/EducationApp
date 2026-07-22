@@ -34,9 +34,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.blur.HazeColorEffect
 import dev.chrisbanes.haze.blur.blurEffect
@@ -196,16 +196,13 @@ fun AppTopBar(
 
         // Layer 2: Top bar content
         Column(modifier = Modifier.statusBarsPadding()) {
-            val isTablet = LocalIsTablet.current
-            val horizontalPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
-
             Box(modifier = Modifier.fillMaxWidth()) {
                 ThreeSectionRow(
                         modifier =
                                 Modifier.fillMaxWidth()
                                         .heightIn(min = 56.dp)
                                         .padding(
-                                                horizontal = horizontalPadding,
+                                                horizontal = AppDimen.screenPadding,
                                                 vertical = AppDimen.p8
                                         ),
                         spacing = AppDimen.p8,

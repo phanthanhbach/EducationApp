@@ -33,11 +33,11 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screen.parent.child_attendance.composable.ClassDetailSection
 import com.example.educationapp.presentation.screen.parent.child_attendance.composable.SummaryCard
 import com.example.educationapp.presentation.screenmodel.parent.ChildAttendanceRateScreenModel
@@ -69,8 +69,7 @@ class ChildAttendanceRateScreen(
         val lazyListState = rememberLazyListState()
         val currentState = state
 
-        val isTablet = LocalIsTablet.current
-        val horizontalPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
+        val horizontalPadding = AppDimen.screenPadding
 
         SearchTopBarLayout(
             title = stringResource(Res.string.parent_attendance_rate_title_format, studentName),

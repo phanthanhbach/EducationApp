@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.sheet.ClassStatusFilterBottomSheet
@@ -183,7 +184,7 @@ private fun ClassesContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(top = totalHeaderHeightDp)
-                            .padding(AppDimen.p16),
+                            .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                         itemCount = 4
                     )
                 }
@@ -193,7 +194,7 @@ private fun ClassesContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(top = totalHeaderHeightDp)
-                            .padding(AppDimen.p16),
+                            .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                         contentAlignment = Alignment.TopCenter
                     ) {
                         ErrorStateView(
@@ -209,7 +210,7 @@ private fun ClassesContent(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(top = totalHeaderHeightDp)
-                                .padding(AppDimen.p16),
+                                .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                             contentAlignment = Alignment.TopCenter
                         ) {
                             Card(
@@ -261,8 +262,8 @@ private fun ClassesContent(
                             modifier = Modifier
                                 .fillMaxSize(),
                             contentPadding = PaddingValues(
-                                start = AppDimen.p16,
-                                end = AppDimen.p16,
+                                start = AppDimen.screenPadding,
+                                end = AppDimen.screenPadding,
                                 top = listTopPaddingDp,
                                 bottom = AppDimen.p24 + LocalBottomBarHeight.current
                             ),
@@ -336,7 +337,7 @@ private fun OtherRolesClassesContent(
             ) {
                 focusManager.clearFocus()
             }
-            .padding(AppDimen.p16)
+            .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -358,7 +359,7 @@ private fun OtherRolesClassesContent(
             Card(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column(modifier = Modifier.padding(AppDimen.p16)) {
+                Column(modifier = Modifier.padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16)) {
                     AppText(
                         text = displayRoleText,
                         fontSize = 18.sp,

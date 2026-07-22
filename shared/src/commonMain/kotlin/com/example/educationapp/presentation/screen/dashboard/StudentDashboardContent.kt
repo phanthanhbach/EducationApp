@@ -34,6 +34,7 @@ import com.example.educationapp.presentation.screen.dashboard.composable.Section
 import com.example.educationapp.presentation.screen.dashboard.composable.TeacherContactSection
 import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
 import com.example.educationapp.presentation.screen.session.SessionDetailScreen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.presentation.screenmodel.dashboard.DashboardSectionState
 import com.example.educationapp.presentation.screenmodel.dashboard.StudentDashboardScreenModel
 import educationapp.shared.generated.resources.Res
@@ -61,11 +62,11 @@ fun StudentDashboardContent(
             DashboardSkeleton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(AppDimen.p16)
+                    .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16)
             )
         } else if (state.profileError != null) {
             ErrorStateView(
-                modifier = Modifier.padding(AppDimen.p16),
+                modifier = Modifier.padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                 error = state.profileError!!,
                 onRetry = { screenModel.loadDashboardData() }
             )
@@ -77,7 +78,7 @@ fun StudentDashboardContent(
                 // 1. Upcoming Schedules
                 Column(
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                     verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                 ) {
                     SectionHeader(title = stringResource(Res.string.lb_dashboard_schedules))
@@ -109,7 +110,7 @@ fun StudentDashboardContent(
                 // 2. Assignment Deadlines (Due within 48 hours)
                 Column(
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                     verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                 ) {
                     SectionHeader(title = stringResource(Res.string.lb_dashboard_assignments))
@@ -133,7 +134,7 @@ fun StudentDashboardContent(
                 // 3. Attendance by Class
                 Column(
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                     verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                 ) {
                     SectionHeader(title = stringResource(Res.string.dashboard_attendance_title))
@@ -157,7 +158,7 @@ fun StudentDashboardContent(
                 // 4. Teacher Contact
                 Column(
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = AppDimen.p16, vertical = AppDimen.p16),
+                        .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                     verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                 ) {
                     SectionHeader(title = stringResource(Res.string.dashboard_teacher_contact_title))
@@ -184,7 +185,7 @@ fun StudentDashboardContent(
                 // 5. Current Courses
                 Column(
                     modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                        .padding(AppDimen.p16),
+                        .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                     verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                 ) {
                     SectionHeader(title = stringResource(Res.string.dashboard_courses_title))

@@ -27,11 +27,12 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.ui.avatar.AppAvatar
 import com.example.educationapp.core.ui.layout.LocalTopBarHazeState
 import com.example.educationapp.core.ui.modifier.GlassBox
+import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.row.OptionRow
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
 import com.example.educationapp.domain.enums.StudentStatus
-import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screen.parent.child_attendance.ChildAttendanceRateScreen
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.gender_female
@@ -63,16 +64,12 @@ fun ChildDetailCard(
     child: UserProfile.Student,
     modifier: Modifier = Modifier
 ) {
-    val isTablet = LocalIsTablet.current
-    val horizontalPadding = if (isTablet) 24.dp else 16.dp
-
-    // Child Info Card with actions inside, styled with premium GlassBox
     GlassBox(
         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.4f),
         hazeState = LocalTopBarHazeState.current,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = horizontalPadding),
+            .padding(horizontal = AppDimen.screenPadding),
         shape = RoundedCornerShape(24.dp),
     ) {
         Column(

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.avatar.AppAvatar
 import com.example.educationapp.core.ui.badge.AppBadge
 import com.example.educationapp.core.ui.error.ErrorStateView
@@ -108,7 +109,7 @@ fun ProfileScreenContent(
                         InfoRowSkeleton(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(vertical = 8.dp),
                             rowCount = 4,
                             showIcons = true
                         )
@@ -231,6 +232,7 @@ private fun ProfileHeaderActions(
             iconModifier = Modifier.size(24.dp),
             boxModifier = Modifier
                 .align(Alignment.TopEnd)
+                .padding(end = AppDimen.screenPadding - AppDimen.p16)
                 .size(AppDimen.p56),
             onClick = onSettingsClick
         )
@@ -253,9 +255,11 @@ private fun CollapsingProfileIdentity(
         SheetTopExpanded - (expandedAvatarSize / 2) + AppDimen.p20 - statusBarHeight
     val expandedTextTop = SheetTopExpanded + AppDimen.p16 - statusBarHeight
     val avatarTop = lerpDp(expandedAvatarTop, AppDimen.p8, collapseProgress)
-    val avatarStart = lerpDp(AppDimen.p20, AppDimen.p16, collapseProgress)
+    val avatarStart = lerpDp(AppDimen.screenPadding + AppDimen.p4, AppDimen.screenPadding, collapseProgress)
     val textTop = lerpDp(expandedTextTop, 17.dp, collapseProgress)
-    val textStart = lerpDp(120.dp, AppDimen.p64, collapseProgress)
+    val expandedTextStart = AppDimen.screenPadding + AppDimen.p4 + expandedAvatarSize + 12.dp
+    val collapsedTextStart = AppDimen.screenPadding + 40.dp + AppDimen.p8
+    val textStart = lerpDp(expandedTextStart, collapsedTextStart, collapseProgress)
     val nameSize = 20 - (2 * collapseProgress)
     val subtitleAlpha = 1f - collapseProgress
 

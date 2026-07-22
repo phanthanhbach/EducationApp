@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.modifier.GlassBox
 import com.example.educationapp.core.ui.text.AppText
@@ -63,7 +64,7 @@ fun TeacherRatingSummaryCard(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
-            .padding(AppDimen.p16),
+            .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
         Row(

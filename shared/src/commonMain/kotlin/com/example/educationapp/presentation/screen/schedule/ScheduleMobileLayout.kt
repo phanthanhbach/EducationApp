@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.shimmer.skeleton.ScheduleSessionSkeleton
@@ -72,7 +73,7 @@ fun ScheduleMobileLayout(
             onToggleExpand = onToggleExpand,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AppDimen.p16)
+                .padding(horizontal = AppDimen.screenPadding)
         )
 
         Spacer(modifier = Modifier.height(AppDimen.p16))
@@ -164,8 +165,8 @@ fun ScheduleMobileLayout(
                             .fillMaxSize()
                             .weight(1f),
                         contentPadding = PaddingValues(
-                            start = AppDimen.p16,
-                            end = AppDimen.p16,
+                            start = AppDimen.screenPadding,
+                            end = AppDimen.screenPadding,
                             bottom = AppDimen.p24 + bottomBarHeight
                         ),
                         verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
