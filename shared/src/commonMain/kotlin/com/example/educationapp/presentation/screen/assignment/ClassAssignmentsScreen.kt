@@ -17,6 +17,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
@@ -24,7 +25,6 @@ import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import com.example.educationapp.domain.entity.Assignment
 import com.example.educationapp.presentation.screen.assignment.composable.AssignmentsList
 import com.example.educationapp.presentation.screen.assignment.composable.EmptyAssignmentsCard
-import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.ClassAssignmentsState
 import educationapp.shared.generated.resources.Res
@@ -80,8 +80,7 @@ private fun ClassAssignmentsContent(
     onAssignmentClick: (Assignment) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isTablet = LocalIsTablet.current
-    val screenPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
+    val paddingHorizontal = AppDimen.screenPadding
 
     AppScaffold(
         modifier = modifier,
@@ -106,7 +105,7 @@ private fun ClassAssignmentsContent(
                     AssignmentCardSkeleton(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(screenPadding),
+                            .padding(paddingHorizontal),
                         itemCount = 3
                     )
                 }
@@ -117,7 +116,7 @@ private fun ClassAssignmentsContent(
                         onRetry = onRetry,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(screenPadding)
+                            .padding(paddingHorizontal)
                     )
                 }
 
@@ -127,7 +126,7 @@ private fun ClassAssignmentsContent(
                             className = className,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(screenPadding)
+                                .padding(paddingHorizontal)
                         )
                     } else {
                         AssignmentsList(
@@ -135,8 +134,8 @@ private fun ClassAssignmentsContent(
                             onLoadNextPage = onLoadNextPage,
                             onAssignmentClick = onAssignmentClick,
                             contentPadding = PaddingValues(
-                                start = screenPadding,
-                                end = screenPadding,
+                                start = paddingHorizontal,
+                                end = paddingHorizontal,
                                 top = AppDimen.p12,
                                 bottom = AppDimen.p24
                             )

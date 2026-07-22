@@ -1,7 +1,10 @@
 package com.example.educationapp.core.theme
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.educationapp.presentation.screen.main.LocalIsTablet
 
 object AppDimen {
     val zero = 0.dp
@@ -50,3 +53,7 @@ object AppDimen {
     val s26 = 26.sp
     val s32 = 32.sp
 }
+
+val AppDimen.screenPadding: Dp
+    @Composable
+    get() = if (LocalIsTablet.current) p24 else p16

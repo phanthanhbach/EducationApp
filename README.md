@@ -41,9 +41,9 @@ Below are some screenshots of the application running on both platforms:
 |:------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|
 | <img src="docs/screenshots/signin_tablet.png" width="220" alt="Login Screen"/> | <img src="docs/screenshots/dashboard_tablet.png" width="220" alt="Student Dashboard"/> |      <img src="docs/screenshots/schedule_tablet.png" width="220" alt="Schedule Screen"/>      |
 
-|                                  Classes List                                  |                                  Feedback & Comments                                   |                                      Payments & Invoices                                      |
-|:------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|
-|    <img src="docs/screenshots/classes.png" width="220" alt="Classes List"/>    |    <img src="docs/screenshots/feedback.png" width="220" alt="Feedback & Comments"/>    |       <img src="docs/screenshots/payments.png" width="220" alt="Payments & Invoices"/>        |
+|                                     Classes List                                     |                                   Feedback & Comments                                   |                                  Payments & Invoices                                   |
+|:------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|
+| <img src="docs/screenshots/classes_list_tablet.png" width="220" alt="Classes List"/> | <img src="docs/screenshots/feedback_tablet.png" width="220" alt="Feedback & Comments"/> | <img src="docs/screenshots/payment_tablet.png" width="220" alt="Payments & Invoices"/> |
 
 ---
 

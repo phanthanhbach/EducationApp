@@ -18,13 +18,13 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.error.ErrorStateView
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.shimmer.skeleton.AssignmentCardSkeleton
 import com.example.educationapp.presentation.screen.assignment.composable.SubmissionFilterBar
 import com.example.educationapp.presentation.screen.assignment.composable.SubmissionsList
-import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentSubmissionsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.AssignmentSubmissionsState
 import com.example.educationapp.presentation.screenmodel.assignment.GradeDialogState
@@ -92,8 +92,7 @@ private fun AssignmentSubmissionsContent(
     onGradeClick: (SubmissionDetail) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isTablet = LocalIsTablet.current
-    val screenPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
+    val paddingHorizontal = AppDimen.screenPadding
 
     AppScaffold(
         modifier = modifier,
@@ -130,7 +129,7 @@ private fun AssignmentSubmissionsContent(
                         AssignmentCardSkeleton(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(screenPadding),
+                                .padding(paddingHorizontal),
                             itemCount = 4
                         )
                     }
@@ -141,7 +140,7 @@ private fun AssignmentSubmissionsContent(
                             onRetry = onRetry,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(screenPadding)
+                                .padding(paddingHorizontal)
                         )
                     }
 
@@ -151,8 +150,8 @@ private fun AssignmentSubmissionsContent(
                             onLoadNextPage = onLoadNextPage,
                             onGradeClick = onGradeClick,
                             contentPadding = PaddingValues(
-                                start = screenPadding,
-                                end = screenPadding,
+                                start = paddingHorizontal,
+                                end = paddingHorizontal,
                                 top = AppDimen.p8,
                                 bottom = AppDimen.p24
                             )

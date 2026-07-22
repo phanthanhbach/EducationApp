@@ -4,7 +4,6 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.educationapp.core.network.ApiResult
 import com.example.educationapp.core.util.asUiText
-import com.example.educationapp.domain.entity.Assignment
 import com.example.educationapp.domain.usecase.FilterAssignmentsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,13 +70,15 @@ class ClassAssignmentsScreenModel(
                     _state.value = ClassAssignmentsState.Error(result.asUiText())
                 }
             }
+
             is ApiResult.Success -> {
                 val pagination = result.data
-                val currentAssignments = if (append && _state.value is ClassAssignmentsState.Success) {
-                    (_state.value as ClassAssignmentsState.Success).assignments + pagination.content
-                } else {
-                    pagination.content
-                }
+                val currentAssignments =
+                    if (append && _state.value is ClassAssignmentsState.Success) {
+                        (_state.value as ClassAssignmentsState.Success).assignments + pagination.content
+                    } else {
+                        pagination.content
+                    }
 
                 _state.value = ClassAssignmentsState.Success(
                     assignments = currentAssignments,

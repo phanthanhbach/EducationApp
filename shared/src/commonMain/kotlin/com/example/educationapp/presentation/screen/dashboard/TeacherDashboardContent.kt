@@ -23,6 +23,7 @@ import com.example.educationapp.presentation.screen.dashboard.composable.Section
 import com.example.educationapp.presentation.screen.dashboard.composable.TeacherRatingSummaryCard
 import com.example.educationapp.presentation.screen.dashboard.composable.UpcomingSchedulesSection
 import com.example.educationapp.presentation.screen.session.SessionDetailScreen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardScreenModel
 import com.example.educationapp.presentation.screenmodel.dashboard.TeacherDashboardState
 import educationapp.shared.generated.resources.Res
@@ -43,13 +44,13 @@ fun TeacherDashboardContent(
             DashboardSkeleton(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(AppDimen.p16)
+                    .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16)
             )
         }
 
         is TeacherDashboardState.Error -> {
             ErrorStateView(
-                modifier = Modifier.padding(AppDimen.p16),
+                modifier = Modifier.padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                 error = currentState.error,
                 onRetry = { screenModel.loadDashboardData() }
             )
@@ -68,7 +69,7 @@ fun TeacherDashboardContent(
                 Column(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.surface)
-                        .padding(AppDimen.p16),
+                        .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p16),
                     verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                 ) {
                     SectionHeader(

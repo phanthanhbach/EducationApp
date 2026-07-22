@@ -42,6 +42,7 @@ import com.example.educationapp.core.file.UploadFile
 import com.example.educationapp.core.file.rememberUploadFilePicker
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.LocalTopBarHazeState
@@ -53,7 +54,6 @@ import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.StudentAssignment
 import com.example.educationapp.presentation.screen.assignment.composable.StudentAssignmentCard
 import com.example.educationapp.presentation.screen.assignment.composable.SubmissionFilterBar
-import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screenmodel.assignment.StudentClassAssignmentsScreenModel
 import com.example.educationapp.presentation.screenmodel.assignment.StudentClassAssignmentsState
 import educationapp.shared.generated.resources.Res
@@ -78,8 +78,7 @@ class StudentClassAssignmentsScreen(
         val submittingAssignmentIds by screenModel.submittingAssignmentIds.collectAsState()
         val isRefreshing by screenModel.isRefreshing.collectAsState()
 
-        val isTablet = LocalIsTablet.current
-        val screenPadding = if (isTablet) AppDimen.p24 else AppDimen.p16
+        val paddingHorizontal = AppDimen.screenPadding
 
         val toastController = LocalToastController.current
         var uploadAssignment by remember { mutableStateOf<StudentAssignment?>(null) }
@@ -130,7 +129,7 @@ class StudentClassAssignmentsScreen(
                                 AssignmentCardSkeleton(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(screenPadding),
+                                        .padding(paddingHorizontal),
                                     itemCount = 3
                                 )
                             }
@@ -141,7 +140,7 @@ class StudentClassAssignmentsScreen(
                                     onRetry = { screenModel.retry() },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(screenPadding)
+                                        .padding(paddingHorizontal)
                                 )
                             }
 
@@ -151,13 +150,13 @@ class StudentClassAssignmentsScreen(
                                         className = className,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(screenPadding)
+                                            .padding(paddingHorizontal)
                                     )
                                 } else {
                                     StudentAssignmentsList(
                                         state = currentState,
                                         submittingAssignmentIds = submittingAssignmentIds,
-                                        horizontalPadding = screenPadding,
+                                        horizontalPadding = paddingHorizontal,
                                         onLoadNextPage = { screenModel.loadNextPage() },
                                         onSubmitAssignmentClick = { assignment ->
                                             uploadAssignment = assignment
