@@ -82,7 +82,6 @@ fun ScheduleCalendar(
         modifier = modifier,
         shape = RoundedCornerShape(AppDimen.p16),
         blurRadius = AppDimen.p16,
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
         hazeState = hazeState
     ) {
         Column(

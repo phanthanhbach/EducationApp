@@ -30,6 +30,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.blurEffect
+import dev.chrisbanes.haze.hazeEffect
 
 @Composable
 actual fun PlatformGlassContainer(
@@ -55,16 +58,44 @@ actual fun PlatformGlassContainer(
 
     // Sử dụng màu outlineVariant của MaterialTheme làm mặc định nếu không truyền borderColor
     val baseBorderColor = borderColor ?: MaterialTheme.colorScheme.outlineVariant
-    val borderBrush = Brush.linearGradient(
-        colors = listOf(
-            baseBorderColor.copy(alpha = borderAlpha * 1.5f),
-            baseBorderColor.copy(alpha = borderAlpha * 0.5f)
-        )
-    )
-
-    // Xác định xem theme hiện tại là tối hay sáng dựa vào độ sáng (luminance) của màu nền.
+    // Xác định theme tối/sáng tự nhiên từ Compose MaterialTheme
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val shadowAlpha = if (isDark) 0.10f else 0.04f
+    val shadowAlpha = if (isDark) 0.12f else 0.05f
+
+    // Viền phản quang specular highlight (tạo viền sáng góc trên-trái để glass box nổi hẳn lên mặt phẳng)
+    val borderBrush = if (borderColor != null) {
+        Brush.linearGradient(
+            colors = listOf(
+                borderColor.copy(alpha = borderAlpha * 1.5f),
+                borderColor.copy(alpha = borderAlpha * 0.5f)
+            )
+        )
+    } else {
+        Brush.linearGradient(
+            colors = if (isDark) {
+                listOf(
+                    Color.White.copy(alpha = 0.45f * borderAlpha),
+                    baseBorderColor.copy(alpha = 0.15f * borderAlpha)
+                )
+            } else {
+                listOf(
+                    Color.White.copy(alpha = 0.90f * borderAlpha),
+                    baseBorderColor.copy(alpha = 0.30f * borderAlpha)
+                )
+            }
+        )
+    }
+
+    // Màu phủ kính thích ứng: tự động nâng tông bề mặt mờ nếu không truyền màu tùy chỉnh
+    val glassTint = if (color != Color.Unspecified) {
+        color
+    } else {
+        if (isDark) {
+            MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f)
+        } else {
+            Color.White.copy(alpha = 0.70f)
+        }
+    }
 
     // Màu bóng đổ: Mặc định dùng màu đen, nếu có màu viền trạng thái (như xanh lá/xanh dương)
     // thì dùng chính màu đó để tạo quầng sáng nhẹ (neon glow) cùng tông màu trạng thái dưới thẻ.
@@ -83,7 +114,21 @@ actual fun PlatformGlassContainer(
             // 2. Cắt bo góc
             .clip(shape)
             // 3. Tô nền kính bán trong suốt
-            .background(color = color, shape = shape)
+            .let { mod ->
+                if (hazeState != null && blurRadius > 0.dp) {
+                    mod.hazeEffect(state = hazeState) {
+                        blurEffect {
+                            this.blurRadius = blurRadius
+                            this.noiseFactor = 0f
+                            this.colorEffects = listOf(
+                                HazeColorEffect.tint(glassTint)
+                            )
+                        }
+                    }
+                } else {
+                    mod.background(color = glassTint, shape = shape)
+                }
+            }
             // 4. Viền kính thích ứng
             .border(
                 width = 1.dp,

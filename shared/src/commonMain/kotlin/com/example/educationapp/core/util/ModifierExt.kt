@@ -6,6 +6,8 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.MaterialTheme
@@ -18,21 +20,86 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.blurEffect
+import dev.chrisbanes.haze.hazeEffect
 
 /**
- * Định nghĩa expect cho hiệu ứng kính để có thể tối ưu riêng cho từng nền tảng.
+ * Modifier tạo hiệu ứng kính (Glassmorphism) sử dụng Haze blur.
+ *
+ * Dùng cho các trường hợp không thể bọc trong [GlassBox] (ví dụ: AlertDialog, Sheet)
+ * vì component bên ngoài có API cố định không cho phép wrap thêm container.
+ *
+ * Trên cả Android và iOS, modifier này sử dụng chung Haze library để tạo blur effect.
+ * Nếu cần native iOS blur (UIVisualEffectView), hãy sử dụng [GlassBox] thay thế.
+ *
+ * @param shape Hình dạng bo góc.
+ * @param hazeState Trạng thái HazeState để liên kết với hazeSource, tạo blur thực sự.
+ * @param blurRadius Bán kính làm mờ.
+ * @param color Màu sắc phủ lên kính.
+ * @param borderAlpha Độ mờ (opacity) của viền phản quang.
  */
-expect fun Modifier.liquidGlass(
+fun Modifier.liquidGlass(
     shape: Shape,
     hazeState: HazeState? = null,
     blurRadius: Dp = 20.dp,
-    color: Color = Color.White.copy(alpha = 0.15f),
+    color: Color = Color.Unspecified,
     borderAlpha: Float = 0.3f
-): Modifier
+): Modifier = composed {
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val resolvedColor = if (color != Color.Unspecified) {
+        color
+    } else {
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
+    }
+
+    val startAlphaFactor = if (!isDark) 1.02f else 1.3f
+    val endAlphaFactor = if (!isDark) 0.95f else 0.7f
+    val borderColor = if (!isDark) Color.Black else Color.White
+    val borderAlphaMultiplier = if (!isDark) 0.25f else 1.0f
+
+    this
+        .background(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    resolvedColor.copy(alpha = (resolvedColor.alpha * startAlphaFactor).coerceAtMost(1f)),
+                    resolvedColor.copy(alpha = resolvedColor.alpha * endAlphaFactor)
+                )
+            ),
+            shape = shape
+        )
+        .let { modifier ->
+            if (hazeState != null) {
+                modifier.hazeEffect(state = hazeState) {
+                    blurEffect {
+                        this.blurRadius = blurRadius
+                        this.noiseFactor = 0f
+                        this.colorEffects = listOf(
+                            HazeColorEffect.tint(resolvedColor.copy(alpha = resolvedColor.alpha * 0.55f))
+                        )
+                    }
+                }
+            } else {
+                modifier
+            }
+        }
+        .border(
+            width = 1.dp,
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    borderColor.copy(alpha = borderAlpha * borderAlphaMultiplier),
+                    borderColor.copy(alpha = borderAlpha * borderAlphaMultiplier * 0.5f),
+                    borderColor.copy(alpha = borderAlpha * borderAlphaMultiplier * 0.2f)
+                )
+            ),
+            shape = shape
+        )
+}
 
 inline fun Modifier.conditional(
     condition: Boolean,

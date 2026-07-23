@@ -96,8 +96,7 @@ fun TeacherRatingSummaryCard(
                     .weight(1f)
                     .fillMaxHeight(),
                 shape = RoundedCornerShape(18.dp),
-                containerColor = Color.Transparent,
-                blurRadius = 0.dp
+                containerColor = primaryColor.copy(alpha = 0.25f)
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -108,8 +107,8 @@ fun TeacherRatingSummaryCard(
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(
-                                    primaryColor.copy(alpha = 0.70f),
-                                    primaryColor
+                                    primaryColor.copy(alpha = 0.65f),
+                                    primaryColor.copy(alpha = 0.85f)
                                 )
                             )
                         )
@@ -221,8 +220,7 @@ private fun RatingSummaryMetric(
     GlassBox(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        containerColor = Color.Transparent,
-        blurRadius = 0.dp
+        containerColor = primaryColor.copy(alpha = 0.25f)
     ) {
         Row(
             modifier = Modifier
@@ -231,8 +229,8 @@ private fun RatingSummaryMetric(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            primaryColor.copy(alpha = 0.70f),
-                            primaryColor
+                            primaryColor.copy(alpha = 0.65f),
+                            primaryColor.copy(alpha = 0.85f)
                         )
                     )
                 )

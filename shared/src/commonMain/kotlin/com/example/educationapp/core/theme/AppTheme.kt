@@ -5,7 +5,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-
 private val LightColorScheme = lightColorScheme(
     primary = AppColor.Primary,
     secondary = AppColor.Secondary,
@@ -22,7 +21,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = AppColor.Secondary, // Use lighter version for primary in dark mode
+    primary = AppColor.Secondary,
     secondary = AppColor.Primary,
     tertiary = AppColor.Tertiary,
     background = AppColor.BackgroundDark,

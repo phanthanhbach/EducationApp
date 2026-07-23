@@ -197,7 +197,6 @@ fun VerticalNavigationRail(
                     isExpanded = isExpanded,
                     buttonSize = menuSize,
                     tint = MaterialTheme.colorScheme.onSurface,
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     hazeState = hazeState
                 ) {
                     onExpandedChange(!isExpanded)
@@ -234,7 +233,7 @@ private fun MenuToggleButton(
     isExpanded: Boolean,
     buttonSize: Dp,
     tint: Color,
-    containerColor: Color,
+    containerColor: Color = Color.Unspecified,
     hazeState: HazeState? = null,
     onClick: () -> Unit
 ) {
@@ -249,7 +248,7 @@ private fun MenuToggleButton(
             .size(buttonSize)
             .clip(CircleShape),
         shape = CircleShape,
-        containerColor = containerColor.copy(alpha = 0.5f),
+        containerColor = containerColor,
         hazeState = hazeState
     ) {
         AppIcon(

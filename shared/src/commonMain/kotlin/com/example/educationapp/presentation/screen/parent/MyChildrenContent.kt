@@ -65,7 +65,6 @@ fun ChildDetailCard(
     modifier: Modifier = Modifier
 ) {
     GlassBox(
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.4f),
         hazeState = LocalTopBarHazeState.current,
         modifier = modifier
             .fillMaxWidth()

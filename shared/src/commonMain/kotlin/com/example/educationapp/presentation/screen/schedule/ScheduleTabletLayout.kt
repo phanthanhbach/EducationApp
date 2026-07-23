@@ -63,7 +63,7 @@ fun ScheduleTabletLayout(
     Box(modifier = modifier.fillMaxSize()) {
         Row(
                 modifier = Modifier.fillMaxSize().padding(horizontal = AppDimen.screenPadding),
-                horizontalArrangement = Arrangement.spacedBy(AppDimen.p12)
+                horizontalArrangement = Arrangement.spacedBy(AppDimen.p16)
         ) {
             // Left Column: Interactive Calendar
             Column(
@@ -165,10 +165,7 @@ fun ScheduleTabletLayout(
                         } else {
                             LazyColumn(
                                     modifier = Modifier.fillMaxSize().weight(1f),
-                                    contentPadding =
-                                            PaddingValues(
-                                                    bottom = AppDimen.p24
-                                            ),
+                                    contentPadding = PaddingValues(bottom = AppDimen.p24),
                                     verticalArrangement = Arrangement.spacedBy(AppDimen.p12)
                             ) {
                                 items(filteredSchedules, key = { it.id }) { session ->
