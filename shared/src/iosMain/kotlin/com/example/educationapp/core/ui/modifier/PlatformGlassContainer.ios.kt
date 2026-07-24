@@ -73,7 +73,7 @@ actual fun PlatformGlassContainer(
         if (isDark) {
             MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f)
         } else {
-            MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
         }
     }
 
@@ -88,7 +88,7 @@ actual fun PlatformGlassContainer(
             spotColor = effectiveShadowColor.copy(alpha = if (isDark) 0.12f else 0.08f)
         )
     ) {
-        if (hazeState != null && blurRadius > 0.dp) {
+        if (hazeState != null && hazeState.areas.isNotEmpty() && blurRadius > 0.dp) {
             // 1. Haze blur layer with floating specular border
             Box(
                 modifier = Modifier

@@ -93,7 +93,7 @@ actual fun PlatformGlassContainer(
         if (isDark) {
             MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.55f)
         } else {
-            Color.White.copy(alpha = 0.70f)
+            MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
         }
     }
 
@@ -115,7 +115,7 @@ actual fun PlatformGlassContainer(
             .clip(shape)
             // 3. Tô nền kính bán trong suốt
             .let { mod ->
-                if (hazeState != null && blurRadius > 0.dp) {
+                if (hazeState != null && hazeState.areas.isNotEmpty() && blurRadius > 0.dp) {
                     mod.hazeEffect(state = hazeState) {
                         blurEffect {
                             this.blurRadius = blurRadius

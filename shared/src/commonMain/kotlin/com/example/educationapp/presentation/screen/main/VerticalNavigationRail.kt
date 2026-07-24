@@ -256,7 +256,6 @@ private fun MenuToggleButton(
             tint = tint,
             onClick = onClick,
             iconModifier = Modifier.size(AppDimen.p24),
-            boxModifier = Modifier.size(buttonSize)
         )
     }
 }

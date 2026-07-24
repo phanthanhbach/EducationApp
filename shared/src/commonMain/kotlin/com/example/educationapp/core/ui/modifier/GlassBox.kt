@@ -13,14 +13,14 @@ import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 
 import com.example.educationapp.core.ui.layout.LocalTopBarHazeState
-import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
+import com.example.educationapp.presentation.screen.main.LocalMainScreenHazeState
 
 /**
  * Container hỗ trợ hiệu ứng kính (Glassmorphism) hoạt động nhất quán trên cả Android và iOS.
  *
  * ## Hành vi theo nền tảng:
  * - **iOS & Android**: Sử dụng [Haze] library để tạo blur mờ nội dung phía sau một cách tự động
- *   thông qua [LocalSharedHazeState] hoặc [LocalTopBarHazeState].
+ *   thông qua [LocalMainScreenHazeState] hoặc [LocalTopBarHazeState].
  *   Đồng bộ 100% với Theme của App và độc lập tuyệt đối với Cài đặt hệ thống thiết bị.
  *
  * @param modifier Modifier dùng để định kích thước, khoảng cách và căn lề cho container.
@@ -51,13 +51,15 @@ fun GlassBox(
         Color.Unspecified
     }
 
+    val effectiveHazeState = hazeState ?: LocalTopBarHazeState.current ?: LocalMainScreenHazeState.current
+
     PlatformGlassContainer(
         modifier = modifier,
         shape = shape,
         blurRadius = blurRadius,
         color = resolvedContainerColor,
         borderAlpha = 0.3f,
-        hazeState = hazeState,
+        hazeState = effectiveHazeState,
         borderColor = borderColor,
         shadowColor = shadowColor
     ) {
