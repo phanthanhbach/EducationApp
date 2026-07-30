@@ -7,6 +7,9 @@
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_timeout">Connection timeout. Please try again.</string>
     <string name="error_unauthorized">Session expired. Please log in again.</string>
+    <string name="dialog_session_expired_title">Session Expired</string>
+    <string name="dialog_session_expired_desc">Your session has expired. Please log in again to continue.</string>
+    <string name="btn_ok">OK</string>
     <string name="error_forbidden">You do not have permission to perform this action.</string>
     <string name="error_not_found">Requested resource not found.</string>
     <string name="error_server">Server error occurred. Please try again later.</string>

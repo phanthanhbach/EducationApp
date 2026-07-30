@@ -9,5 +9,14 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+		<key>UIImageName</key>
+		<string>LaunchIcon</string>
+		<key>UILaunchScreenImageName</key>
+		<string>LaunchIcon</string>
+	</dict>
 </dict>
 </plist>

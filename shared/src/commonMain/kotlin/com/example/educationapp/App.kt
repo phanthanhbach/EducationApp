@@ -29,6 +29,18 @@ import com.example.educationapp.presentation.screen.login.LoginScreen
 import com.example.educationapp.presentation.screen.main.LocalIsTablet
 import com.example.educationapp.presentation.screen.main.MainScreen
 import org.koin.compose.koinInject
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.example.educationapp.core.data.SessionManager
+import com.example.educationapp.core.data.SessionEvent
+import com.example.educationapp.core.ui.dialog.AppAlertDialog
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.dialog_session_expired_title
+import educationapp.shared.generated.resources.dialog_session_expired_desc
+import educationapp.shared.generated.resources.btn_ok
+import org.jetbrains.compose.resources.stringResource
+import cafe.adriel.voyager.navigator.CurrentScreen
 
 @Composable
 @Preview
@@ -38,6 +50,16 @@ fun App() {
     val preferences by observeAppPreferencesUseCase().collectAsState(initial = AppPreferences())
     val coroutineScope = rememberCoroutineScope()
     val toastController = remember(coroutineScope) { ToastController(coroutineScope) }
+    val sessionManager = koinInject<SessionManager>()
+    var showSessionExpiredDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        sessionManager.sessionEvent.collect { event ->
+            when (event) {
+                SessionEvent.Expired -> showSessionExpiredDialog = true
+            }
+        }
+    }
 
     val initialScreen = remember(tokenManager) {
         val token = tokenManager.getAccessToken()
@@ -64,7 +86,25 @@ fun App() {
                     LocalIsTablet provides isTablet
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        Navigator(initialScreen)
+                        Navigator(initialScreen) { navigator ->
+                            if (showSessionExpiredDialog) {
+                                AppAlertDialog(
+                                    title = stringResource(Res.string.dialog_session_expired_title),
+                                    description = stringResource(Res.string.dialog_session_expired_desc),
+                                    confirmText = stringResource(Res.string.btn_ok),
+                                    dismissText = "",
+                                    onConfirm = {
+                                        showSessionExpiredDialog = false
+                                        navigator.replaceAll(LoginScreen())
+                                    },
+                                    onDismiss = {
+                                        showSessionExpiredDialog = false
+                                        navigator.replaceAll(LoginScreen())
+                                    }
+                                )
+                            }
+                            CurrentScreen()
+                        }
 
                         AppToast(
                             message = toastController.message,

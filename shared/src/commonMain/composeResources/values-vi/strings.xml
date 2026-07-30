@@ -7,6 +7,9 @@
     <string name="error_no_internet">Không có kết nối mạng. Vui lòng kiểm tra lại.</string>
     <string name="error_timeout">Hết thời gian kết nối. Vui lòng thử lại.</string>
     <string name="error_unauthorized">Phiên làm việc hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="dialog_session_expired_title">Phiên đã hết hạn</string>
+    <string name="dialog_session_expired_desc">Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.</string>
+    <string name="btn_ok">Đồng ý</string>
     <string name="error_forbidden">Bạn không có quyền thực hiện hành động này.</string>
     <string name="error_not_found">Không tìm thấy yêu cầu.</string>
     <string name="error_server">Lỗi hệ thống. Vui lòng thử lại sau.</string>
