@@ -14,7 +14,6 @@ import com.example.educationapp.core.ui.button.AppButton
 import com.example.educationapp.core.ui.button.AppTextButton
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.util.liquidGlass
-import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 
 /**
  * A standard, high-quality Alert Dialog component for warnings, confirmations, and actions.
@@ -30,8 +29,6 @@ fun AppAlertDialog(
     modifier: Modifier = Modifier,
     isConfirmDestructive: Boolean = false
 ) {
-    val sharedHazeState = LocalSharedHazeState.current
-
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -83,9 +80,8 @@ fun AppAlertDialog(
         containerColor = Color.Transparent,
         modifier = modifier.liquidGlass(
             shape = RoundedCornerShape(AppDimen.p28),
-            hazeState = sharedHazeState,
             blurRadius = AppDimen.p32,
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+            color = MaterialTheme.colorScheme.surface
         )
     )
 }

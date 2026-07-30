@@ -34,6 +34,7 @@ import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.tab.TabNavigator
+import com.example.educationapp.core.ui.layout.LocalAppScaffoldApplyInsets
 import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.core.util.AppBackHandler
 import com.example.educationapp.domain.enums.AppRole
@@ -104,7 +105,7 @@ class MainScreen(private val role: AppRole) : Screen {
 
         CompositionLocalProvider(
                 LocalAppRole provides role,
-                LocalSharedHazeState provides sharedHazeState,
+                LocalMainScreenHazeState provides sharedHazeState,
                 LocalBottomBarHeight provides 64.dp
         ) {
             ParentWrapper {
@@ -193,11 +194,12 @@ class MainScreen(private val role: AppRole) : Screen {
                                                             .padding(tabContentPadding)
                                     ) {
                                         CompositionLocalProvider(
-                                            com.example.educationapp.core.ui.layout.LocalAppScaffoldApplyInsets provides false
+                                            LocalAppScaffoldApplyInsets provides false,
+                                            LocalMainScreenHazeState provides null
                                         ) {
                                             Crossfade(
-                                                    targetState = tabNavigator.current,
-                                                    animationSpec = tween(durationMillis = 220)
+                                                targetState = tabNavigator.current,
+                                                animationSpec = tween(durationMillis = 220)
                                             ) { tab -> tab.Content() }
                                         }
                                     }
@@ -280,10 +282,14 @@ class MainScreen(private val role: AppRole) : Screen {
                                                         .hazeSource(state = sharedHazeState)
                                                         .padding(contentPadding)
                                 ) {
-                                    Crossfade(
-                                            targetState = tabNavigator.current,
-                                            animationSpec = tween(durationMillis = 220)
-                                    ) { tab -> tab.Content() }
+                                    CompositionLocalProvider(
+                                        LocalMainScreenHazeState provides null
+                                    ) {
+                                        Crossfade(
+                                                targetState = tabNavigator.current,
+                                                animationSpec = tween(durationMillis = 220)
+                                        ) { tab -> tab.Content() }
+                                    }
                                 }
                             }
                         }

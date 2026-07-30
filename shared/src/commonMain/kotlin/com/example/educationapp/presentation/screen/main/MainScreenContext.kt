@@ -16,9 +16,8 @@ val LocalParentMainScreenModel = compositionLocalOf<ParentMainScreenModel> {
     error("No ParentMainScreenModel provided")
 }
 
-val LocalSharedHazeState = staticCompositionLocalOf<HazeState?> { null }
+val LocalMainScreenHazeState = staticCompositionLocalOf<HazeState?> { null }
 
-val LocalBottomBarHeight = staticCompositionLocalOf<Dp> { 0.dp }
+val LocalBottomBarHeight = staticCompositionLocalOf { 0.dp }
 
 val LocalIsTablet = staticCompositionLocalOf { false }
-

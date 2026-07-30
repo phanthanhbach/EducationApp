@@ -45,6 +45,7 @@ import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.image.CoreMediaSource
 import com.example.educationapp.core.ui.layout.CollapsingHeaderScaffold
 import com.example.educationapp.core.ui.layout.lerpDp
+import com.example.educationapp.core.ui.modifier.GlassBox
 import com.example.educationapp.core.ui.shimmer.skeleton.InfoRowSkeleton
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.domain.entity.UserProfile
@@ -214,28 +215,27 @@ private fun ProfileHeaderActions(
     collapseProgress: Float,
     onSettingsClick: () -> Unit
 ) {
-    val settingsTint = lerp(
-        start = MaterialTheme.colorScheme.onPrimary,
-        stop = MaterialTheme.colorScheme.onSurface,
-        fraction = collapseProgress
-    )
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .height(AppDimen.p64)
+            .height(AppDimen.p56)
     ) {
-        AppIcon(
-            drawableRes = Res.drawable.ic_settings_24dp,
-            tint = settingsTint,
-            iconModifier = Modifier.size(24.dp),
-            boxModifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(end = AppDimen.screenPadding - AppDimen.p16)
-                .size(AppDimen.p56),
-            onClick = onSettingsClick
-        )
+        GlassBox(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = AppDimen.screenPadding)
+                .clip(CircleShape),
+            shape = CircleShape
+        ) {
+            AppIcon(
+                drawableRes = Res.drawable.ic_settings_24dp,
+                tint = MaterialTheme.colorScheme.onSurface,
+                iconModifier = Modifier.size(AppDimen.p24),
+                boxModifier = Modifier.size(AppDimen.p40),
+                onClick = onSettingsClick
+            )
+        }
     }
 }
 

@@ -52,13 +52,14 @@ class AuthRepositoryImpl(
 
     override suspend fun logout(): ApiResult<Unit> {
         return safeApiCall {
-            httpClient.post(AuthEndpoint.LOGOUT)
-            tokenManager.clearTokens()
-
-            // Clear Ktor Bearer Token cache
-            clearKtorAuthCache()
-
-            return@safeApiCall Unit
+            try {
+                httpClient.post(AuthEndpoint.LOGOUT)
+            } catch (_: Exception) {
+            } finally {
+                tokenManager.clearTokens()
+                clearKtorAuthCache()
+            }
+            return@safeApiCall
         }
     }
 

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -260,62 +261,67 @@ private fun WeekStripView(
             val isToday = date == today
             val dayName = dayNames[index]
 
-            Column(
+            Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        if (isSelected) {
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                        } else {
-                            Color.Transparent
-                        }
-                    )
-                    .border(
-                        width = if (isToday && !isSelected) 1.dp else 0.dp,
-                        color = if (isToday && !isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                        shape = RoundedCornerShape(12.dp)
-                    )
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
                         onDateSelected(date)
-                    }
-                    .padding(vertical = AppDimen.p10),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    },
+                contentAlignment = Alignment.Center
             ) {
-                AppText(
-                    text = dayName,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(AppDimen.p6))
-
-                AppText(
-                    text = date.day.toString(),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(AppDimen.p4))
-
-                val hasClasses = highlightDates.contains(date)
-                Box(
+                Column(
                     modifier = Modifier
-                        .size(4.dp)
-                        .clip(CircleShape)
+                        .width(42.dp)
+                        .padding(vertical = AppDimen.p4)
+                        .clip(RoundedCornerShape(20.dp))
                         .background(
-                            if (isSelected && hasClasses) MaterialTheme.colorScheme.primary
-                            else if (!isSelected && hasClasses) MaterialTheme.colorScheme.primary.copy(
-                                alpha = 0.6f
-                            )
-                            else Color.Transparent
+                            if (isSelected) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            } else {
+                                Color.Transparent
+                            }
                         )
-                )
+                        .border(
+                            width = if (isToday && !isSelected) 1.dp else 0.dp,
+                            color = if (isToday && !isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .padding(vertical = AppDimen.p6),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AppText(
+                        text = dayName,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(AppDimen.p6))
+
+                    AppText(
+                        text = date.day.toString(),
+                        fontSize = 14.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    )
+                    val hasClasses = highlightDates.contains(date)
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 2.dp)
+                            .size(4.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (isSelected && hasClasses) MaterialTheme.colorScheme.primary
+                                else if (!isSelected && hasClasses) MaterialTheme.colorScheme.primary.copy(
+                                    alpha = 0.6f
+                                )
+                                else Color.Transparent
+                            )
+                    )
+                }
             }
         }
     }
@@ -380,45 +386,53 @@ private fun MonthGridView(
                         modifier = Modifier
                             .weight(1f)
                             .height(38.dp)
-                            .padding(AppDimen.p2)
-                            .clip(CircleShape)
-                            .background(
-                                if (isSelected) {
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                                } else {
-                                    Color.Transparent
-                                }
-                            )
-                            .clickable { onDateSelected(date) },
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { onDateSelected(date) },
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            AppText(
-                                text = date.day.toString(),
-                                fontSize = 14.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = when {
-                                    isSelected -> MaterialTheme.colorScheme.primary
-                                    isCurrentMonth -> MaterialTheme.colorScheme.onSurface
-                                    else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                                }
-                            )
-
-                            val hasClasses = highlightDates.contains(date)
-                            if (hasClasses) {
-                                Box(
-                                    modifier = Modifier
-                                        .padding(top = 2.dp)
-                                        .size(3.dp)
-                                        .clip(CircleShape)
-                                        .background(
-                                            if (isSelected) MaterialTheme.colorScheme.primary
-                                            else if (isCurrentMonth) MaterialTheme.colorScheme.primary.copy(
-                                                alpha = 0.6f
-                                            )
-                                            else MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                                        )
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (isSelected) {
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                    } else {
+                                        Color.Transparent
+                                    }
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                AppText(
+                                    text = date.day.toString(),
+                                    fontSize = 14.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = when {
+                                        isSelected -> MaterialTheme.colorScheme.primary
+                                        isCurrentMonth -> MaterialTheme.colorScheme.onSurface
+                                        else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                                    }
                                 )
+
+                                val hasClasses = highlightDates.contains(date)
+                                if (hasClasses) {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(top = 1.dp)
+                                            .size(3.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                if (isSelected) MaterialTheme.colorScheme.primary
+                                                else if (isCurrentMonth) MaterialTheme.colorScheme.primary.copy(
+                                                    alpha = 0.6f
+                                                )
+                                                else MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                            )
+                                    )
+                                }
                             }
                         }
                     }

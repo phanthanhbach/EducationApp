@@ -33,9 +33,10 @@ import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import com.example.educationapp.presentation.screen.main.LocalSharedHazeState
 import com.example.educationapp.presentation.screen.main.LocalBottomBarHeight
+import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import androidx.compose.runtime.CompositionLocalProvider
 
 /**
  * A small SliverAppBar-style layout for screens with:
@@ -136,56 +137,62 @@ fun CollapsingHeaderScaffold(
             }
     }
 
-    val sharedHaze = LocalSharedHazeState.current
- 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .let {
-                if (sharedHaze != null) it.hazeSource(state = sharedHaze) else it
-            }
+    val collapsingHazeState = remember { HazeState() }
+
+    CompositionLocalProvider(
+        LocalTopBarHazeState provides collapsingHazeState
     ) {
-        cover()
-
-        val currentCornerRadius = lerpDp(sheetCornerRadius, 0.dp, collapseProgress)
-
-        // The moving white surface. It is not part of the LazyColumn, so it can
-        // visually cover the image while the body content keeps its own clipping.
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .offset(y = sheetOffset)
-                .background(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(
-                        topStart = currentCornerRadius,
-                        topEnd = currentCornerRadius
-                    )
-                )
-        )
-
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = collapsedContentTop),
-            verticalArrangement = verticalArrangement,
-            contentPadding = finalContentPadding
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            // Invisible header space. This item is the "scroll ruler" used to
-            // compute collapseProgress and to give the expanded profile room.
-            item {
-                Spacer(modifier = Modifier.height(expandedContentSpacer))
-            }
-            content()
-        }
+            // 1. The source container (contains cover and body to be blurred, marked as hazeSource)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .hazeSource(state = collapsingHazeState)
+            ) {
+                cover()
 
-        // Overlay layers are rendered after the body so they stay above content.
-        // They receive progress instead of listState to keep animation decisions
-        // local to each screen.
-        collapsingContent(collapseProgress)
-        headerActions(collapseProgress)
+                val currentCornerRadius = lerpDp(sheetCornerRadius, 0.dp, collapseProgress)
+
+                // The moving white surface. It is not part of the LazyColumn, so it can
+                // visually cover the image while the body content keeps its own clipping.
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .offset(y = sheetOffset)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(
+                                topStart = currentCornerRadius,
+                                topEnd = currentCornerRadius
+                            )
+                        )
+                )
+
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = collapsedContentTop),
+                    verticalArrangement = verticalArrangement,
+                    contentPadding = finalContentPadding
+                ) {
+                    // Invisible header space. This item is the "scroll ruler" used to
+                    // compute collapseProgress and to give the expanded profile room.
+                    item {
+                        Spacer(modifier = Modifier.height(expandedContentSpacer))
+                    }
+                    content()
+                }
+            }
+
+            // 2. The overlay effects (siblings, NOT children of the hazeSource Box above)
+            collapsingContent(collapseProgress)
+            headerActions(collapseProgress)
+        }
     }
 }
 

@@ -15,10 +15,17 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import com.example.educationapp.core.data.SessionManager
+import com.example.educationapp.data.dto.request.RefreshTokenRequest
+import com.example.educationapp.data.dto.response.LoginDTO
+import com.example.educationapp.data.endpoint.AuthEndpoint
+import io.ktor.client.call.body
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import kotlinx.serialization.json.Json
 import co.touchlab.kermit.Logger as KermitLogger
 
-fun createHttpClient(tokenManager: TokenManager, baseUrl: String): HttpClient = HttpClient {
+fun createHttpClient(tokenManager: TokenManager, sessionManager: SessionManager, baseUrl: String): HttpClient = HttpClient {
     expectSuccess = true
     install(ContentNegotiation) {
         json(Json {
@@ -38,15 +45,42 @@ fun createHttpClient(tokenManager: TokenManager, baseUrl: String): HttpClient = 
     install(Auth) {
         bearer {
             loadTokens {
-                tokenManager.getAccessToken()?.let { token ->
-                    val cleanToken = if (token.startsWith("Bearer ", ignoreCase = true)) {
-                        token.substring(7)
-                    } else {
-                        token
-                    }
-                    BearerTokens(cleanToken, "")
+                val accessToken = tokenManager.getAccessToken() ?: return@loadTokens null
+                val cleanToken = if (accessToken.startsWith("Bearer ", ignoreCase = true)) {
+                    accessToken.substring(7)
+                } else {
+                    accessToken
+                }
+                val refreshToken = tokenManager.getRefreshToken() ?: ""
+                BearerTokens(cleanToken, refreshToken)
+            }
+            refreshTokens {
+                val refreshToken = oldTokens?.refreshToken
+                if (refreshToken.isNullOrBlank()) {
+                    tokenManager.clearTokens()
+                    sessionManager.notifySessionExpired()
+                    return@refreshTokens null
+                }
+                try {
+                    val response = client.post(AuthEndpoint.REFRESH) {
+                        markAsRefreshTokenRequest()
+                        setBody(RefreshTokenRequest(refreshToken = refreshToken))
+                    }.body<BaseResponse<LoginDTO>>()
+
+                    tokenManager.saveTokens(
+                        accessToken = response.data.accessToken,
+                        refreshToken = response.data.refreshToken,
+                        role = response.data.userRole,
+                        fullName = response.data.fullName
+                    )
+                    BearerTokens(response.data.accessToken, response.data.refreshToken)
+                } catch (e: Exception) {
+                    tokenManager.clearTokens()
+                    sessionManager.notifySessionExpired()
+                    null
                 }
             }
+            sendWithoutRequest { true }
         }
     }
     defaultRequest {

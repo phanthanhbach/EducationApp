@@ -16,6 +16,9 @@ class TokenManager(private val secureSettings: Settings) {
     /** Lấy Access Token (Cơ chế đồng bộ của Settings) */
     fun getAccessToken(): String? = secureSettings.getStringOrNull(ACCESS_TOKEN_KEY)
 
+    /** Lấy Refresh Token */
+    fun getRefreshToken(): String? = secureSettings.getStringOrNull(REFRESH_TOKEN_KEY)
+
     /** Lấy User Role đã lưu */
     fun getUserRole(): AppRole {
         val roleStr = secureSettings.getStringOrNull(USER_ROLE_KEY) ?: return AppRole.UNKNOWN
