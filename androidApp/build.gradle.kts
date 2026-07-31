@@ -43,8 +43,12 @@ android {
         }
     }
     buildTypes {
+        getByName("debug") {
+            buildConfigField("String", "BASE_URL", "\"http://10.11.11.212:8085/api/v1/\"")
+        }
         getByName("release") {
             isMinifyEnabled = false
+            buildConfigField("String", "BASE_URL", "\"http://cnxvn.ddns.net:9000/api/v1/\"")
         }
     }
     compileOptions {

@@ -45,7 +45,8 @@ import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.icon.AppIcon
 import com.example.educationapp.core.ui.text.AppText
 import com.example.educationapp.core.ui.textfield.SearchTextField
-import org.jetbrains.compose.resources.DrawableResource
+import educationapp.shared.generated.resources.Res
+import educationapp.shared.generated.resources.ic_sort_24dp
 import kotlin.math.roundToInt
 
 /**
@@ -58,9 +59,10 @@ import kotlin.math.roundToInt
  * @param lazyListState Shared scroll state of the list content.
  * @param modifier Custom modifier for the root container.
  * @param placeholder Optional search placeholder text.
- * @param filterIcon Optional resource for filter action. If null, filter icon is hidden.
  * @param isFilterActive True if filter is currently active (styles icon differently).
- * @param onFilterClick Callback triggered when filter icon is clicked.
+ * @param onFilterClick Callback triggered when filter icon is clicked. If null, filter icon is hidden.
+ * @param onBackClick Callback for back action. If provided, AppTopBar remains pinned; otherwise it collapses.
+ * @param isTitleCentered True if title should be centered.
  * @param isRefreshing True if the data is refreshing.
  * @param onRefresh Callback to trigger refreshing.
  * @param extraContent Slot for collapsible headers below the AppTopBar (e.g., ChildSelectorBar).
@@ -75,7 +77,6 @@ fun SearchTopBarLayout(
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
     placeholder: String = "",
-    filterIcon: DrawableResource? = null,
     isFilterActive: Boolean = false,
     onFilterClick: (() -> Unit)? = null,
     onBackClick: (() -> Unit)? = null,
@@ -88,15 +89,36 @@ fun SearchTopBarLayout(
     val density = LocalDensity.current
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val statusBarHeightPx = with(density) { statusBarHeight.toPx() }
+    val defaultAppTopBarHeightPx = with(density) { 56.dp.toPx() }
+    val defaultSearchRowHeightPx = with(density) { 72.dp.toPx() }
 
-    var sectionAHeightPx by remember { mutableStateOf(0f) }
-    var searchRowHeightPx by remember { mutableStateOf(0f) }
+    var appTopBarHeightPx by remember { mutableStateOf(statusBarHeightPx + defaultAppTopBarHeightPx) }
+    var extraContentHeightPx by remember { mutableStateOf(0f) }
+    var searchRowHeightPx by remember { mutableStateOf(defaultSearchRowHeightPx) }
 
-    val maxScrollPx = maxOf(0f, sectionAHeightPx - statusBarHeightPx)
+    val shouldPinTopBar = onBackClick != null
+
+    val maxScrollPx = if (shouldPinTopBar) {
+        extraContentHeightPx
+    } else {
+        maxOf(0f, appTopBarHeightPx + extraContentHeightPx - statusBarHeightPx)
+    }
+
     val maxScrollDp = with(density) { maxScrollPx.toDp() }
+    val appTopBarHeightDp = with(density) { appTopBarHeightPx.toDp() }
     val searchRowHeightDp = with(density) { searchRowHeightPx.toDp() }
-    val totalHeaderHeightDp = statusBarHeight + searchRowHeightDp + maxScrollDp
-    val listTopPaddingDp = statusBarHeight + searchRowHeightDp + 12.dp
+
+    val totalHeaderHeightDp = if (shouldPinTopBar) {
+        appTopBarHeightDp + searchRowHeightDp + maxScrollDp
+    } else {
+        statusBarHeight + searchRowHeightDp + maxScrollDp
+    }
+
+    val listTopPaddingDp = if (shouldPinTopBar) {
+        appTopBarHeightDp + searchRowHeightDp + 12.dp
+    } else {
+        statusBarHeight + searchRowHeightDp + 12.dp
+    }
 
     val headerOffset by remember(lazyListState, maxScrollPx) {
         derivedStateOf {
@@ -166,31 +188,23 @@ fun SearchTopBarLayout(
             content(maxScrollDp, totalHeaderHeightDp, listTopPaddingDp)
         }
 
-        // 2. Fixed Status Bar Background Mask with higher zIndex (4f) to hide top bar sliding underneath
+        // 2. Fixed Status Bar Background Mask with highest zIndex (5f)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(statusBarHeight)
                 .background(MaterialTheme.colorScheme.surface)
-                .zIndex(4f)
+                .zIndex(5f)
         )
 
-        // 3. Floating Collapsible Header
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset { IntOffset(0, headerOffset.roundToInt()) }
-                .zIndex(3f)
-        ) {
-            // Section A: Collapsible part (Top Bar & Extra Content)
-            Column(
+        if (shouldPinTopBar) {
+            // Pinned AppTopBar (zIndex = 4f)
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surface)
-                    .onSizeChanged { sectionAHeightPx = it.height.toFloat() }
-                    .graphicsLayer {
-                        alpha = 1f - collapseProgress
-                    }
+                    .onSizeChanged { appTopBarHeightPx = it.height.toFloat() }
+                    .zIndex(4f)
             ) {
                 AppTopBar(
                     title = if (isTitleCentered) title else null,
@@ -207,54 +221,158 @@ fun SearchTopBarLayout(
                     isTitleCentered = isTitleCentered,
                     onBackClick = onBackClick
                 )
+            }
 
-                if (extraContent != null) {
+            // Collapsible extraContent (zIndex = 3f)
+            if (extraContent != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset { IntOffset(0, (appTopBarHeightPx + headerOffset).roundToInt()) }
+                        .background(MaterialTheme.colorScheme.surface)
+                        .onSizeChanged { extraContentHeightPx = it.height.toFloat() }
+                        .graphicsLayer {
+                            alpha = 1f - collapseProgress
+                        }
+                        .zIndex(3f)
+                ) {
                     extraContent()
                 }
             }
 
-            // Section B: Pinned part (Search Bar + Filter)
+            // Pinned Search Row (zIndex = 4f)
+            val visibleExtraContentHeightPx = if (extraContent != null) {
+                extraContentHeightPx + headerOffset
+            } else {
+                0f
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .offset { IntOffset(0, (appTopBarHeightPx + visibleExtraContentHeightPx).roundToInt()) }
                     .onSizeChanged { searchRowHeightPx = it.height.toFloat() }
+                    .zIndex(4f)
             ) {
-                Row(
+                SearchRowContent(
+                    searchQuery = searchQuery,
+                    onSearch = onSearch,
+                    placeholder = placeholder,
+                    onFilterClick = onFilterClick,
+                    isFilterActive = isFilterActive,
+                    showDivider = headerOffset < 0f
+                )
+            }
+        } else {
+            // Collapsible TopBar + extraContent block (zIndex = 3f)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset { IntOffset(0, headerOffset.roundToInt()) }
+                    .background(MaterialTheme.colorScheme.surface)
+                    .graphicsLayer {
+                        alpha = 1f - collapseProgress
+                    }
+                    .zIndex(3f)
+            ) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p8),
-                    verticalAlignment = Alignment.CenterVertically
+                        .onSizeChanged { appTopBarHeightPx = it.height.toFloat() }
                 ) {
-                    SearchTextField(
-                        value = searchQuery,
-                        onSearch = onSearch,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        placeholder = placeholder,
-                        modifier = Modifier.weight(1f)
+                    AppTopBar(
+                        title = if (isTitleCentered) title else null,
+                        titleContent = if (!isTitleCentered) {
+                            {
+                                AppText(
+                                    text = title,
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        } else null,
+                        isTitleCentered = isTitleCentered,
+                        onBackClick = onBackClick
                     )
+                }
 
-                    if (filterIcon != null && onFilterClick != null) {
-                        Spacer(modifier = Modifier.width(AppDimen.p16))
-                        AppIcon(
-                            drawableRes = filterIcon,
-                            tint = if (isFilterActive) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
-                            onClick = onFilterClick
-                        )
+                if (extraContent != null) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onSizeChanged { extraContentHeightPx = it.height.toFloat() }
+                    ) {
+                        extraContent()
                     }
                 }
+            }
 
-                if (headerOffset < 0f) {
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
-                        thickness = 0.5.dp
-                    )
-                }
+            // Search Row (zIndex = 4f)
+            val visibleCollapsibleHeightPx = maxOf(0f, maxScrollPx + headerOffset)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset { IntOffset(0, (statusBarHeightPx + visibleCollapsibleHeightPx).roundToInt()) }
+                    .onSizeChanged { searchRowHeightPx = it.height.toFloat() }
+                    .zIndex(4f)
+            ) {
+                SearchRowContent(
+                    searchQuery = searchQuery,
+                    onSearch = onSearch,
+                    placeholder = placeholder,
+                    onFilterClick = onFilterClick,
+                    isFilterActive = isFilterActive,
+                    showDivider = headerOffset < 0f || lazyListState.firstVisibleItemScrollOffset > 0 || lazyListState.firstVisibleItemIndex > 0
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun SearchRowContent(
+    searchQuery: String,
+    onSearch: (String) -> Unit,
+    placeholder: String,
+    onFilterClick: (() -> Unit)?,
+    isFilterActive: Boolean,
+    showDivider: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = AppDimen.screenPadding, vertical = AppDimen.p8),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SearchTextField(
+            value = searchQuery,
+            onSearch = onSearch,
+            containerColor = MaterialTheme.colorScheme.surface,
+            placeholder = placeholder,
+            modifier = Modifier.weight(1f)
+        )
+
+        if (onFilterClick != null) {
+            Spacer(modifier = Modifier.width(AppDimen.p16))
+            AppIcon(
+                drawableRes = Res.drawable.ic_sort_24dp,
+                tint = if (isFilterActive) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                onClick = onFilterClick
+            )
+        }
+    }
+
+    if (showDivider) {
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+            thickness = 0.5.dp
+        )
     }
 }

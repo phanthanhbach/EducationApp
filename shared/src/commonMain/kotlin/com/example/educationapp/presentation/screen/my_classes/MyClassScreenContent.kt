@@ -159,7 +159,6 @@ private fun ClassesContent(
         onSearch = onSearch,
         lazyListState = lazyListState,
         placeholder = stringResource(Res.string.my_classes_search_placeholder),
-        filterIcon = Res.drawable.ic_sort_24dp,
         isFilterActive = selectedStatus != null,
         onFilterClick = {
             showFilterSheet = true
