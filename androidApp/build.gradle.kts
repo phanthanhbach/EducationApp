@@ -17,9 +17,16 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.voyager.navigator)
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.testExt.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.compose.uiTestJunit4)
 }
 
 android {
@@ -36,6 +43,7 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {

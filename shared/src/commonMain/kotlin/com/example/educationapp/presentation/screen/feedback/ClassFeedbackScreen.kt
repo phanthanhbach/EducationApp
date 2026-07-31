@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,8 +21,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
@@ -45,11 +43,14 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
+import com.example.educationapp.core.ui.layout.AppScaffold
 import com.example.educationapp.core.ui.layout.AppTopBar
+import com.example.educationapp.core.ui.shimmer.skeleton.ListCardSkeleton
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.textfield.AppTextFieldLabelStyle
+import com.example.educationapp.core.util.UiText
 import com.example.educationapp.domain.entity.StudentClassFeedback
 import com.example.educationapp.presentation.screenmodel.feedback.ClassFeedbackScreenModel
 import com.example.educationapp.presentation.screenmodel.feedback.ClassFeedbackState
@@ -100,9 +101,10 @@ private fun ClassFeedbackContent(
     onSubmitFeedback: (StudentClassFeedback, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
+    val screenPadding = AppDimen.screenPadding
+
+    AppScaffold(
         modifier = modifier,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             AppTopBar(
                 title = stringResource(Res.string.class_feedback_title),
@@ -114,7 +116,7 @@ private fun ClassFeedbackContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
                 .background(MaterialTheme.colorScheme.background)
         ) {
             when (state) {
@@ -122,7 +124,7 @@ private fun ClassFeedbackContent(
                     ListCardSkeleton(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(screenPadding),
                         itemCount = 4
                     )
                 }
@@ -133,7 +135,7 @@ private fun ClassFeedbackContent(
                         onRetry = onRetry,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(AppDimen.p16)
+                            .padding(screenPadding)
                     )
                 }
 
@@ -143,11 +145,12 @@ private fun ClassFeedbackContent(
                             className = className,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(AppDimen.p16)
+                                .padding(screenPadding)
                         )
                     } else {
                         FeedbackList(
                             state = state,
+                            screenPadding = screenPadding,
                             onLoadNextPage = onLoadNextPage,
                             onSubmitFeedback = onSubmitFeedback
                         )
@@ -161,6 +164,7 @@ private fun ClassFeedbackContent(
 @Composable
 private fun FeedbackList(
     state: ClassFeedbackState.Success,
+    screenPadding: Dp,
     onLoadNextPage: () -> Unit,
     onSubmitFeedback: (StudentClassFeedback, String) -> Unit
 ) {
@@ -181,8 +185,8 @@ private fun FeedbackList(
         state = lazyListState,
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
-            start = AppDimen.p16,
-            end = AppDimen.p16,
+            start = screenPadding,
+            end = screenPadding,
             top = AppDimen.p12,
             bottom = AppDimen.p24
         ),
@@ -467,7 +471,7 @@ private fun formatFeedbackDate(dateStr: String): String {
 
         val timePart = parts.getOrNull(1)?.take(5)
         if (!timePart.isNullOrBlank()) "$formattedDate $timePart" else formattedDate
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         dateStr
     }
 }

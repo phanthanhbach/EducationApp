@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -26,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -171,7 +171,7 @@ class LoginScreen : Screen {
     }
 
     @Composable
-    private fun LoginForm(
+    fun LoginForm(
         username: String,
         onUsernameChange: (String) -> Unit,
         password: String,
@@ -207,7 +207,7 @@ class LoginScreen : Screen {
                 onValueChange = onUsernameChange,
                 label = stringResource(Res.string.lb_email_or_phone),
                 placeholder = stringResource(Res.string.lb_email_or_phone_placeholder),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("input_username"),
                 enabled = state !is LoginState.Loading
             )
 
@@ -220,7 +220,7 @@ class LoginScreen : Screen {
                     onValueChange = onPasswordChange,
                     label = stringResource(Res.string.lb_password),
                     placeholder = stringResource(Res.string.lb_password_placeholder),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("input_password"),
                     enabled = state !is LoginState.Loading,
                     imeAction = ImeAction.Done
                 )
@@ -238,7 +238,7 @@ class LoginScreen : Screen {
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().testTag("error_message")
                 )
             }
 
@@ -247,7 +247,7 @@ class LoginScreen : Screen {
             AppButton(
                 text = stringResource(Res.string.login_button),
                 onClick = onLoginClick,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag("btn_login"),
                 isLoading = state is LoginState.Loading,
                 elevation = AppDimen.p3
             )
