@@ -67,7 +67,11 @@ fun Modifier.liquidGlass(
         .background(
             brush = Brush.linearGradient(
                 colors = listOf(
-                    resolvedColor.copy(alpha = (resolvedColor.alpha * startAlphaFactor).coerceAtMost(1f)),
+                    resolvedColor.copy(
+                        alpha = (resolvedColor.alpha * startAlphaFactor).coerceAtMost(
+                            1f
+                        )
+                    ),
                     resolvedColor.copy(alpha = resolvedColor.alpha * endAlphaFactor)
                 )
             ),

@@ -40,12 +40,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
@@ -54,6 +56,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.example.educationapp.core.theme.AppColor
 import com.example.educationapp.core.theme.AppDimen
+import com.example.educationapp.core.theme.screenPadding
 import com.example.educationapp.core.ui.avatar.AppAvatar
 import com.example.educationapp.core.ui.button.AppButton
 import com.example.educationapp.core.ui.chip.AppChip
@@ -62,13 +65,12 @@ import com.example.educationapp.core.ui.layout.AppTopBar
 import com.example.educationapp.core.ui.layout.SearchTopBarLayout
 import com.example.educationapp.core.ui.shimmer.skeleton.StudentListSkeleton
 import com.example.educationapp.core.ui.text.AppText
-import com.example.educationapp.core.util.UiText
 import com.example.educationapp.core.ui.textfield.AppTextField
 import com.example.educationapp.core.ui.toast.LocalToastController
 import com.example.educationapp.domain.enums.AttendanceStatus
+import com.example.educationapp.presentation.model.AttendanceUiModel
 import com.example.educationapp.presentation.screenmodel.attendance.AttendanceScreenModel
 import com.example.educationapp.presentation.screenmodel.attendance.AttendanceState
-import com.example.educationapp.presentation.model.AttendanceUiModel
 import educationapp.shared.generated.resources.Res
 import educationapp.shared.generated.resources.attendance_filter_absent
 import educationapp.shared.generated.resources.attendance_filter_all
@@ -124,123 +126,9 @@ class AttendanceScreen(
             }
         }
 
+        val horizontalPadding = AppDimen.screenPadding
+
         when (val currentState = state) {
-            is AttendanceState.Loading -> {
-                AppScaffold(
-                    topBar = {
-                        AppTopBar(
-                            title = stringResource(Res.string.attendance_title),
-                            onBackClick = { navigator.pop() }
-                        )
-                    },
-                    containerColor = MaterialTheme.colorScheme.background
-                ) { paddingValues ->
-                    StudentListSkeleton(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = paddingValues.calculateTopPadding())
-                            .padding(16.dp),
-                        itemCount = 6
-                    )
-                }
-            }
-
-            is AttendanceState.Error -> {
-                AppScaffold(
-                    topBar = {
-                        AppTopBar(
-                            title = stringResource(Res.string.attendance_title),
-                            onBackClick = { navigator.pop() }
-                        )
-                    },
-                    containerColor = MaterialTheme.colorScheme.background
-                ) { paddingValues ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = paddingValues.calculateTopPadding()),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.padding(24.dp)
-                        ) {
-                            AppText(
-                                text = currentState.message.asString(),
-                                color = AppColor.Error,
-                                fontSize = 16.sp,
-                                textAlign = TextAlign.Center
-                            )
-                            Button(
-                                onClick = {
-                                    screenModel.loadAttendances(
-                                        classId,
-                                        sessionNumber
-                                    )
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
-                            ) {
-                                AppText(
-                                    text = stringResource(Res.string.btn_retry),
-                                    color = Color.White
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            is AttendanceState.Saved -> {
-                AppScaffold(
-                    topBar = {
-                        AppTopBar(
-                            title = stringResource(Res.string.attendance_title),
-                            onBackClick = { navigator.pop() }
-                        )
-                    },
-                    containerColor = MaterialTheme.colorScheme.background
-                ) { paddingValues ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = paddingValues.calculateTopPadding()),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(CircleShape)
-                                    .background(AppColor.Success.copy(alpha = 0.1f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                AppText(
-                                    text = "✓",
-                                    fontSize = 32.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = AppColor.Success
-                                )
-                            }
-                            AppText(
-                                text = stringResource(Res.string.attendance_save_success),
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            AppText(
-                                text = stringResource(Res.string.attendance_returning_message),
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-
             is AttendanceState.Loaded -> {
                 val filteredStudents = currentState.students.filter { student ->
                     val matchesSearch =
@@ -285,7 +173,7 @@ class AttendanceScreen(
                                             .fillMaxWidth()
                                             .background(AppColor.Warning.copy(alpha = 0.15f))
                                             .padding(
-                                                horizontal = AppDimen.p16,
+                                                horizontal = horizontalPadding,
                                                 vertical = AppDimen.p8
                                             )
                                     ) {
@@ -325,7 +213,8 @@ class AttendanceScreen(
                                     StatisticsRow(
                                         students = currentState.students,
                                         selectedStatus = selectedFilterStatus,
-                                        onStatusSelect = { selectedFilterStatus = it }
+                                        onStatusSelect = { selectedFilterStatus = it },
+                                        horizontalPadding = horizontalPadding
                                     )
                                 }
 
@@ -354,7 +243,7 @@ class AttendanceScreen(
                                             Row(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .padding(horizontal = AppDimen.p16),
+                                                    .padding(horizontal = horizontalPadding),
                                                 horizontalArrangement = Arrangement.spacedBy(
                                                     AppDimen.p12
                                                 )
@@ -385,7 +274,7 @@ class AttendanceScreen(
                                         }
                                     } else {
                                         items(filteredStudents, key = { it.studentId }) { student ->
-                                            Box(modifier = Modifier.padding(horizontal = AppDimen.p16)) {
+                                            Box(modifier = Modifier.padding(horizontal = horizontalPadding)) {
                                                 StudentCard(
                                                     student = student,
                                                     onStatusSelect = { status ->
@@ -415,12 +304,113 @@ class AttendanceScreen(
                             modifier = Modifier.align(Alignment.BottomCenter),
                             hasChanges = currentState.hasChanges,
                             isSaving = currentState.isSaving,
+                            horizontalPadding = horizontalPadding,
                             onSave = {
                                 screenModel.saveAttendances(classId, sessionNumber) { msg ->
                                     toastController.show(msg)
                                 }
                             }
                         )
+                    }
+                }
+            }
+
+            else -> {
+                AppScaffold(
+                    topBar = {
+                        AppTopBar(
+                            title = stringResource(Res.string.attendance_title),
+                            onBackClick = { navigator.pop() }
+                        )
+                    },
+                    containerColor = MaterialTheme.colorScheme.background
+                ) { paddingValues ->
+                    when (currentState) {
+                        is AttendanceState.Loading -> {
+                            StudentListSkeleton(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = paddingValues.calculateTopPadding())
+                                    .padding(horizontalPadding),
+                                itemCount = 6
+                            )
+                        }
+
+                        is AttendanceState.Error -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = paddingValues.calculateTopPadding()),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                                    modifier = Modifier.padding(horizontalPadding)
+                                ) {
+                                    AppText(
+                                        text = currentState.message.asString(),
+                                        color = AppColor.Error,
+                                        fontSize = 16.sp,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Button(
+                                        onClick = {
+                                            screenModel.loadAttendances(
+                                                classId,
+                                                sessionNumber
+                                            )
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = AppColor.Primary)
+                                    ) {
+                                        AppText(
+                                            text = stringResource(Res.string.btn_retry),
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        is AttendanceState.Saved -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = paddingValues.calculateTopPadding()),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(64.dp)
+                                            .clip(CircleShape)
+                                            .background(AppColor.Success.copy(alpha = 0.1f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        AppText(
+                                            text = "✓",
+                                            fontSize = 32.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = AppColor.Success
+                                        )
+                                    }
+                                    AppText(
+                                        text = stringResource(Res.string.attendance_save_success),
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    AppText(
+                                        text = stringResource(Res.string.attendance_returning_message),
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -487,7 +477,8 @@ class AttendanceScreen(
     private fun StatisticsRow(
         students: List<AttendanceUiModel>,
         selectedStatus: AttendanceStatus?,
-        onStatusSelect: (AttendanceStatus?) -> Unit
+        onStatusSelect: (AttendanceStatus?) -> Unit,
+        horizontalPadding: Dp = AppDimen.p16
     ) {
         val total = students.size
         val present = students.count { it.status == AttendanceStatus.PRESENT }
@@ -499,7 +490,7 @@ class AttendanceScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(horizontal = AppDimen.p16),
+                .padding(horizontal = horizontalPadding),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -689,6 +680,7 @@ class AttendanceScreen(
         modifier: Modifier = Modifier.Companion,
         hasChanges: Boolean,
         isSaving: Boolean,
+        horizontalPadding: Dp = AppDimen.p20,
         onSave: () -> Unit
     ) {
         val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
@@ -704,8 +696,8 @@ class AttendanceScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        start = AppDimen.p20,
-                        end = AppDimen.p20,
+                        start = horizontalPadding,
+                        end = horizontalPadding,
                         top = AppDimen.p16,
                         bottom = AppDimen.p16 + bottomPadding
                     )

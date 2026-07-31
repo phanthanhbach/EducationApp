@@ -374,9 +374,9 @@
     <string name="session_status_late_minutes">Late %1$d minutes</string>
     <string name="session_status_on_time">On time</string>
     <string name="session_label_checkout_time">Check-out time</string>
-    <string name="btn_view_attendance">VIEW ATTENDANCE LIST</string>
-    <string name="btn_take_attendance">TAKE ATTENDANCE</string>
-    <string name="btn_check_out_session">CHECK OUT SESSION</string>
+    <string name="btn_view_attendance">View Attendance List</string>
+    <string name="btn_take_attendance">Take Attendance</string>
+    <string name="btn_check_out_session">Check Out Session</string>
     <string name="session_status_completed">Completed</string>
     <string name="session_status_ongoing">Ongoing</string>
     <string name="session_status_upcoming">Upcoming</string>

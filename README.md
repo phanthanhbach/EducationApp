@@ -33,17 +33,11 @@ The project shares UI components, state management, networking, data persistence
 
 ---
 
-## 📱 Screenshots
+## 📸 Quick Preview
 
-Below are some screenshots of the application running on both platforms:
-
-|                                  Login Screen                                  |                                  Dashboard (Student)                                   |                                     Schedule / Timetable                                      |
-|:------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------:|
-| <img src="docs/screenshots/signin_tablet.png" width="220" alt="Login Screen"/> | <img src="docs/screenshots/dashboard_tablet.png" width="220" alt="Student Dashboard"/> |      <img src="docs/screenshots/schedule_tablet.png" width="220" alt="Schedule Screen"/>      |
-
-|                                     Classes List                                     |                                   Feedback & Comments                                   |                                  Payments & Invoices                                   |
-|:------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|
-| <img src="docs/screenshots/classes_list_tablet.png" width="220" alt="Classes List"/> | <img src="docs/screenshots/feedback_tablet.png" width="220" alt="Feedback & Comments"/> | <img src="docs/screenshots/payment_tablet.png" width="220" alt="Payments & Invoices"/> |
+| Phone (Student) | Phone (Teacher) | Tablet (Overview) |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/student/dashboard_student.png" width="220" alt="Student Dashboard"/> | <img src="docs/screenshots/phone/teacher/dashboard_teacher.png" width="220" alt="Teacher Dashboard"/> | <img src="docs/screenshots/tablet/sidebar.png" width="320" alt="Tablet Layout"/> |
 
 ---
 
@@ -122,6 +116,104 @@ Shared unit tests are located in `shared/src/commonTest/`. Run them using the ID
 # Run all unit tests for common and platform sourcesets
 ./gradlew :shared:allTests
 ```
+
+---
+
+## 🖼️ Full Screenshots Gallery
+
+Below is the complete gallery of application screens categorized by device type and user role. Click each dropdown to expand:
+
+<details>
+<summary>📱 <b>Phone Screenshots (Expand to View)</b></summary>
+<br/>
+
+### 🔐 System & Auth
+| Sign In (Light) | Sign In (Dark) | Settings (Light) | Settings (Dark) |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/sign_in_light.png" width="180" alt="Sign In Light"/> | <img src="docs/screenshots/phone/sign_in_dark.png" width="180" alt="Sign In Dark"/> | <img src="docs/screenshots/phone/settings_light.png" width="180" alt="Settings Light"/> | <img src="docs/screenshots/phone/settings_dark.png" width="180" alt="Settings Dark"/> |
+
+### 👨‍🎓 Student Role
+| Dashboard | My Classes | Assignments |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/student/dashboard_student.png" width="180" alt="Student Dashboard"/> | <img src="docs/screenshots/phone/student/my_classes_student.png" width="180" alt="My Classes"/> | <img src="docs/screenshots/phone/student/assignment_student.png" width="180" alt="Assignments"/> |
+
+| Schedule | Feedback | Payments |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/student/schedule_student.png" width="180" alt="Schedule"/> | <img src="docs/screenshots/phone/student/feedback_student.png" width="180" alt="Feedback"/> | <img src="docs/screenshots/phone/student/payments_student.png" width="180" alt="Payments"/> |
+
+| Class Payment | Edit Profile | Profile |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/student/class_payment_student.png" width="180" alt="Class Payment"/> | <img src="docs/screenshots/phone/student/edit_profile_student.png" width="180" alt="Edit Profile"/> | <img src="docs/screenshots/phone/student/profile_student.png" width="180" alt="Profile"/> |
+
+### 👩‍🏫 Teacher Role
+| Dashboard | My Classes | Schedule |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/teacher/dashboard_teacher.png" width="180" alt="Teacher Dashboard"/> | <img src="docs/screenshots/phone/teacher/my_classes_teacher.png" width="180" alt="My Classes"/> | <img src="docs/screenshots/phone/teacher/schedule_teacher.png" width="180" alt="Schedule"/> |
+
+| Attendance | Session Detail | Feedback |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/teacher/class_attendance_teacher.png" width="180" alt="Class Attendance"/> | <img src="docs/screenshots/phone/teacher/session_detail_teacher.png" width="180" alt="Session Detail"/> | <img src="docs/screenshots/phone/teacher/feedback_teacher.png" width="180" alt="Feedback"/> |
+
+| Assignments | Assignment Detail | Edit Profile | Profile |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/teacher/assignment_teacher.png" width="180" alt="Assignments"/> | <img src="docs/screenshots/phone/teacher/assignment_detail_teacher.png" width="180" alt="Assignment Detail"/> | <img src="docs/screenshots/phone/teacher/edit_profile_teacher.png" width="180" alt="Edit Profile"/> | <img src="docs/screenshots/phone/teacher/profile_teacher.png" width="180" alt="Profile"/> |
+
+### 👪 Parent Role
+| My Children | Child Schedule | Attendance Rate | Feedback |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/parent/my_childern_parent.png" width="180" alt="My Children"/> | <img src="docs/screenshots/phone/parent/child_schedule_parent.png" width="180" alt="Child Schedule"/> | <img src="docs/screenshots/phone/parent/child_attendance_rate_parent.png" width="180" alt="Attendance Rate"/> | <img src="docs/screenshots/phone/parent/feedback_parent.png" width="180" alt="Feedback"/> |
+
+| Feedback Detail | Payments | Profile |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/phone/parent/feedback_detail_parent.png" width="180" alt="Feedback Detail"/> | <img src="docs/screenshots/phone/parent/payments_parent.png" width="180" alt="Payments"/> | <img src="docs/screenshots/phone/parent/profile_parent.png" width="180" alt="Profile"/> |
+
+</details>
+
+<details>
+<summary>💻 <b>Tablet Screenshots (Expand to View)</b></summary>
+<br/>
+
+### 🔐 System & Layout
+| Sidebar Navigation | Sign In (Light) | Sign In (Dark) | Settings (Light) | Settings (Dark) |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/tablet/sidebar.png" width="220" alt="Sidebar Navigation"/> | <img src="docs/screenshots/tablet/sign_in_light.png" width="220" alt="Sign In Light"/> | <img src="docs/screenshots/tablet/sign_in_dark.png" width="220" alt="Sign In Dark"/> | <img src="docs/screenshots/tablet/settings_light.png" width="220" alt="Settings Light"/> | <img src="docs/screenshots/tablet/settings_dark.png" width="220" alt="Settings Dark"/> |
+
+### 👨‍🎓 Student Role
+| Dashboard | My Classes | Schedule |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tablet/student/dashboard_student.png" width="240" alt="Dashboard"/> | <img src="docs/screenshots/tablet/student/my_classes_student.png" width="240" alt="My Classes"/> | <img src="docs/screenshots/tablet/student/schedule_student.png" width="240" alt="Schedule"/> |
+
+| Submissions | Feedback | Payments |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tablet/student/submission_student.png" width="240" alt="Submissions"/> | <img src="docs/screenshots/tablet/student/feedback_student.png" width="240" alt="Feedback"/> | <img src="docs/screenshots/tablet/student/payments_student.png" width="240" alt="Payments"/> |
+
+| Invoices | Dashboard Alt View | Profile |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tablet/student/payment_invoices_student.png" width="240" alt="Invoices"/> | <img src="docs/screenshots/tablet/student/dashboard_2_student.png" width="240" alt="Dashboard Alt View"/> | <img src="docs/screenshots/tablet/student/profile_student.png" width="240" alt="Profile"/> |
+
+### 👩‍🏫 Teacher Role
+| Dashboard | My Classes | Schedule |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tablet/teacher/dashboard_teacher.png" width="240" alt="Dashboard"/> | <img src="docs/screenshots/tablet/teacher/my_classes_teacher.png" width="240" alt="My Classes"/> | <img src="docs/screenshots/tablet/teacher/schedule_teacher.png" width="240" alt="Schedule"/> |
+
+| Class Attendance | Session Detail | Assignments |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tablet/teacher/class_attendance_teacher.png" width="240" alt="Attendance"/> | <img src="docs/screenshots/tablet/teacher/session_detai_teacher.png" width="240" alt="Session Detail"/> | <img src="docs/screenshots/tablet/teacher/assignment_teacher.png" width="240" alt="Assignments"/> |
+
+| Assignment Detail | Profile |
+| :---: | :---: |
+| <img src="docs/screenshots/tablet/teacher/assignment_detail_teacher.png" width="240" alt="Assignment Detail"/> | <img src="docs/screenshots/tablet/teacher/profile_teacher.png" width="240" alt="Profile"/> |
+
+### 👪 Parent Role
+| My Children | Child Schedule | Attendance Rate |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tablet/parent/my_children_parent.png" width="240" alt="My Children"/> | <img src="docs/screenshots/tablet/parent/child_schedule_parent.png" width="240" alt="Child Schedule"/> | <img src="docs/screenshots/tablet/parent/attendance_rate_parent.png" width="240" alt="Attendance Rate"/> |
+
+| Feedback | Payments | Profile |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/tablet/parent/feedback_parent.png" width="240" alt="Feedback"/> | <img src="docs/screenshots/tablet/parent/payments_parent.png" width="240" alt="Payments"/> | <img src="docs/screenshots/tablet/parent/profile_parent.png" width="240" alt="Profile"/> |
+
+</details>
 
 ---
 
