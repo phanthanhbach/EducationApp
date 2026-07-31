@@ -88,7 +88,6 @@ class FeedbackTab : Tab {
             searchQuery = searchQuery,
             onSearch = { screenModel.searchClasses(it) },
             lazyListState = lazyListState,
-            filterIcon = Res.drawable.ic_sort_24dp,
             isFilterActive = selectedStatus != null,
             placeholder = stringResource(Res.string.my_classes_search_placeholder),
             onFilterClick = {

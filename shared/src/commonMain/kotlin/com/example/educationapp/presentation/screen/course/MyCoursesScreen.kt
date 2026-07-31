@@ -108,7 +108,6 @@ class MyCoursesScreen : Screen {
             onSearch = { screenModel.searchCourses(it) },
             lazyListState = lazyListState,
             placeholder = stringResource(Res.string.search_placeholder),
-            filterIcon = Res.drawable.ic_sort_24dp,
             isFilterActive = selectedStatus != null,
             onFilterClick = {
                 tempSelectedStatus = selectedStatus

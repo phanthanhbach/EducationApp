@@ -24,6 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -172,11 +174,31 @@ fun CollapsingHeaderScaffold(
                         )
                 )
 
+                val relativeClipTop = remember(sheetOffset, collapsedContentTop) {
+                    maxOf(0.dp, sheetOffset - collapsedContentTop)
+                }
+
                 LazyColumn(
                     state = listState,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = collapsedContentTop),
+                        .padding(top = collapsedContentTop)
+                        .clip(
+                            remember(relativeClipTop) {
+                                object : androidx.compose.ui.graphics.Shape {
+                                    override fun createOutline(
+                                        size: androidx.compose.ui.geometry.Size,
+                                        layoutDirection: androidx.compose.ui.unit.LayoutDirection,
+                                        density: androidx.compose.ui.unit.Density
+                                    ): androidx.compose.ui.graphics.Outline {
+                                        val topPx = with(density) { relativeClipTop.toPx() }
+                                        return androidx.compose.ui.graphics.Outline.Rectangle(
+                                            androidx.compose.ui.geometry.Rect(0f, topPx, size.width, size.height)
+                                        )
+                                    }
+                                }
+                            }
+                        ),
                     verticalArrangement = verticalArrangement,
                     contentPadding = finalContentPadding
                 ) {
